@@ -2033,34 +2033,48 @@ function bindSliders() {
 MODE SWITCH
 ========================================================= */
 
+```javascript id="f5m4mv"
 function bindModeButtons() {
 
-  document
-    .querySelectorAll('.modebtn')
-    .forEach(btn=>{
+  const buttons = document.querySelectorAll(
+    '.modebtn, .mode-btn'
+  );
 
-      btn.addEventListener('click',()=>{
+  buttons.forEach(btn => {
 
-        const target =
-          btn.dataset.mode;
+    btn.addEventListener('click', () => {
 
-        document
-          .querySelectorAll('.modeview')
-          .forEach(v=>
-            v.classList.remove('active')
-          );
+      const target =
+        btn.dataset.mode ||
+        btn.dataset.view;
 
-        document
-          .querySelector(`#v-${target}`)
-          ?.classList.add('active');
+      document
+        .querySelectorAll('.modeview')
+        .forEach(v => {
+          v.classList.remove('active');
+        });
 
-      });
+      const activeView =
+        document.querySelector(
+          `#v-${target}`
+        );
+
+      if (activeView) {
+        activeView.classList.add('active');
+      }
+
+      buttons.forEach(b =>
+        b.classList.remove('active')
+      );
+
+      btn.classList.add('active');
 
     });
+
+  });
 
 }
 
 </script>
-```
 </body>
 </html>
