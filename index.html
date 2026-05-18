@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <head>
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>Healthcare Procurement Intelligence — Greenscape Designz</title>
@@ -1479,99 +1480,105 @@ const CSV_URL =
 let CONSULTANTS = [];
 
 /* LOAD LIVE DATA */
+```javascript id="ojvq17"
 async function loadConsultants() {
 
-  const response = await fetch(CSV_URL);
+  Papa.parse(CSV_URL, {
 
-  const csv = await response.text();
+    download: true,
 
-  const rows = csv.split('\n')
-    .map(r => r.split(','));
+    header: true,
 
-  const headers = rows[0];
+    skipEmptyLines: true,
 
-  CONSULTANTS = rows
-    .slice(1)
-    .filter(r => r.length > 5)
-    .map(r => {
+    complete: function(results) {
 
-      const obj = {};
+      CONSULTANTS = results.data.map(obj => {
 
-      headers.forEach((h,i)=>{
-        obj[h.trim()] = (r[i] || '').trim();
+        const raw =
+          JSON.stringify(obj).toLowerCase();
+
+        const healthcare =
+          raw.includes('hospital') ? 85 :
+          raw.includes('healthcare') ? 78 :
+          60;
+
+        const nabh =
+          raw.includes('nabh') ? 88 :
+          raw.includes('medical gas') ? 72 :
+          58;
+
+        const coordination =
+          raw.includes('pmc') ? 90 :
+          raw.includes('coordination') ? 78 :
+          60;
+
+        const mep =
+          raw.includes('hvac') ? 90 :
+          raw.includes('mep') ? 82 :
+          58;
+
+        const documentation =
+          raw.includes('gfc') ? 88 :
+          raw.includes('documentation') ? 78 :
+          60;
+
+        const cost = 72;
+
+        const opex =
+          raw.includes('sustainable') ? 82 :
+          65;
+
+        return {
+
+          name:
+            obj['Legal Corporate Name of Firm'] ||
+            'Unnamed Consultant',
+
+          domain:
+            obj['Select your primary engineering/consultancy domain for this project'] ||
+            'Consultant',
+
+          team:
+            obj['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] ||
+            'Undisclosed',
+
+          grade:'A',
+
+          role:
+            coordination > 80
+            ? 'Integrated Delivery Candidate'
+            : mep > 80
+            ? 'Specialist Systems Consultant'
+            : 'Consultant',
+
+          scores: {
+            healthcare,
+            nabh,
+            coordination,
+            mep,
+            documentation,
+            cost,
+            opex
+          }
+
+        };
+
       });
 
-      const raw =
-        JSON.stringify(obj).toLowerCase();
+      renderRankings();
 
-      const healthcare =
-        raw.includes('hospital') ? 85 :
-        raw.includes('healthcare') ? 78 :
-        60;
+      refreshNarrative();
 
-      const nabh =
-        raw.includes('nabh') ? 88 :
-        raw.includes('medical gas') ? 72 :
-        58;
+      renderCommittee();
 
-      const coordination =
-        raw.includes('pmc') ? 90 :
-        raw.includes('coordination') ? 78 :
-        60;
+      updatePitchStats();
 
-      const mep =
-        raw.includes('hvac') ? 90 :
-        raw.includes('mep') ? 82 :
-        58;
+    }
 
-      const documentation =
-        raw.includes('gfc') ? 88 :
-        raw.includes('documentation') ? 78 :
-        60;
+  });
 
-      const cost =
-        72;
-
-      const opex =
-        raw.includes('sustainable') ? 82 :
-        65;
-
-      return {
-
-        name:
-          obj['Legal Corporate Name of Firm'] ||
-          'Unnamed Consultant',
-
-        domain:
-          obj['Select your primary engineering/consultancy domain for this project'] ||
-          'Consultant',
-
-        team:
-          obj['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] ||
-          'Undisclosed',
-
-        grade:'A',
-
-        role:
-          coordination > 80
-          ? 'Integrated Delivery Candidate'
-          : mep > 80
-          ? 'Specialist Systems Consultant'
-          : 'Consultant',
-
-        scores: {
-          healthcare,
-          nabh,
-          coordination,
-          mep,
-          documentation,
-          cost,
-          opex
-        }
-
-      };
-
-    });
+}
 
   renderRankings();
 
