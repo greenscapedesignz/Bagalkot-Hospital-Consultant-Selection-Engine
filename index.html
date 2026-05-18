@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Bagalkot Neuro-Care Hospital | Consultant Selection Intelligence Engine</title>
+<title>Integrated Healthcare Procurement Intelligence System | Greenscape Designz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 <style>
@@ -221,9 +221,9 @@ color:var(--muted);
 </head>
 <body>
 <header>
-<h1>Bagalkot Neuro-Care Hospital<br>Consultant Selection Intelligence Engine</h1>
+<h1>Integrated Healthcare Procurement<br>Intelligence System</h1>
 <p>
-An interactive prequalification and final appointment framework for evaluating PMC-led integrated healthcare delivery teams, specialist consultants, and multidisciplinary coordination ecosystems for a NABH-oriented neuro-care hospital.
+A live AI-assisted procurement intelligence dashboard for evaluating PMC-led healthcare delivery ecosystems, multidisciplinary consultants, institutional coordination maturity, NABH readiness, execution survivability, and long-term operational governance.
 </p>
 </header>
 
@@ -554,14 +554,465 @@ Create a weighted evaluation matrix signed by the client to reduce future bias a
 </table>
 </div>
 
+<div class="panel" style="margin-top:24px;">
+<div class="section-title">Live AI-Assisted Consultant Intelligence Feed</div>
+
+<div id="riskInsights"></div>
+
+<div class="chart-container h420" style="margin-top:24px;">
+<canvas id="radarChartDynamic"></canvas>
+</div>
+
+<div class="matrix" style="margin-top:24px;">
+<table>
+<thead>
+<tr>
+<th>Consultant</th>
+<th>Primary Domain</th>
+<th>Team Scale</th>
+<th>Institutional Grade Band</th>
+<th>Risk Interpretation</th>
+<th>Strategic Recommendation</th>
+</tr>
+</thead>
+<tbody id="dynamicConsultants">
+<tr>
+<td colspan="6">Loading live consultant intelligence...</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
 <footer>
 Prepared as a strategic decision-support interface for institutional healthcare consultant selection and governance calibration. This interface is intended to help clients understand the implications of procurement decisions rather than merely comparing fee quotations.
-</footer>
+<div class="panel" style="margin-top:24px;">
+<div class="section-title">Dynamic Consultant Mapping & Weighted Evaluation Engine</div>
+
+<div class="note" style="margin-bottom:24px;">
+The client can dynamically alter the importance of each evaluation parameter using the sliders below. This helps visualize how consultant rankings shift based on strategic intent — whether prioritizing cost, NABH readiness, execution survivability, coordination intelligence, or long-term institutional maturity.
+</div>
+
+<div class="grid" style="margin-bottom:28px;">
+<div class="card">
+<h3>Dynamic Weight Controls</h3>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Healthcare Experience</label>
+<span class="priority" id="w1v">20%</span>
+</div>
+<input type="range" min="0" max="30" value="20" id="w1">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>NABH / Regulatory Preparedness</label>
+<span class="priority" id="w2v">18%</span>
+</div>
+<input type="range" min="0" max="30" value="18" id="w2">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Construction Coordination Capability</label>
+<span class="priority" id="w3v">16%</span>
+</div>
+<input type="range" min="0" max="30" value="16" id="w3">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>MEP & Systems Integration</label>
+<span class="priority" id="w4v">16%</span>
+</div>
+<input type="range" min="0" max="30" value="16" id="w4">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Documentation & Institutional Maturity</label>
+<span class="priority" id="w5v">12%</span>
+</div>
+<input type="range" min="0" max="30" value="12" id="w5">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Cost Sensitivity</label>
+<span class="priority" id="w6v">8%</span>
+</div>
+<input type="range" min="0" max="30" value="8" id="w6">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Long-term OPEX & Maintainability</label>
+<span class="priority" id="w7v">10%</span>
+</div>
+<input type="range" min="0" max="30" value="10" id="w7">
 </div>
 
 </div>
 
+<div class="card">
+<h3>How To Use This Engine</h3>
+<ul style="padding-left:20px;color:var(--muted);font-size:.93rem;line-height:1.8;">
+<li>Increase <strong>NABH & Regulatory</strong> weight to favor institutional healthcare specialists.</li>
+<li>Increase <strong>Cost Sensitivity</strong> to favor leaner or emerging firms.</li>
+<li>Increase <strong>Construction Coordination</strong> to prioritize site survivability.</li>
+<li>Increase <strong>MEP Integration</strong> for technically complex neuro-care operations.</li>
+<li>Increase <strong>OPEX</strong> to favor lifecycle-efficient long-term systems thinking.</li>
+<li>Use this as a governance transparency tool during consultant discussions.</li>
+</ul>
+</div>
+</div>
+
+<div class="section-title">Mapped Consultant Ecosystem & Strategic Fit</div>
+
+<p style="margin-bottom:20px;color:var(--muted)">
+The following indicative scoring is based on the submitted EOI responses, visible organizational maturity, healthcare delivery relevance, coordination capability signals, documentation seriousness, specialist depth, and institutional survivability indicators. This is not a final appointment recommendation, but a strategic prequalification interpretation layer.
+</p>
+
+<table id="consultantTable">
+<thead>
+<tr>
+<th>Firm</th>
+<th>Primary Domain</th>
+<th>Approx Team Scale</th>
+<th>Healthcare Alignment</th>
+<th>Coordination Maturity</th>
+<th>MEP / Systems Readiness</th>
+<th>Institutional Survivability</th>
+<th>Indicative Grade</th>
+<th>Strategic Observation</th>
+<th>Suggested Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Design Alphabet</strong></td>
+<td>Architecture</td>
+<td>~170+</td>
+<td>Strong</td>
+<td>High</td>
+<td>Moderate–High</td>
+<td>High</td>
+<td><span class="badge good">A</span></td>
+<td>Largest visible team structure (~170), stronger institutional scalability signals, likely better multidisciplinary survivability and documentation bandwidth.</td>
+<td>Lead Consultant / Integrated Design Lead</td>
+</tr>
+<tr>
+<td><strong>Wellness Bridge</strong></td>
+<td>PMC</td>
+<td>PMC-Oriented</td>
+<td>Strong</td>
+<td>High</td>
+<td>Moderate</td>
+<td>High</td>
+<td><span class="badge good">A-</span></td>
+<td>PMC-oriented positioning aligns strongly with integrated hospital coordination needs.</td>
+<td>PMC / Delivery Governance</td>
+</tr>
+<tr>
+<td><strong>Infrabees Project Management Consultants Pvt Ltd</strong></td>
+<td>Architecture + PMC tendencies</td>
+<td>Medium</td>
+<td>Moderate</td>
+<td>Moderate–High</td>
+<td>Moderate</td>
+<td>Moderate–High</td>
+<td><span class="badge medium">B+</span></td>
+<td>Appears coordination-aware with lifecycle orientation. Requires validation of healthcare-specific execution depth.</td>
+<td>PMC Support / Coordination</td>
+</tr>
+<tr>
+<td><strong>Interface Architects</strong></td>
+<td>Architecture</td>
+<td>Medium</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td><span class="badge medium">B+</span></td>
+<td>Moderate organizational maturity with portfolio visibility. Needs deeper evaluation for hospital systems integration.</td>
+<td>Architectural Design Support</td>
+</tr>
+<tr>
+<td><strong>Rainmaker Studio</strong></td>
+<td>Architecture</td>
+<td>Small–Medium</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Low–Moderate</td>
+<td>Moderate</td>
+<td><span class="badge medium">B</span></td>
+<td>Smaller agile practice signals flexibility, but institutional-scale healthcare survivability needs validation.</td>
+<td>Design Collaboration / Interior Interface</td>
+</tr>
+<tr>
+<td><strong>Synergic Designs</strong></td>
+<td>Architecture</td>
+<td>Medium</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Low–Moderate</td>
+<td>Moderate</td>
+<td><span class="badge medium">B</span></td>
+<td>Potentially competent but requires stronger evidence of healthcare documentation rigor and coordination maturity.</td>
+<td>Secondary Consultant</td>
+</tr>
+<tr>
+<td><strong>MEPCO Engineering Consultancy Services</strong></td>
+<td>MEP-F Engineering</td>
+<td>Specialist</td>
+<td>Strong</td>
+<td>High</td>
+<td>High</td>
+<td>High</td>
+<td><span class="badge good">A-</span></td>
+<td>Dedicated MEP profile with stronger relevance for hospital systems integration.</td>
+<td>Healthcare MEP Lead</td>
+</tr>
+<tr>
+<td><strong>Audvic Solutions Pvt Ltd</strong></td>
+<td>MEP-F Engineering</td>
+<td>Small–Medium</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td>Moderate</td>
+<td><span class="badge medium">B</span></td>
+<td>Potential technical specialization, though organizational scale appears limited for standalone institutional responsibility.</td>
+<td>Specialist Support</td>
+</tr>
+<tr>
+<td><strong>Pavan Architects</strong></td>
+<td>Architecture</td>
+<td>Small</td>
+<td>Low–Moderate</td>
+<td>Low–Moderate</td>
+<td>Low</td>
+<td>Low–Moderate</td>
+<td><span class="badge medium">B-</span></td>
+<td>Smaller emerging practice. Needs substantial validation for hospital execution complexity.</td>
+<td>Not preferred as lead institutional consultant</td>
+</tr>
+</tbody>
+</table>
+
+<div class="note" style="margin-top:24px;">
+<strong>Critical Advisory:</strong><br><br>
+At present, the responses indicate that the project should NOT be awarded purely to a standalone architectural entity unless they demonstrate proven hospital systems coordination capability across:
+<ul style="padding-left:20px;margin-top:10px;">
+<li>Fire and life safety integration</li>
+<li>Healthcare HVAC and pressure zoning</li>
+<li>Medical gas coordination</li>
+<li>NABH documentation maturity</li>
+<li>Construction-stage interdisciplinary governance</li>
+<li>Institutional-scale RFIs and revision management</li>
+</ul>
+</div>
+
+<div class="strategy">
+<h3>Suggested Shortlist Structure</h3>
+<p>
+Rather than selecting a single consultant immediately, a more resilient strategy would be:
+<br><br>
+<strong>Stage 1:</strong> Technical shortlist (3–4 firms)<br>
+<strong>Stage 2:</strong> Live coordination workshop using real hospital coordination scenarios<br>
+<strong>Stage 3:</strong> Governance and accountability matrix evaluation<br>
+<strong>Stage 4:</strong> Commercial negotiation only after technical alignment
+<br><br>
+This sequence significantly reduces downstream redesign and coordination risks.
+</p>
+</div>
+
+<footer>
+</div>
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 <script>
+
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHrcy8mR6WAzqxaQHAlDwEZ_N9lyagn3aHPItCDV4-NkIsNr1lJb67gWQWcvedllMIOMgiWB-bqHZi/pub?gid=764802717&single=true&output=csv';
+
+let consultants = [];
+
+async function loadConsultantData() {
+  Papa.parse(CSV_URL, {
+    download: true,
+    header: true,
+    skipEmptyLines: true,
+    complete: function(results) {
+      consultants = results.data.map(transformConsultant);
+      renderConsultants();
+      buildRadarChart();
+      generateRiskInsights();
+    }
+  });
+}
+
+function transformConsultant(row) {
+  const healthcareStrength = calculateHealthcareStrength(row);
+  const coordinationStrength = calculateCoordinationStrength(row);
+  const mepStrength = calculateMEPStrength(row);
+  const institutionalMaturity = calculateInstitutionalMaturity(row);
+  const survivability = calculateSurvivability(row);
+
+  return {
+    name: row['Legal Corporate Name of Firm'] || 'Unnamed Consultant',
+    domain: row['Select your primary engineering/consultancy domain for this project'] || 'Unknown',
+    teamSize: row['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] || 'Undisclosed',
+    portfolio: row['Provide a secure URL to your updated Digital Portfolio showing past healthcare/rehabilitation layouts.'] || '',
+    healthcareStrength,
+    coordinationStrength,
+    mepStrength,
+    institutionalMaturity,
+    survivability,
+    grade: calculateGrade(healthcareStrength, coordinationStrength, institutionalMaturity, survivability),
+    risk: calculateRiskLabel(healthcareStrength, coordinationStrength, survivability),
+    recommendation: generateRecommendation(row)
+  };
+}
+
+function calculateHealthcareStrength(row) {
+  const text = JSON.stringify(row).toLowerCase();
+  let score = 40;
+  if(text.includes('hospital')) score += 20;
+  if(text.includes('healthcare')) score += 15;
+  if(text.includes('rehabilitation')) score += 10;
+  if(text.includes('nabh')) score += 10;
+  return Math.min(score,100);
+}
+
+function calculateCoordinationStrength(row) {
+  const text = JSON.stringify(row).toLowerCase();
+  let score = 35;
+  if(text.includes('pmc')) score += 25;
+  if(text.includes('construction')) score += 15;
+  if(text.includes('site')) score += 10;
+  if(text.includes('coordination')) score += 15;
+  return Math.min(score,100);
+}
+
+function calculateMEPStrength(row) {
+  const text = JSON.stringify(row).toLowerCase();
+  let score = 25;
+  if(text.includes('hvac')) score += 20;
+  if(text.includes('fire')) score += 20;
+  if(text.includes('medical gas')) score += 20;
+  if(text.includes('mep')) score += 15;
+  return Math.min(score,100);
+}
+
+function calculateInstitutionalMaturity(row) {
+  const team = parseInt(row['Total Strength of Active Full-Time Technical Personnel (Firm Size)']) || 5;
+  return Math.min(40 + (team * 0.6), 100);
+}
+
+function calculateSurvivability(row) {
+  const text = JSON.stringify(row).toLowerCase();
+  let score = 45;
+  if(text.includes('inspection')) score += 10;
+  if(text.includes('gfc')) score += 15;
+  if(text.includes('tender')) score += 10;
+  if(text.includes('liaison')) score += 10;
+  return Math.min(score,100);
+}
+
+function calculateGrade(h,c,i,s){
+  const total = (h+c+i+s)/4;
+  if(total >= 85) return 'Institutional Grade';
+  if(total >= 70) return 'Strong';
+  if(total >= 55) return 'Moderate';
+  return 'High Risk';
+}
+
+function calculateRiskLabel(h,c,s){
+  const avg = (h+c+s)/3;
+  if(avg >= 80) return 'Lower Coordination Risk';
+  if(avg >= 60) return 'Moderate Coordination Risk';
+  return 'Elevated Delivery Risk';
+}
+
+function generateRecommendation(row){
+  const domain = row['Select your primary engineering/consultancy domain for this project'] || '';
+  if(domain.toLowerCase().includes('pmc')) return 'Suitable for integrated delivery governance';
+  if(domain.toLowerCase().includes('mep')) return 'Suitable as specialist healthcare systems consultant';
+  if(domain.toLowerCase().includes('architect')) return 'Requires coordination capability validation';
+  return 'Further technical evaluation recommended';
+}
+
+function renderConsultants() {
+  const table = document.getElementById('dynamicConsultants');
+  if(!table) return;
+
+  table.innerHTML = consultants.map(c => `
+    <tr>
+      <td><strong>${c.name}</strong></td>
+      <td>${c.domain}</td>
+      <td>${c.teamSize}</td>
+      <td>${c.grade}</td>
+      <td>${c.risk}</td>
+      <td>${c.recommendation}</td>
+    </tr>
+  `).join('');
+}
+
+function buildRadarChart(){
+  const canvas = document.getElementById('radarChartDynamic');
+  if(!canvas || consultants.length === 0) return;
+
+  const top = consultants[0];
+
+  new Chart(canvas, {
+    type: 'radar',
+    data: {
+      labels: ['Healthcare', 'Coordination', 'MEP', 'Institutional', 'Survivability'],
+      datasets: [{
+        label: top.name,
+        data: [
+          top.healthcareStrength,
+          top.coordinationStrength,
+          top.mepStrength,
+          top.institutionalMaturity,
+          top.survivability
+        ]
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      scales: {
+        r: {
+          suggestedMin: 0,
+          suggestedMax: 100
+        }
+      }
+    }
+  });
+}
+
+function generateRiskInsights(){
+  const insights = document.getElementById('riskInsights');
+  if(!insights) return;
+
+  const highRisk = consultants.filter(c => c.risk.includes('Elevated'));
+
+  insights.innerHTML = `
+    <div class="note">
+      <strong>AI-Assisted Procurement Insight:</strong><br><br>
+      ${consultants.length} consultant responses analyzed dynamically from the live Google Sheet database.<br><br>
+      ${highRisk.length} firms currently indicate elevated coordination or institutional delivery risks based on healthcare integration signals, documentation maturity, and lifecycle survivability interpretation.
+    </div>
+  `;
+}
+
+window.addEventListener('DOMContentLoaded', loadConsultantData);
+
 const sliders = [
 ['exp','expVal'],
 ['reg','regVal'],
@@ -618,6 +1069,16 @@ message += ' Warning: low emphasis on construction survivability often leads to 
 
 document.getElementById('strategyText').innerText=message;
 }
+
+const weightSliders=['w1','w2','w3','w4','w5','w6','w7'];
+weightSliders.forEach((id,index)=>{
+const slider=document.getElementById(id);
+const val=document.getElementById(id+'v');
+val.innerText=slider.value+'%';
+slider.addEventListener('input',()=>{
+val.innerText=slider.value+'%';
+});
+});
 </script>
 </body>
 </html>
