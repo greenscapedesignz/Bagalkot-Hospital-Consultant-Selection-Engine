@@ -1,1084 +1,1831 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Integrated Healthcare Procurement Intelligence System | Greenscape Designz</title>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Healthcare Procurement Intelligence — Greenscape Designz</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <style>
-:root{
---bg:#f4f6f8;
---card:#ffffff;
---ink:#14202b;
---muted:#5f6b77;
---line:#dde5ec;
---accent:#0f766e;
---accent2:#0b4f4a;
---warn:#c2410c;
---danger:#b91c1c;
---good:#15803d;
---shadow:0 10px 30px rgba(0,0,0,.08);
---radius:18px;
+:root {
+  --bg: #080d18;
+  --surface: #0e1525;
+  --surface2: #141e30;
+  --surface3: #1a2640;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --border-teal: rgba(13,180,135,0.28);
+  --text: #dde8f0;
+  --text-muted: #6d8499;
+  --text-dim: #32475c;
+  --teal: #0db487;
+  --teal-glow: rgba(13,180,135,0.12);
+  --amber: #e8a530;
+  --danger: #e84949;
+  --danger-bg: rgba(232,73,73,0.08);
+  --danger-border: rgba(232,73,73,0.22);
+  --good: #0db487;
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --ff-mono: 'JetBrains Mono', 'Courier New', monospace;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-font-family:'Inter',sans-serif;
-background:var(--bg);
-color:var(--ink);
-line-height:1.6;
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
 }
-header{
-background:linear-gradient(135deg,#0f172a,#0f766e);
-color:white;
-padding:60px 40px;
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* ══════════ MODE BAR ══════════ */
+.modebar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,13,24,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  gap: 20px;
 }
-header h1{
-font-size:clamp(2rem,4vw,3.8rem);
-font-weight:800;
-line-height:1.1;
-margin-bottom:18px;
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
 }
-header p{
-max-width:950px;
-font-size:1.05rem;
-opacity:.9;
+
+.brand-mark {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--teal);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono);
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.05em;
 }
-.container{
-width:min(1450px,95%);
-margin:30px auto 80px;
-display:grid;
-grid-template-columns:430px 1fr;
-gap:24px;
-align-items:start;
+
+.brand-name {
+  font-family: var(--ff-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.55);
 }
-.panel{
-background:var(--card);
-border-radius:var(--radius);
-box-shadow:var(--shadow);
-padding:28px;
-border:1px solid var(--line);
+
+.brand-name span { color: var(--teal); }
+
+.mode-pills {
+  display: flex;
+  gap: 3px;
+  background: var(--surface);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
 }
-.sticky{
-position:sticky;
-top:20px;
-max-height:95vh;
-overflow:auto;
+
+.mpill {
+  padding: 5px 15px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--ff-body);
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
 }
-.section-title{
-font-size:1.1rem;
-font-weight:700;
-margin-bottom:20px;
-color:var(--accent2);
+
+.mpill.on { background: var(--teal); color: #000; }
+.mpill:hover:not(.on) { color: var(--text); background: var(--surface3); }
+
+/* ══════════ MODE PANELS ══════════ */
+.modeview { display: none; }
+.modeview.on { display: block; }
+
+/* ═══════════════════════════════════════
+   COMMAND MODE
+═══════════════════════════════════════ */
+#v-command {}
+
+.cmd-header {
+  padding: 44px 32px 36px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
 }
-.control-group{
-margin-bottom:26px;
-padding-bottom:20px;
-border-bottom:1px solid var(--line);
+
+.cmd-title {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
 }
-.control-group:last-child{border-bottom:none}
-label{
-font-weight:600;
-display:block;
-margin-bottom:8px;
+
+.cmd-title em { color: var(--teal); font-style: normal; }
+
+.cmd-sub {
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  max-width: 540px;
+  line-height: 1.65;
 }
-.helper{
-font-size:.88rem;
-color:var(--muted);
-margin-bottom:12px;
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--teal);
+  border: 1px solid var(--border-teal);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 4px;
 }
-.range-wrap{
-display:flex;
-align-items:center;
-gap:14px;
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  animation: livepulse 2s ease-in-out infinite;
 }
-input[type=range]{
-width:100%;
-accent-color:var(--accent);
+
+@keyframes livepulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.35; transform:scale(0.7); }
 }
-.range-value{
-min-width:44px;
-font-weight:700;
-color:var(--accent2);
+
+.cmd-body {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: calc(100vh - 54px - 110px);
+  align-items: start;
 }
-select, textarea{
-width:100%;
-padding:12px 14px;
-border-radius:12px;
-border:1px solid var(--line);
-font-family:inherit;
-font-size:.95rem;
-background:white;
+
+/* ── LEFT PANEL ── */
+.cmd-left {
+  border-right: 1px solid var(--border);
+  padding: 28px 22px;
+  position: sticky;
+  top: 54px;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  overflow-x: hidden;
 }
-.grid{
-display:grid;
-grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
-gap:18px;
+
+.panel-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
-.card{
-background:white;
-border-radius:16px;
-padding:22px;
-border:1px solid var(--line);
-box-shadow:var(--shadow);
+
+.panel-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-teal);
 }
-.rank{
-width:42px;
-height:42px;
-border-radius:50%;
-display:flex;
-align-items:center;
-justify-content:center;
-font-weight:800;
-background:#d1fae5;
-color:var(--good);
-margin-bottom:14px;
+
+.srow { margin-bottom: 18px; }
+
+.shead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
 }
-.score{
-font-size:2.4rem;
-font-weight:800;
-margin:8px 0;
+
+.sname {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
 }
-.metric{
-display:flex;
-justify-content:space-between;
-font-size:.9rem;
-padding:8px 0;
-border-bottom:1px dashed #d7dde3;
+
+.sval {
+  font-family: var(--ff-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--teal);
+  min-width: 22px;
+  text-align: right;
 }
-.metric:last-child{border-bottom:none}
-.badge{
-display:inline-block;
-padding:6px 12px;
-border-radius:999px;
-font-size:.76rem;
-font-weight:700;
-letter-spacing:.04em;
-text-transform:uppercase;
-margin:8px 6px 8px 0;
+
+input[type=range] {
+  width: 100%;
+  height: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--surface3);
+  outline: none;
+  border-radius: 1px;
+  cursor: pointer;
 }
-.good{background:#dcfce7;color:#166534}
-.medium{background:#fef3c7;color:#92400e}
-.high{background:#fee2e2;color:#991b1b}
-.note{
-background:#eff6ff;
-border-left:4px solid #2563eb;
-padding:18px;
-border-radius:12px;
-margin-top:20px;
-font-size:.95rem;
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px; height: 13px;
+  background: var(--teal);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.12s;
+  box-shadow: 0 0 0 3px rgba(13,180,135,0.15);
 }
-.strategy{
-margin-top:26px;
-padding:22px;
-border-radius:16px;
-background:linear-gradient(135deg,#ecfeff,#f0fdf4);
-border:1px solid #cce7e4;
+
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.35); }
+input[type=range]::-moz-range-thumb {
+  width: 13px; height: 13px;
+  background: var(--teal);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
 }
-.strategy h3{
-margin-bottom:12px;
+
+.divline {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
 }
-.matrix{
-margin-top:22px;
-overflow:auto;
+
+.slabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 7px;
 }
-table{
-width:100%;
-border-collapse:collapse;
-font-size:.9rem;
+
+select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-family: var(--ff-body);
+  font-size: 0.82rem;
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.15s;
 }
-th,td{
-padding:12px;
-border:1px solid var(--line);
-text-align:left;
-vertical-align:top;
+
+select:focus { border-color: var(--border-teal); }
+select option { background: #141e30; }
+
+/* ── RIGHT PANEL ── */
+.cmd-right { padding: 28px 32px; }
+
+/* NLG */
+.nlg-box {
+  background: var(--surface);
+  border: 1px solid var(--border-teal);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
 }
-th{
-background:#0f172a;
-color:white;
+
+.nlg-box::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--teal) 0%, transparent 60%);
 }
-.slider-title{
-display:flex;
-justify-content:space-between;
-gap:10px;
-align-items:center;
+
+.nlg-head {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
 }
-.priority{
-font-size:.82rem;
-font-weight:700;
-color:var(--accent2);
+
+.nlg-out {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.82;
+  transition: opacity 0.22s ease;
 }
-footer{
-margin-top:30px;
-font-size:.85rem;
-color:var(--muted);
+
+.nlg-out p { margin-bottom: 12px; }
+.nlg-out p:last-child { margin-bottom: 0; }
+
+.nlg-out .hl { color: var(--teal); font-weight: 500; }
+.nlg-out .warn { color: var(--amber); font-weight: 500; }
+.nlg-out .alert { color: var(--danger); font-weight: 500; }
+
+/* Rankings */
+.rankings-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
 }
-@media(max-width:1100px){
-.container{grid-template-columns:1fr}
-.sticky{position:relative;max-height:none}
+
+.rankings-hd {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.rankings-note {
+  font-size: 0.73rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.clist { display: flex; flex-direction: column; gap: 9px; }
+
+.ccard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 46px 1fr 68px;
+  gap: 14px;
+  align-items: center;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: default;
+}
+
+.ccard:hover { border-color: var(--border-hover); background: var(--surface2); }
+
+.ccard.r1 { border-color: var(--border-teal); background: rgba(13,180,135,0.04); }
+.ccard.r2 { border-color: rgba(232,165,48,0.2); }
+
+.ranknum {
+  font-family: var(--ff-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.r1 .ranknum { color: var(--teal); }
+.r2 .ranknum { color: var(--amber); }
+.r3 .ranknum { color: #4a6070; }
+.ccard:not(.r1):not(.r2):not(.r3) .ranknum { color: var(--text-dim); }
+
+.cname { font-size: 0.92rem; font-weight: 600; margin-bottom: 2px; }
+.cdomain { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+.crole { font-size: 0.7rem; color: var(--teal); font-weight: 500; }
+
+.cscore-area { text-align: right; }
+
+.cscore {
+  font-family: var(--ff-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.cbar-track {
+  width: 56px;
+  height: 2px;
+  background: var(--surface3);
+  border-radius: 1px;
+  margin-top: 6px;
+  margin-left: auto;
+  overflow: hidden;
+}
+
+.cbar-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.gbadge {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.ga { background: rgba(13,180,135,0.14); color: var(--teal); }
+.gb { background: rgba(232,165,48,0.14); color: var(--amber); }
+.gc { background: rgba(232,73,73,0.14); color: var(--danger); }
+
+/* ── FAILURE CASCADE ── */
+.failure-zone {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.failure-hd {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--danger);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.failure-hd::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--danger-border);
+}
+
+.ftriggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.ftrig {
+  padding: 7px 13px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: #f4a0a0;
+  font-family: var(--ff-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.01em;
+}
+
+.ftrig:hover, .ftrig.on {
+  background: rgba(232,73,73,0.15);
+  border-color: rgba(232,73,73,0.5);
+  color: #ffb3b3;
+}
+
+.cascade-box {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  animation: fadein 0.3s ease;
+}
+
+@keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.cascade-box.on { display: block; }
+
+.cascade-phases {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 22px;
+}
+
+.cphase {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cphase-box {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  background: var(--surface2);
+  transition: all 0.4s ease;
+  white-space: nowrap;
+  font-family: var(--ff-body);
+  font-weight: 500;
+  text-align: center;
+  min-width: 80px;
+}
+
+.cphase-box.origin {
+  border-color: var(--danger);
+  background: rgba(232,73,73,0.14);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.cphase-box.hit {
+  border-color: rgba(232,73,73,0.45);
+  background: rgba(232,73,73,0.08);
+  color: #f4a0a0;
+}
+
+.cphase-arrow {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.cascade-desc {
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  min-height: 52px;
+  transition: opacity 0.3s;
+}
+
+.cascade-impact {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.impact-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--ff-mono);
+}
+
+.impact-pill.delay { background: rgba(232,165,48,0.12); color: var(--amber); }
+.impact-pill.cost { background: rgba(232,73,73,0.12); color: var(--danger); }
+.impact-pill.risk { background: rgba(106,90,165,0.14); color: #b4a6e8; }
+
+/* ════════════════════════════════
+   CLIENT MODE
+════════════════════════════════ */
+#v-client { background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
+
+.cl-hero {
+  background: #0a1020;
+  padding: 64px 48px 56px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.cl-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse at 80% 100%, rgba(13,180,135,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cl-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+
+.cl-hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+
+.cl-hero p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.cl-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 52px 32px 80px;
+}
+
+.cl-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 26px;
+  margin-bottom: 56px;
+  align-items: start;
+}
+
+.cl-stepnum {
+  width: 48px; height: 48px;
+  background: #0a1020;
+  color: var(--teal);
+  font-family: var(--ff-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cl-step-body h3 {
+  font-family: var(--ff-display);
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: #0a1020;
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+.cl-step-body p {
+  font-size: 0.93rem;
+  color: #4a5568;
+  margin-bottom: 16px;
+  line-height: 1.78;
+}
+
+.cl-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cl-card {
+  background: white;
+  border: 1px solid #e2e8ef;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.cl-card.r { border-left: 3px solid #e84949; }
+.cl-card.a { border-left: 3px solid #e8a530; }
+.cl-card.g { border-left: 3px solid #0db487; }
+
+.cl-card h4 { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.cl-card p { font-size: 0.78rem; color: #64748b; line-height: 1.55; margin: 0; }
+
+.cl-qlist {
+  background: white;
+  border: 1px solid #e2e8ef;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 18px;
+}
+
+.cl-q {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cl-q:last-child { border-bottom: none; padding-bottom: 0; }
+.cl-q:first-child { padding-top: 0; }
+
+.cl-q-arrow { color: #0db487; font-size: 0.9rem; margin-top: 1px; flex-shrink: 0; font-weight: 700; }
+.cl-q-text { font-size: 0.86rem; color: #374151; line-height: 1.6; }
+
+.cl-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cl-stat {
+  background: #0a1020;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.cl-stat-n {
+  font-family: var(--ff-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.cl-stat-l {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ════════════════════════════════
+   COMMITTEE MODE
+════════════════════════════════ */
+#v-committee {
+  background: #eef0f4;
+  color: #1a1a1a;
+  min-height: 100vh;
+  padding: 40px 44px 80px;
+}
+
+.cm-header { margin-bottom: 32px; }
+
+.cm-header h1 {
+  font-family: var(--ff-display);
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: #0a1020;
+  margin-bottom: 6px;
+}
+
+.cm-header p { font-size: 0.88rem; color: #64748b; }
+
+.cm-weight-panel {
+  background: white;
+  border: 1px solid #dde3ec;
+  border-radius: 14px;
+  padding: 26px;
+  margin-bottom: 26px;
+}
+
+.cm-weight-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #0db487;
+  margin-bottom: 20px;
+}
+
+.cm-wgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.cm-wfield label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 7px;
+}
+
+.cm-wfield input[type=number] {
+  width: 70px;
+  padding: 8px 10px;
+  border: 1.5px solid #dde3ec;
+  border-radius: 8px;
+  font-family: var(--ff-mono);
+  font-size: 0.92rem;
+  color: #0a1020;
+  background: #f8fafc;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+
+.cm-wfield input[type=number]:focus { border-color: #0db487; }
+
+.cm-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8ef;
+  font-size: 0.87rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.cm-total-val {
+  font-family: var(--ff-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.cm-total-val.ok { color: #0db487; }
+.cm-total-val.err { color: #e84949; }
+
+.cm-matrix {
+  background: white;
+  border: 1px solid #dde3ec;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cm-matrix-hd {
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8ef;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.cm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  min-width: 800px;
+}
+
+.cm-table th {
+  background: #0a1020;
+  color: rgba(255,255,255,0.6);
+  padding: 11px 13px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cm-table td {
+  padding: 13px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.cm-table tr:last-child td { border-bottom: none; }
+.cm-table tr:hover td { background: #f8fafc; }
+
+.cm-score {
+  font-family: var(--ff-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0a1020;
+}
+
+.cm-grade {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+
+.cm-grade.ga { background: #d1fae5; color: #065f46; }
+.cm-grade.gb { background: #fef3c7; color: #92400e; }
+.cm-grade.gc { background: #fee2e2; color: #991b1b; }
+
+.cm-dim-val {
+  font-family: var(--ff-mono);
+  font-size: 0.82rem;
+}
+
+.overflow-wrap { overflow-x: auto; }
+
+/* ════════════════════════════════
+   PITCH MODE
+════════════════════════════════ */
+#v-pitch { background: #050810; color: white; min-height: 100vh; }
+
+.pitch-hero {
+  padding: 80px 64px 70px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.pitch-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(13,180,135,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.pitch-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 26px;
+}
+
+.pitch-headline {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 5.2rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 26px;
+  max-width: 800px;
+}
+
+.pitch-headline em { color: var(--teal); font-style: normal; }
+
+.pitch-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.45);
+  max-width: 600px;
+  line-height: 1.78;
+}
+
+.pitch-stats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.pstat {
+  padding: 40px 32px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+
+.pstat:last-child { border-right: none; }
+.pstat:hover { background: rgba(13,180,135,0.04); }
+
+.pstat-n {
+  font-family: var(--ff-mono);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.pstat-l {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pitch-caps {
+  padding: 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.pitch-caps-title {
+  font-family: var(--ff-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  margin-bottom: 36px;
+  line-height: 1.15;
+}
+
+.pcap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.pcap {
+  background: #050810;
+  padding: 30px 26px;
+  transition: background 0.2s;
+}
+
+.pcap:hover { background: rgba(13,180,135,0.04); }
+
+.pcap-n {
+  font-family: var(--ff-mono);
+  font-size: 0.68rem;
+  color: var(--teal);
+  margin-bottom: 14px;
+  letter-spacing: 0.1em;
+}
+
+.pcap-t {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.pcap-b {
+  font-size: 0.83rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.68;
+}
+
+.pitch-cta {
+  padding: 80px 64px;
+  text-align: center;
+}
+
+.pcta-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 16px;
+}
+
+.pcta-hl {
+  font-family: var(--ff-display);
+  font-size: 2.6rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.pcta-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 36px;
+}
+
+.pcta-btn {
+  display: inline-block;
+  padding: 15px 40px;
+  background: var(--teal);
+  color: #000;
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.pcta-btn:hover { opacity: 0.82; transform: translateY(-1px); }
+
+/* responsive */
+@media (max-width: 900px) {
+  .cmd-body { grid-template-columns: 1fr; }
+  .cmd-left { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .pitch-stats { grid-template-columns: repeat(2,1fr); }
+  .pitch-hero, .pitch-caps, .pitch-cta { padding: 40px 28px; }
+  .cl-hero { padding: 40px 28px; }
+  .cl-body { padding: 32px 20px; }
+  #v-committee { padding: 24px 16px; }
 }
 </style>
 </head>
 <body>
-<header>
-<h1>Integrated Healthcare Procurement<br>Intelligence System</h1>
-<p>
-A live AI-assisted procurement intelligence dashboard for evaluating PMC-led healthcare delivery ecosystems, multidisciplinary consultants, institutional coordination maturity, NABH readiness, execution survivability, and long-term operational governance.
-</p>
-</header>
 
-<div class="container">
-
-<div class="panel sticky">
-<div class="section-title">Client Decision Calibration Panel</div>
-
-<div class="control-group">
-<label>Project Positioning</label>
-<select id="positioning">
-<option value="functional">Functional Mid-Scale Hospital</option>
-<option value="premium">Premium Neuro-Care Center</option>
-<option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
-<option value="future">Future Expansion-Ready Medical Campus</option>
-</select>
-</div>
-
-<div class="control-group">
-<label>Execution Strategy</label>
-<select id="strategyType">
-<option>PMC-led Integrated Delivery</option>
-<option>Lead Consultant + Specialist Partners</option>
-<option>Fast-track Design Build Hybrid</option>
-<option>Independent Multi-consultant Coordination</option>
-</select>
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Healthcare Experience Priority</label>
-<span class="priority" id="expVal">80</span>
-</div>
-<div class="helper">How important is prior healthcare and hospital experience?</div>
-<div class="range-wrap">
-<input type="range" min="0" max="100" value="80" id="exp">
-</div>
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Regulatory & NABH Preparedness</label>
-<span class="priority" id="regVal">92</span>
-</div>
-<div class="helper">Importance of Fire NOC, KPME, NBC, AERB and accreditation maturity.</div>
-<input type="range" min="0" max="100" value="92" id="reg">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Construction Survivability</label>
-<span class="priority" id="execVal">88</span>
-</div>
-<div class="helper">Ability to survive site realities, RFIs, coordination conflicts and revisions.</div>
-<input type="range" min="0" max="100" value="88" id="exec">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>MEP + Systems Coordination</label>
-<span class="priority" id="mepVal">90</span>
-</div>
-<div class="helper">Importance of HVAC, MGPS, electrical, fire and low-current integration maturity.</div>
-<input type="range" min="0" max="100" value="90" id="mep">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Cost Sensitivity</label>
-<span class="priority" id="costVal">55</span>
-</div>
-<div class="helper">Higher score prioritizes cost control over long-term sophistication.</div>
-<input type="range" min="0" max="100" value="55" id="cost">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Long-term OPEX & Maintainability</label>
-<span class="priority" id="opexVal">86</span>
-</div>
-<div class="helper">Importance of lifecycle efficiency, maintainability and future operations.</div>
-<input type="range" min="0" max="100" value="86" id="opex">
-</div>
-
-<div class="control-group">
-<label>Decision-maker Risk Appetite</label>
-<select id="riskAppetite">
-<option value="safe">Low Risk / Stable Delivery</option>
-<option value="balanced" selected>Balanced</option>
-<option value="aggressive">Aggressive Upgrade / High Ambition</option>
-</select>
-</div>
-
-<div class="control-group">
-<label>Additional Client Notes</label>
-<textarea rows="5" placeholder="Add concerns regarding timelines, budget, local approvals, coordination issues, or future expansion."></textarea>
-</div>
-
-<div class="strategy">
-<h3>Suggested Governance Structure</h3>
-<p id="strategyText">
-For this project typology, a PMC-led integrated delivery ecosystem with a strong healthcare architect, dedicated MEP healthcare consultant, fire consultant, and statutory coordination lead is strongly recommended.
-</p>
-</div>
-</div>
-
-<div>
-<div class="panel">
-<div class="section-title">Strategic Recommendation Framework</div>
-
-<div class="note">
-<strong>Suggested Approach (As Independent Advisor):</strong><br><br>
-Since you are not the final decision-maker, your role should be positioned as a systems-level risk interpreter rather than a consultant selector. Instead of recommending “Firm A vs Firm B,” create a transparent weighted evaluation ecosystem where the client understands the implications of each strategic choice.
-<br><br>
-This protects your professional neutrality while simultaneously increasing your institutional credibility.
-</div>
-
-<div class="matrix">
-<table>
-<thead>
-<tr>
-<th>Evaluation Layer</th>
-<th>Why It Matters</th>
-<th>Suggested Weight</th>
-<th>Failure Risk if Ignored</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Healthcare Experience</strong></td>
-<td>Hospital workflows are fundamentally different from residential/commercial projects.</td>
-<td>18–22%</td>
-<td>Workflow collapse, infection-control issues</td>
-</tr>
-<tr>
-<td><strong>NABH & Regulatory Readiness</strong></td>
-<td>Determines long-term accreditation viability.</td>
-<td>16–20%</td>
-<td>Licensing delays and retrofits</td>
-</tr>
-<tr>
-<td><strong>Construction Coordination</strong></td>
-<td>Critical for avoiding site conflicts and rework.</td>
-<td>14–18%</td>
-<td>Massive rework and delays</td>
-</tr>
-<tr>
-<td><strong>MEP & Fire Integration</strong></td>
-<td>Most hospital failures emerge from systems clashes.</td>
-<td>12–16%</td>
-<td>Unsafe operations and ceiling rework</td>
-</tr>
-<tr>
-<td><strong>Documentation Quality</strong></td>
-<td>Determines contractor clarity and legal defensibility.</td>
-<td>10–12%</td>
-<td>RFI overload and disputes</td>
-</tr>
-<tr>
-<td><strong>Lifecycle OPEX Intelligence</strong></td>
-<td>Long-term sustainability and operational viability.</td>
-<td>8–12%</td>
-<td>High maintenance burden</td>
-</tr>
-<tr>
-<td><strong>Institutional Stability</strong></td>
-<td>Ensures long-term support continuity.</td>
-<td>6–8%</td>
-<td>Consultant abandonment risk</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<div style="margin-top:24px" class="grid">
-
-<div class="card">
-<div class="rank">1</div>
-<h3>Integrated Healthcare PMC Team</h3>
-<div class="score">92</div>
-<span class="badge good">Recommended</span>
-<span class="badge good">Scalable</span>
-<div class="metric"><span>Coordination Capability</span><strong>Excellent</strong></div>
-<div class="metric"><span>Regulatory Survivability</span><strong>High</strong></div>
-<div class="metric"><span>Future Expansion Readiness</span><strong>Strong</strong></div>
-<div class="metric"><span>Lifecycle OPEX Logic</span><strong>Strong</strong></div>
-<div class="metric"><span>Initial Cost</span><strong>Higher</strong></div>
-<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
-Best suited if the client wants institutional-grade delivery with lower long-term operational and compliance risk.
-</p>
-</div>
-
-<div class="card">
-<div class="rank" style="background:#fef3c7;color:#92400e">2</div>
-<h3>Lead Architect + Specialist Consultants</h3>
-<div class="score">81</div>
-<span class="badge medium">Balanced</span>
-<span class="badge medium">Moderate Risk</span>
-<div class="metric"><span>Coordination Capability</span><strong>Dependent on Lead</strong></div>
-<div class="metric"><span>Documentation Control</span><strong>Moderate–High</strong></div>
-<div class="metric"><span>Cost Control</span><strong>Moderate</strong></div>
-<div class="metric"><span>Execution Risk</span><strong>Moderate</strong></div>
-<div class="metric"><span>Adaptability</span><strong>Good</strong></div>
-<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
-Works well if the lead consultant has proven healthcare integration experience and strong site coordination culture.
-</p>
-</div>
-
-<div class="card">
-<div class="rank" style="background:#fee2e2;color:#991b1b">3</div>
-<h3>Fragmented Multi-Consultant Model</h3>
-<div class="score">63</div>
-<span class="badge high">High Coordination Risk</span>
-<div class="metric"><span>Consultant Alignment</span><strong>Weak</strong></div>
-<div class="metric"><span>Site Decision Speed</span><strong>Slow</strong></div>
-<div class="metric"><span>Change Order Probability</span><strong>High</strong></div>
-<div class="metric"><span>Responsibility Clarity</span><strong>Diffuse</strong></div>
-<div class="metric"><span>Long-term Stability</span><strong>Variable</strong></div>
-<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
-Should only be used if a powerful owner-side coordinator or PMC exists to govern the ecosystem.
-</p>
-</div>
-
-</div>
-
-<div class="panel" style="margin-top:24px;">
-<div class="section-title">What I Would Suggest Strategically</div>
-
-<div class="grid">
-<div class="card">
-<h3>1. Avoid Lowest-Cost Selection Logic</h3>
-<p>
-Hospitals are operational ecosystems. Poor coordination during design and MEP integration often creates exponentially higher downstream costs than consultant fees.
-</p>
-</div>
-
-<div class="card">
-<h3>2. Select for Coordination Intelligence</h3>
-<p>
-The winning ecosystem should demonstrate evidence of interdisciplinary coordination, not just attractive drawings or isolated technical claims.
-</p>
-</div>
-
-<div class="card">
-<h3>3. Prioritize Healthcare Documentation Maturity</h3>
-<p>
-Most failures in hospitals happen between architecture, HVAC, electrical, fire, biomedical, and operations—not in concept design.
-</p>
-</div>
-
-<div class="card">
-<h3>4. Use Two-Stage Selection</h3>
-<p>
-Stage 1: Technical prequalification.<br>
-Stage 2: Scenario-based interview and coordination workshop.
-</p>
-</div>
-
-<div class="card">
-<h3>5. Interview Through Problem Simulation</h3>
-<p>
-Instead of asking for portfolios alone, ask candidates to solve real project conflicts:
-- ICU airflow clash
-- Fire staircase integration
-- OT sterile movement sequencing
-- Basement smoke extraction
-</p>
-</div>
-
-<div class="card">
-<h3>6. Keep Governance Transparent</h3>
-<p>
-Create a weighted evaluation matrix signed by the client to reduce future bias allegations and protect decision integrity.
-</p>
-</div>
-</div>
-</div>
-
-<div class="panel" style="margin-top:24px;">
-<div class="section-title">Suggested Final Appointment Structure</div>
-
-<table>
-<thead>
-<tr>
-<th>Role</th>
-<th>Suggested Appointment Logic</th>
-<th>Priority</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Lead Healthcare Architect / PMC</td>
-<td>Single accountable coordination authority</td>
-<td>Critical</td>
-</tr>
-<tr>
-<td>Healthcare MEP Consultant</td>
-<td>Separate specialist with hospital experience</td>
-<td>Critical</td>
-</tr>
-<tr>
-<td>Fire & Life Safety Consultant</td>
-<td>Independent NBC and Fire NOC specialist</td>
-<td>Critical</td>
-</tr>
-<tr>
-<td>NABH Consultant</td>
-<td>Integrated from design stage</td>
-<td>High</td>
-</tr>
-<tr>
-<td>Structural Consultant</td>
-<td>Integrated with MEP routing coordination</td>
-<td>High</td>
-</tr>
-<tr>
-<td>Landscape + Healing Environment Consultant</td>
-<td>Patient recovery, microclimate and therapeutic design</td>
-<td>Moderate–High</td>
-</tr>
-<tr>
-<td>Medical Planning Specialist</td>
-<td>Workflow optimization and equipment planning</td>
-<td>High</td>
-</tr>
-</tbody>
-</table>
-</div>
-
-<div class="panel" style="margin-top:24px;">
-<div class="section-title">Live AI-Assisted Consultant Intelligence Feed</div>
-
-<div id="riskInsights"></div>
-
-<div class="chart-container h420" style="margin-top:24px;">
-<canvas id="radarChartDynamic"></canvas>
-</div>
-
-<div class="matrix" style="margin-top:24px;">
-<table>
-<thead>
-<tr>
-<th>Consultant</th>
-<th>Primary Domain</th>
-<th>Team Scale</th>
-<th>Institutional Grade Band</th>
-<th>Risk Interpretation</th>
-<th>Strategic Recommendation</th>
-</tr>
-</thead>
-<tbody id="dynamicConsultants">
-<tr>
-<td colspan="6">Loading live consultant intelligence...</td>
-</tr>
-</tbody>
-</table>
-</div>
-</div>
-
-<footer>
-Prepared as a strategic decision-support interface for institutional healthcare consultant selection and governance calibration. This interface is intended to help clients understand the implications of procurement decisions rather than merely comparing fee quotations.
-<div class="panel" style="margin-top:24px;">
-<div class="section-title">Dynamic Consultant Mapping & Weighted Evaluation Engine</div>
-
-<div class="note" style="margin-bottom:24px;">
-The client can dynamically alter the importance of each evaluation parameter using the sliders below. This helps visualize how consultant rankings shift based on strategic intent — whether prioritizing cost, NABH readiness, execution survivability, coordination intelligence, or long-term institutional maturity.
-</div>
-
-<div class="grid" style="margin-bottom:28px;">
-<div class="card">
-<h3>Dynamic Weight Controls</h3>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Healthcare Experience</label>
-<span class="priority" id="w1v">20%</span>
-</div>
-<input type="range" min="0" max="30" value="20" id="w1">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>NABH / Regulatory Preparedness</label>
-<span class="priority" id="w2v">18%</span>
-</div>
-<input type="range" min="0" max="30" value="18" id="w2">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Construction Coordination Capability</label>
-<span class="priority" id="w3v">16%</span>
-</div>
-<input type="range" min="0" max="30" value="16" id="w3">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>MEP & Systems Integration</label>
-<span class="priority" id="w4v">16%</span>
-</div>
-<input type="range" min="0" max="30" value="16" id="w4">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Documentation & Institutional Maturity</label>
-<span class="priority" id="w5v">12%</span>
-</div>
-<input type="range" min="0" max="30" value="12" id="w5">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Cost Sensitivity</label>
-<span class="priority" id="w6v">8%</span>
-</div>
-<input type="range" min="0" max="30" value="8" id="w6">
-</div>
-
-<div class="control-group">
-<div class="slider-title">
-<label>Long-term OPEX & Maintainability</label>
-<span class="priority" id="w7v">10%</span>
-</div>
-<input type="range" min="0" max="30" value="10" id="w7">
-</div>
-
-</div>
-
-<div class="card">
-<h3>How To Use This Engine</h3>
-<ul style="padding-left:20px;color:var(--muted);font-size:.93rem;line-height:1.8;">
-<li>Increase <strong>NABH & Regulatory</strong> weight to favor institutional healthcare specialists.</li>
-<li>Increase <strong>Cost Sensitivity</strong> to favor leaner or emerging firms.</li>
-<li>Increase <strong>Construction Coordination</strong> to prioritize site survivability.</li>
-<li>Increase <strong>MEP Integration</strong> for technically complex neuro-care operations.</li>
-<li>Increase <strong>OPEX</strong> to favor lifecycle-efficient long-term systems thinking.</li>
-<li>Use this as a governance transparency tool during consultant discussions.</li>
-</ul>
-</div>
-</div>
-
-<div class="section-title">Mapped Consultant Ecosystem & Strategic Fit</div>
-
-<p style="margin-bottom:20px;color:var(--muted)">
-The following indicative scoring is based on the submitted EOI responses, visible organizational maturity, healthcare delivery relevance, coordination capability signals, documentation seriousness, specialist depth, and institutional survivability indicators. This is not a final appointment recommendation, but a strategic prequalification interpretation layer.
-</p>
-
-<table id="consultantTable">
-<thead>
-<tr>
-<th>Firm</th>
-<th>Primary Domain</th>
-<th>Approx Team Scale</th>
-<th>Healthcare Alignment</th>
-<th>Coordination Maturity</th>
-<th>MEP / Systems Readiness</th>
-<th>Institutional Survivability</th>
-<th>Indicative Grade</th>
-<th>Strategic Observation</th>
-<th>Suggested Role</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td><strong>Design Alphabet</strong></td>
-<td>Architecture</td>
-<td>~170+</td>
-<td>Strong</td>
-<td>High</td>
-<td>Moderate–High</td>
-<td>High</td>
-<td><span class="badge good">A</span></td>
-<td>Largest visible team structure (~170), stronger institutional scalability signals, likely better multidisciplinary survivability and documentation bandwidth.</td>
-<td>Lead Consultant / Integrated Design Lead</td>
-</tr>
-<tr>
-<td><strong>Wellness Bridge</strong></td>
-<td>PMC</td>
-<td>PMC-Oriented</td>
-<td>Strong</td>
-<td>High</td>
-<td>Moderate</td>
-<td>High</td>
-<td><span class="badge good">A-</span></td>
-<td>PMC-oriented positioning aligns strongly with integrated hospital coordination needs.</td>
-<td>PMC / Delivery Governance</td>
-</tr>
-<tr>
-<td><strong>Infrabees Project Management Consultants Pvt Ltd</strong></td>
-<td>Architecture + PMC tendencies</td>
-<td>Medium</td>
-<td>Moderate</td>
-<td>Moderate–High</td>
-<td>Moderate</td>
-<td>Moderate–High</td>
-<td><span class="badge medium">B+</span></td>
-<td>Appears coordination-aware with lifecycle orientation. Requires validation of healthcare-specific execution depth.</td>
-<td>PMC Support / Coordination</td>
-</tr>
-<tr>
-<td><strong>Interface Architects</strong></td>
-<td>Architecture</td>
-<td>Medium</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td><span class="badge medium">B+</span></td>
-<td>Moderate organizational maturity with portfolio visibility. Needs deeper evaluation for hospital systems integration.</td>
-<td>Architectural Design Support</td>
-</tr>
-<tr>
-<td><strong>Rainmaker Studio</strong></td>
-<td>Architecture</td>
-<td>Small–Medium</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Low–Moderate</td>
-<td>Moderate</td>
-<td><span class="badge medium">B</span></td>
-<td>Smaller agile practice signals flexibility, but institutional-scale healthcare survivability needs validation.</td>
-<td>Design Collaboration / Interior Interface</td>
-</tr>
-<tr>
-<td><strong>Synergic Designs</strong></td>
-<td>Architecture</td>
-<td>Medium</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Low–Moderate</td>
-<td>Moderate</td>
-<td><span class="badge medium">B</span></td>
-<td>Potentially competent but requires stronger evidence of healthcare documentation rigor and coordination maturity.</td>
-<td>Secondary Consultant</td>
-</tr>
-<tr>
-<td><strong>MEPCO Engineering Consultancy Services</strong></td>
-<td>MEP-F Engineering</td>
-<td>Specialist</td>
-<td>Strong</td>
-<td>High</td>
-<td>High</td>
-<td>High</td>
-<td><span class="badge good">A-</span></td>
-<td>Dedicated MEP profile with stronger relevance for hospital systems integration.</td>
-<td>Healthcare MEP Lead</td>
-</tr>
-<tr>
-<td><strong>Audvic Solutions Pvt Ltd</strong></td>
-<td>MEP-F Engineering</td>
-<td>Small–Medium</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td>Moderate</td>
-<td><span class="badge medium">B</span></td>
-<td>Potential technical specialization, though organizational scale appears limited for standalone institutional responsibility.</td>
-<td>Specialist Support</td>
-</tr>
-<tr>
-<td><strong>Pavan Architects</strong></td>
-<td>Architecture</td>
-<td>Small</td>
-<td>Low–Moderate</td>
-<td>Low–Moderate</td>
-<td>Low</td>
-<td>Low–Moderate</td>
-<td><span class="badge medium">B-</span></td>
-<td>Smaller emerging practice. Needs substantial validation for hospital execution complexity.</td>
-<td>Not preferred as lead institutional consultant</td>
-</tr>
-</tbody>
-</table>
-
-<div class="note" style="margin-top:24px;">
-<strong>Critical Advisory:</strong><br><br>
-At present, the responses indicate that the project should NOT be awarded purely to a standalone architectural entity unless they demonstrate proven hospital systems coordination capability across:
-<ul style="padding-left:20px;margin-top:10px;">
-<li>Fire and life safety integration</li>
-<li>Healthcare HVAC and pressure zoning</li>
-<li>Medical gas coordination</li>
-<li>NABH documentation maturity</li>
-<li>Construction-stage interdisciplinary governance</li>
-<li>Institutional-scale RFIs and revision management</li>
-</ul>
-</div>
-
-<div class="strategy">
-<h3>Suggested Shortlist Structure</h3>
-<p>
-Rather than selecting a single consultant immediately, a more resilient strategy would be:
-<br><br>
-<strong>Stage 1:</strong> Technical shortlist (3–4 firms)<br>
-<strong>Stage 2:</strong> Live coordination workshop using real hospital coordination scenarios<br>
-<strong>Stage 3:</strong> Governance and accountability matrix evaluation<br>
-<strong>Stage 4:</strong> Commercial negotiation only after technical alignment
-<br><br>
-This sequence significantly reduces downstream redesign and coordination risks.
-</p>
-</div>
-
-<footer>
-</div>
-
-</div>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-<script>
-
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHrcy8mR6WAzqxaQHAlDwEZ_N9lyagn3aHPItCDV4-NkIsNr1lJb67gWQWcvedllMIOMgiWB-bqHZi/pub?gid=764802717&single=true&output=csv';
-
-let consultants = [];
-
-async function loadConsultantData() {
-  Papa.parse(CSV_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      consultants = results.data.map(transformConsultant);
-      renderConsultants();
-      buildRadarChart();
-      generateRiskInsights();
-    }
-  });
-}
-
-function transformConsultant(row) {
-  const healthcareStrength = calculateHealthcareStrength(row);
-  const coordinationStrength = calculateCoordinationStrength(row);
-  const mepStrength = calculateMEPStrength(row);
-  const institutionalMaturity = calculateInstitutionalMaturity(row);
-  const survivability = calculateSurvivability(row);
-
-  return {
-    name: row['Legal Corporate Name of Firm'] || 'Unnamed Consultant',
-    domain: row['Select your primary engineering/consultancy domain for this project'] || 'Unknown',
-    teamSize: row['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] || 'Undisclosed',
-    portfolio: row['Provide a secure URL to your updated Digital Portfolio showing past healthcare/rehabilitation layouts.'] || '',
-    healthcareStrength,
-    coordinationStrength,
-    mepStrength,
-    institutionalMaturity,
-    survivability,
-    grade: calculateGrade(healthcareStrength, coordinationStrength, institutionalMaturity, survivability),
-    risk: calculateRiskLabel(healthcareStrength, coordinationStrength, survivability),
-    recommendation: generateRecommendation(row)
-  };
-}
-
-function calculateHealthcareStrength(row) {
-  const text = JSON.stringify(row).toLowerCase();
-  let score = 40;
-  if(text.includes('hospital')) score += 20;
-  if(text.includes('healthcare')) score += 15;
-  if(text.includes('rehabilitation')) score += 10;
-  if(text.includes('nabh')) score += 10;
-  return Math.min(score,100);
-}
-
-function calculateCoordinationStrength(row) {
-  const text = JSON.stringify(row).toLowerCase();
-  let score = 35;
-  if(text.includes('pmc')) score += 25;
-  if(text.includes('construction')) score += 15;
-  if(text.includes('site')) score += 10;
-  if(text.includes('coordination')) score += 15;
-  return Math.min(score,100);
-}
-
-function calculateMEPStrength(row) {
-  const text = JSON.stringify(row).toLowerCase();
-  let score = 25;
-  if(text.includes('hvac')) score += 20;
-  if(text.includes('fire')) score += 20;
-  if(text.includes('medical gas')) score += 20;
-  if(text.includes('mep')) score += 15;
-  return Math.min(score,100);
-}
-
-function calculateInstitutionalMaturity(row) {
-  const team = parseInt(row['Total Strength of Active Full-Time Technical Personnel (Firm Size)']) || 5;
-  return Math.min(40 + (team * 0.6), 100);
-}
-
-function calculateSurvivability(row) {
-  const text = JSON.stringify(row).toLowerCase();
-  let score = 45;
-  if(text.includes('inspection')) score += 10;
-  if(text.includes('gfc')) score += 15;
-  if(text.includes('tender')) score += 10;
-  if(text.includes('liaison')) score += 10;
-  return Math.min(score,100);
-}
-
-function calculateGrade(h,c,i,s){
-  const total = (h+c+i+s)/4;
-  if(total >= 85) return 'Institutional Grade';
-  if(total >= 70) return 'Strong';
-  if(total >= 55) return 'Moderate';
-  return 'High Risk';
-}
-
-function calculateRiskLabel(h,c,s){
-  const avg = (h+c+s)/3;
-  if(avg >= 80) return 'Lower Coordination Risk';
-  if(avg >= 60) return 'Moderate Coordination Risk';
-  return 'Elevated Delivery Risk';
-}
-
-function generateRecommendation(row){
-  const domain = row['Select your primary engineering/consultancy domain for this project'] || '';
-  if(domain.toLowerCase().includes('pmc')) return 'Suitable for integrated delivery governance';
-  if(domain.toLowerCase().includes('mep')) return 'Suitable as specialist healthcare systems consultant';
-  if(domain.toLowerCase().includes('architect')) return 'Requires coordination capability validation';
-  return 'Further technical evaluation recommended';
-}
-
-function renderConsultants() {
-  const table = document.getElementById('dynamicConsultants');
-  if(!table) return;
-
-  table.innerHTML = consultants.map(c => `
-    <tr>
-      <td><strong>${c.name}</strong></td>
-      <td>${c.domain}</td>
-      <td>${c.teamSize}</td>
-      <td>${c.grade}</td>
-      <td>${c.risk}</td>
-      <td>${c.recommendation}</td>
-    </tr>
-  `).join('');
-}
-
-function buildRadarChart(){
-  const canvas = document.getElementById('radarChartDynamic');
-  if(!canvas || consultants.length === 0) return;
-
-  const top = consultants[0];
-
-  new Chart(canvas, {
-    type: 'radar',
-    data: {
-      labels: ['Healthcare', 'Coordination', 'MEP', 'Institutional', 'Survivability'],
-      datasets: [{
-        label: top.name,
-        data: [
-          top.healthcareStrength,
-          top.coordinationStrength,
-          top.mepStrength,
-          top.institutionalMaturity,
-          top.survivability
-        ]
-      }]
-    },
-    options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      scales: {
-        r: {
-          suggestedMin: 0,
-          suggestedMax: 100
-        }
-      }
-    }
-  });
-}
-
-function generateRiskInsights(){
-  const insights = document.getElementById('riskInsights');
-  if(!insights) return;
-
-  const highRisk = consultants.filter(c => c.risk.includes('Elevated'));
-
-  insights.innerHTML = `
-    <div class="note">
-      <strong>AI-Assisted Procurement Insight:</strong><br><br>
-      ${consultants.length} consultant responses analyzed dynamically from the live Google Sheet database.<br><br>
-      ${highRisk.length} firms currently indicate elevated coordination or institutional delivery risks based on healthcare integration signals, documentation maturity, and lifecycle survivability interpretation.
+<!-- ══════ MODE BAR ══════ -->
+<nav class="modebar">
+  <div class="brand-wrap">
+    <div class="brand-mark">GD</div>
+    <div class="brand-name">Greenscape <span>Designz</span> · Procurement Intelligence</div>
+  </div>
+  <div class="mode-pills">
+    <button class="mpill on" data-mode="command">Command</button>
+    <button class="mpill" data-mode="client">Client</button>
+    <button class="mpill" data-mode="committee">Committee</button>
+    <button class="mpill" data-mode="pitch">Pitch</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     COMMAND MODE
+══════════════════════════════════ -->
+<div id="v-command" class="modeview on">
+
+  <div class="cmd-header">
+    <div>
+      <div class="cmd-title">Procurement <em>Intelligence</em> Command</div>
+      <div class="cmd-sub">Live calibration engine for healthcare consultant evaluation. Adjust weights to rerank all registered firms in real time. Activate failure cascades to simulate downstream delivery risk.</div>
     </div>
-  `;
-}
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      Live Engine
+    </div>
+  </div>
 
-window.addEventListener('DOMContentLoaded', loadConsultantData);
+  <div class="cmd-body">
 
-const sliders = [
-['exp','expVal'],
-['reg','regVal'],
-['exec','execVal'],
-['mep','mepVal'],
-['cost','costVal'],
-['opex','opexVal']
+    <div class="cmd-left">
+      <div class="panel-label">Weight Calibration</div>
+
+      <div class="srow">
+        <div class="shead"><span class="sname">Healthcare Experience</span><span class="sval" id="sv-healthcare">20</span></div>
+        <input type="range" min="0" max="30" step="1" value="20" data-key="healthcare" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">NABH / Regulatory Readiness</span><span class="sval" id="sv-nabh">18</span></div>
+        <input type="range" min="0" max="30" step="1" value="18" data-key="nabh" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Construction Coordination</span><span class="sval" id="sv-coordination">16</span></div>
+        <input type="range" min="0" max="30" step="1" value="16" data-key="coordination" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">MEP &amp; Systems Integration</span><span class="sval" id="sv-mep">16</span></div>
+        <input type="range" min="0" max="30" step="1" value="16" data-key="mep" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Documentation Maturity</span><span class="sval" id="sv-documentation">12</span></div>
+        <input type="range" min="0" max="30" step="1" value="12" data-key="documentation" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Cost Sensitivity</span><span class="sval" id="sv-cost">8</span></div>
+        <input type="range" min="0" max="30" step="1" value="8" data-key="cost" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Long-term OPEX</span><span class="sval" id="sv-opex">10</span></div>
+        <input type="range" min="0" max="30" step="1" value="10" data-key="opex" class="wslider">
+      </div>
+
+      <div class="divline"></div>
+
+      <div class="slabel">Project Positioning</div>
+      <select id="sel-pos">
+        <option value="functional">Functional Mid-Scale Hospital</option>
+        <option value="premium">Premium Neuro-Care Centre</option>
+        <option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
+        <option value="future">Future Expansion-Ready Campus</option>
+      </select>
+
+      <div class="slabel">Decision-maker Risk Appetite</div>
+      <select id="sel-risk">
+        <option value="safe">Low Risk / Stable Delivery</option>
+        <option value="balanced" selected>Balanced</option>
+        <option value="aggressive">Aggressive / High Ambition</option>
+      </select>
+    </div>
+
+    <div class="cmd-right">
+
+      <div class="nlg-box">
+        <div class="nlg-head">
+          <span class="live-dot"></span>
+          Procurement Intelligence Feed
+        </div>
+        <div class="nlg-out" id="nlg-out"></div>
+      </div>
+
+      <div class="rankings-bar">
+        <div class="rankings-hd">Live Consultant Rankings</div>
+        <div class="rankings-note">Re-sorts as weights shift</div>
+      </div>
+
+      <div class="clist" id="clist"></div>
+
+      <div class="failure-zone">
+        <div class="failure-hd">Failure Cascade Simulator</div>
+        <div class="ftriggers">
+          <button class="ftrig" data-cascade="mep">MEP – Fire Ceiling Clash</button>
+          <button class="ftrig" data-cascade="nabh">NABH Audit Failure</button>
+          <button class="ftrig" data-cascade="rfi">RFI Overload Storm</button>
+          <button class="ftrig" data-cascade="contractor">Contractor Abandonment</button>
+          <button class="ftrig" data-cascade="noc">Regulatory NOC Delay</button>
+          <button class="ftrig" data-cascade="opex">Post-Handover Breakdown</button>
+        </div>
+        <div class="cascade-box" id="cascade-box">
+          <div class="cascade-phases" id="cascade-phases"></div>
+          <div class="cascade-desc" id="cascade-desc"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CLIENT MODE
+══════════════════════════════════ -->
+<div id="v-client" class="modeview">
+  <div class="cl-hero">
+    <div class="cl-eyebrow">For Hospital Clients &amp; Decision-Makers</div>
+    <h1>Your hospital project deserves<br>institutional thinking.</h1>
+    <p>A plain-language guide to what really matters when selecting your design and delivery team — and what most clients never think to ask.</p>
+  </div>
+  <div class="cl-body">
+
+    <div class="cl-step">
+      <div class="cl-stepnum">01</div>
+      <div class="cl-step-body">
+        <h3>A hospital is not a building. It is an operational system.</h3>
+        <p>Most failed hospital projects do not fail because of bad architecture. They fail because the architecture, engineering, fire safety, medical planning, and construction teams were never truly coordinated. The most expensive moment in a hospital project is discovering in Month 18 that the HVAC ducts and fire sprinklers cannot occupy the same ceiling zone.</p>
+        <div class="cl-cards">
+          <div class="cl-card r">
+            <h4>What breaks silently</h4>
+            <p>MEP clashes, NABH documentation gaps, and coordination voids appear only after concrete is poured.</p>
+          </div>
+          <div class="cl-card a">
+            <h4>What gets delayed</h4>
+            <p>Fire NOC, KPME licensing, and AERB approvals all require documentation that starts at design, not at completion.</p>
+          </div>
+          <div class="cl-card g">
+            <h4>What protects you</h4>
+            <p>One accountable coordination authority with proven hospital delivery experience prevents most of these failures.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">02</div>
+      <div class="cl-step-body">
+        <h3>Three questions that matter more than any portfolio.</h3>
+        <p>Before selecting any consultant, ask yourself these three things. The answers will tell you more than any presentation.</p>
+        <div class="cl-qlist">
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">Has this firm built a hospital that has received NABH accreditation after completion — and can they show you the documentation they produced to achieve it, not just photos of the building?</div>
+          </div>
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">How many RFIs were raised on their last hospital project, and what was the average resolution time? High RFI volume is a documentation failure, not a construction one.</div>
+          </div>
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">Ask them to describe, in detail, how they would coordinate an ICU pressure-zoning conflict between the HVAC consultant and the infection-control planner. Process answers reveal real depth.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">03</div>
+      <div class="cl-step-body">
+        <h3>The fee is the smallest number in this decision.</h3>
+        <p>A hospital project typically spends 3–5% of its capital budget on consultant fees. The coordination failures those fees either prevent or cause can cost 10–25% of the capital budget in retrofits, delays, and lost revenue days.</p>
+        <div class="cl-stat-row">
+          <div class="cl-stat">
+            <div class="cl-stat-n">3–5%</div>
+            <div class="cl-stat-l">Consultant fees as % of CAPEX</div>
+          </div>
+          <div class="cl-stat">
+            <div class="cl-stat-n">10–25%</div>
+            <div class="cl-stat-l">Coordination failure cost range</div>
+          </div>
+          <div class="cl-stat">
+            <div class="cl-stat-n">18 mo</div>
+            <div class="cl-stat-l">Avg delay from NABH rework</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">04</div>
+      <div class="cl-step-body">
+        <h3>Red flags to watch for in presentations.</h3>
+        <div class="cl-cards">
+          <div class="cl-card r">
+            <h4>No NABH vocabulary</h4>
+            <p>Consultants who don't spontaneously use terms like NABH, KPME, AERB, MGPS, or NBC may lack healthcare documentation depth.</p>
+          </div>
+          <div class="cl-card r">
+            <h4>Solo architect model</h4>
+            <p>A single firm offering to manage all hospital systems coordination without named specialist partners is a significant red flag.</p>
+          </div>
+          <div class="cl-card r">
+            <h4>Portfolio-only defense</h4>
+            <p>Firms who respond to technical coordination questions with portfolio images rather than process descriptions.</p>
+          </div>
+          <div class="cl-card a">
+            <h4>Fee significantly below market</h4>
+            <p>Below-market fees often signal inadequate documentation bandwidth, not efficiency.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     COMMITTEE MODE
+══════════════════════════════════ -->
+<div id="v-committee" class="modeview">
+  <div class="cm-header">
+    <h1>Formal Evaluation Matrix</h1>
+    <p>Adjust criterion weights below (total should reach 100). The scoring matrix re-ranks automatically.</p>
+  </div>
+
+  <div class="cm-weight-panel">
+    <div class="cm-weight-title">Criterion Weights</div>
+    <div class="cm-wgrid" id="cm-wgrid"></div>
+    <div class="cm-total-row">
+      <span>Total weight</span>
+      <span class="cm-total-val ok" id="cm-total">100%</span>
+    </div>
+  </div>
+
+  <div class="cm-matrix">
+    <div class="cm-matrix-hd">Consultant Weighted Evaluation — All Registered Firms</div>
+    <div class="overflow-wrap">
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th>Firm</th>
+            <th>Domain</th>
+            <th>Healthcare</th>
+            <th>NABH</th>
+            <th>Coordination</th>
+            <th>MEP</th>
+            <th>Docs</th>
+            <th>Cost</th>
+            <th>OPEX</th>
+            <th>Weighted Score</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody id="cm-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PITCH MODE
+══════════════════════════════════ -->
+<div id="v-pitch" class="modeview">
+
+  <div class="pitch-hero">
+    <div class="pitch-eyebrow">Greenscape Designz · Healthcare Delivery Advisory · Bengaluru</div>
+    <div class="pitch-headline">We don't choose your consultants.<br>We make the choice <em>intelligent.</em></div>
+    <div class="pitch-sub">Greenscape Designz brings a systems-level procurement intelligence layer to healthcare projects — translating technical complexity into defensible, institutionally rigorous decision frameworks that protect client interests at every stage.</div>
+  </div>
+
+  <div class="pitch-stats">
+    <div class="pstat">
+      <div class="pstat-n">9</div>
+      <div class="pstat-l">Firms Evaluated</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">7</div>
+      <div class="pstat-l">Evaluation Dimensions</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">6</div>
+      <div class="pstat-l">Failure Vectors Modeled</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">20+</div>
+      <div class="pstat-l">Years Delivery Experience</div>
+    </div>
+  </div>
+
+  <div class="pitch-caps">
+    <div class="pitch-caps-title">What we bring to your procurement</div>
+    <div class="pcap-grid">
+      <div class="pcap">
+        <div class="pcap-n">01 — Intelligence</div>
+        <div class="pcap-t">Procurement Intelligence Engine</div>
+        <div class="pcap-b">We evaluate consultants on institutional delivery capability — not portfolio aesthetics or fee levels.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">02 — Risk</div>
+        <div class="pcap-t">Failure Risk Modeling</div>
+        <div class="pcap-b">Six hospital delivery failure vectors modeled and stress-tested against your specific procurement configuration.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">03 — Regulatory</div>
+        <div class="pcap-t">NABH Readiness Scoring</div>
+        <div class="pcap-b">Accreditation documentation maturity evaluated as a primary procurement criterion — not a post-completion concern.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">04 — Governance</div>
+        <div class="pcap-t">Coordination Governance</div>
+        <div class="pcap-b">Accountability matrices, coordination protocols, and delivery governance frameworks as standard advisory deliverables.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">05 — Lifecycle</div>
+        <div class="pcap-t">Lifecycle Intelligence</div>
+        <div class="pcap-b">Long-term OPEX, maintainability, and operational viability factored into every recommendation from Day 1.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">06 — Integrity</div>
+        <div class="pcap-t">Institutional Neutrality</div>
+        <div class="pcap-b">We serve the client's governance interests — not consultant relationships — protecting decision integrity at every stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pitch-cta">
+    <div class="pcta-eyebrow">Engage the intelligence layer</div>
+    <div class="pcta-hl">Ready to protect your procurement?</div>
+    <div class="pcta-sub">Greenscape Designz · SG Palya, Bengaluru · greenscapedesignz.com</div>
+    <button class="pcta-btn" onclick="setMode('command')">Open Command Interface →</button>
+  </div>
+
+</div>
+
+<script>
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+const CONSULTANTS = [
+  { name:'Design Alphabet', domain:'Architecture', team:'~170+', grade:'A',
+    role:'Lead Consultant / Design Lead',
+    scores:{healthcare:82,nabh:75,coordination:85,mep:72,documentation:88,cost:55,opex:80} },
+  { name:'Wellness Bridge', domain:'PMC', team:'PMC-oriented', grade:'A−',
+    role:'PMC / Delivery Governance',
+    scores:{healthcare:85,nabh:82,coordination:90,mep:68,documentation:80,cost:60,opex:75} },
+  { name:'MEPCO Engineering', domain:'MEP-F Engineering', team:'Specialist', grade:'A−',
+    role:'Healthcare MEP Lead',
+    scores:{healthcare:78,nabh:80,coordination:72,mep:92,documentation:70,cost:65,opex:85} },
+  { name:'Infrabees PMC', domain:'Arch + PMC', team:'Medium', grade:'B+',
+    role:'PMC Support / Coordination',
+    scores:{healthcare:70,nabh:68,coordination:75,mep:65,documentation:72,cost:70,opex:70} },
+  { name:'Interface Architects', domain:'Architecture', team:'Medium', grade:'B+',
+    role:'Architectural Design Support',
+    scores:{healthcare:68,nabh:65,coordination:65,mep:60,documentation:65,cost:72,opex:65} },
+  { name:'Rainmaker Studio', domain:'Architecture', team:'Small–Medium', grade:'B',
+    role:'Design Collaboration',
+    scores:{healthcare:62,nabh:58,coordination:60,mep:55,documentation:58,cost:75,opex:58} },
+  { name:'Synergic Designs', domain:'Architecture', team:'Medium', grade:'B',
+    role:'Secondary Consultant',
+    scores:{healthcare:60,nabh:55,coordination:58,mep:52,documentation:55,cost:78,opex:55} },
+  { name:'Audvic Solutions', domain:'MEP-F Engineering', team:'Small–Medium', grade:'B',
+    role:'Specialist Support',
+    scores:{healthcare:65,nabh:60,coordination:55,mep:70,documentation:55,cost:80,opex:60} },
+  { name:'Pavan Architects', domain:'Architecture', team:'Small', grade:'B−',
+    role:'Not preferred as lead',
+    scores:{healthcare:45,nabh:42,coordination:40,mep:38,documentation:42,cost:85,opex:42} }
 ];
 
-sliders.forEach(([slider,val])=>{
-const s=document.getElementById(slider);
-const v=document.getElementById(val);
-v.innerText=s.value;
-s.addEventListener('input',()=>{
-v.innerText=s.value;
-updateStrategy();
+const KEYS = ['healthcare','nabh','coordination','mep','documentation','cost','opex'];
+const LABELS = {healthcare:'Healthcare',nabh:'NABH',coordination:'Coordination',mep:'MEP',documentation:'Documentation',cost:'Cost',opex:'OPEX'};
+
+let W = {healthcare:20,nabh:18,coordination:16,mep:16,documentation:12,cost:8,opex:10};
+
+/* ═══════════════════════════════════
+   SCORING
+═══════════════════════════════════ */
+function wScore(c) {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  if (!tot) return 0;
+  return Math.round(KEYS.reduce((s,k)=>s + c.scores[k]*W[k]/tot, 0));
+}
+
+function sorted() {
+  return [...CONSULTANTS].sort((a,b)=>wScore(b)-wScore(a));
+}
+
+/* ═══════════════════════════════════
+   NLG ENGINE
+═══════════════════════════════════ */
+const NLG_D = {
+  nabh: [
+    "The current weight distribution places <span class='hl'>NABH regulatory preparedness</span> as the dominant procurement signal. This shifts the evaluation axis decisively from aesthetic portfolio strength toward accreditation documentation maturity. Consultants with demonstrated NABH process literacy — not merely healthcare project experience — consistently float to the top of the ranking in this configuration.",
+    "With <span class='hl'>regulatory readiness</span> as the leading criterion, the scoring engine interprets this as an institutional-benchmark project where licensing viability from Day 1 is non-negotiable. The ability to produce NABH-compliant documentation from the design stage — not retroactively — becomes the primary differentiator. Firms that have only designed hospitals without subsequently managing their accreditation are systematically disadvantaged."
+  ],
+  healthcare: [
+    "Healthcare experience dominates the current calibration. The engine prioritises consultants who have navigated the full delivery cycle of <span class='hl'>operational hospital facilities</span> — not institutional buildings in the general sense. The distinction matters critically: a completed school or corporate campus shares almost no coordination complexity with a functioning ICU or sterile surgical suite.",
+    "With healthcare experience weighted highest, the evaluation favours consultants with genuine <span class='hl'>clinical workflow literacy</span>. The ability to distinguish between infection control zones, patient and staff circulation sequencing, and biomedical equipment clearances is not a design skill — it is an operational one. Consultants without field evidence of this literacy are unlikely to survive site conditions on a hospital project."
+  ],
+  coordination: [
+    "Construction coordination is the dominant criterion in this configuration. This is <span class='hl'>the most frequently underweighted dimension</span> in standard consultant evaluation — and the one most directly correlated with mid-construction cost escalation and schedule collapse. Consultants scoring highest here demonstrate a systematic approach to interdisciplinary coordination, not merely coordination claims in their presentations.",
+    "<span class='hl'>Coordination intelligence</span> carries the highest evaluative weight. This signals a client or advisor who understands that the highest delivery risk in hospital construction is not conceptual design failure — it is good design that cannot survive contact with the site. Firms with documented RFI management discipline and interdisciplinary coordination protocols score significantly above competitors."
+  ],
+  mep: [
+    "MEP and systems integration carries the highest evaluative weight. This is appropriate for critical care environments where <span class='hl'>HVAC pressure zoning, MGPS coordination, and electrical redundancy</span> are not secondary engineering concerns — they define operational safety. Specialists without dedicated healthcare MEP track records are significantly disadvantaged at this calibration.",
+    "Systems integration dominates the evaluation logic. In hospital construction, research consistently shows that <span class='hl'>over 60% of post-construction defects</span> originate from MEP-architecture interface failures. The current weighting appropriately treats interdisciplinary systems coordination as a primary selection criterion, not a specialist subcategory added late to the consultant ecosystem."
+  ],
+  cost: [
+    "<span class='warn'>Cost sensitivity is elevated as the primary criterion</span> — a configuration that historically correlates with higher post-construction risk in hospital delivery. Consultant fee savings of 1–2% of project cost frequently generate coordination deficits that produce 8–15% rework and delay costs downstream. This tension is flagged as the primary procurement risk in the current calibration.",
+    "The current calibration prioritises <span class='warn'>cost control above institutional quality criteria</span>. This is a legitimate business decision, but the intelligence engine recommends pairing it with a significantly strengthened accountability matrix to compensate for the reduced coordination bandwidth that lower-fee consultant ecosystems typically carry into construction."
+  ],
+  documentation: [
+    "Documentation maturity is the primary criterion in this configuration — an unusually sophisticated calibration signal. It indicates a client or advisor who understands that <span class='hl'>hospital project failures are predominantly documentation failures</span>, not design failures. Consultants with GFC drawing discipline, RFI protocols, and construction-stage document governance score highest.",
+    "The dominant weight on documentation intelligence reflects a mature understanding that hospitals are not delivered by architectural drawings — they are delivered by <span class='hl'>the entire document ecosystem</span> that flows from those drawings. Contractors, authorities, and future hospital operators all depend on documentation quality that is determined, and cannot be recovered, at the design stage."
+  ],
+  opex: [
+    "Long-term OPEX and lifecycle maintainability carries the highest weight — a configuration that signals a client committed to <span class='hl'>operational sustainability</span> over initial delivery cost. This decision typically produces 15–25% lower lifecycle costs over a 20-year operational period for hospital facilities when reflected in early procurement choices.",
+    "Lifecycle intelligence dominates the evaluation. The current calibration rewards consultants who design with <span class='hl'>operational maintainability as a primary constraint</span> — not a post-handover consideration. This directly reduces the risk of high-maintenance mechanical systems, inaccessible MEP infrastructure, and energy-inefficient clinical environments emerging after opening."
+  ]
+};
+
+const NLG_T = {
+  costVsQuality: "There is a <span class='warn'>visible tension</span> in the weight distribution between cost sensitivity and institutional quality criteria. This is one of the most dangerous configurations in healthcare procurement — the saving on consultant fees is real and immediate; the rework costs are deferred by 18–36 months and are exponentially larger.",
+  highAmbition: "The project positioning and risk appetite signal institutional ambition that <span class='hl'>aligns with the technically deeper ecosystems</span> in this evaluation. The scoring engine consistently elevates firms with multidisciplinary depth and documented healthcare systems coordination experience at this configuration.",
+  balanced: "The weight distribution reflects a <span class='hl'>balanced institutional approach</span> — prioritising healthcare coordination quality without ignoring commercial realities. This is the appropriate configuration for an NABH-ready benchmark project seeking long-term operational viability alongside fiscal discipline.",
+  safe: "The low-risk appetite calibration produces a <span class='hl'>stable, proven-ecosystem preference</span>. The scoring engine elevates firms with the strongest institutional survivability scores — prioritising delivery certainty over technical ambition."
+};
+
+const NLG_A = {
+  nabh: "For NABH-benchmark positioning, the most critical procurement risk is <span class='hl'>pre-construction documentation incompleteness</span>. Every approval delay, accreditation failure, and licensing rejection in Indian hospital projects traces back to documentation not structured correctly at the design stage — not to construction quality. Consultants should be evaluated on their NABH documentation track record, not their hospital portfolio count.",
+  functional: "For a functional mid-scale hospital, the key structural risk is over-reliance on a single architectural lead without named specialist systems consultants. A <span class='hl'>two-stage evaluation</span> — technical prequalification followed by a live coordination scenario workshop — dramatically reduces the likelihood of appointment regret.",
+  premium: "Premium neuro-care environments require MEP consultants with specific experience in <span class='hl'>electromagnetic interference management, critical power redundancy, and laminar airflow design</span>. These are non-standard capabilities that demand specialist shortlisting, not general MEP firms with hospital project references.",
+  future: "Future-expansion readiness must be specified as a design constraint from Day 1 — not a vague aspiration. Consultants should demonstrate how they would design <span class='hl'>MEP service void redundancy, structural grid flexibility, and floor-to-floor height provision</span> to accommodate future clinical departments without structural intervention."
+};
+
+let _lastDom = null;
+
+function buildNarrative() {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  if (!tot) return '<p>Awaiting calibration.</p>';
+
+  const domKey = [...KEYS].sort((a,b)=>W[b]-W[a])[0];
+  const costPct = W.cost / tot * 100;
+  const pos = document.getElementById('sel-pos')?.value || 'nabh';
+  const risk = document.getElementById('sel-risk')?.value || 'balanced';
+
+  // pick variant: alternate when dominant changes
+  if (domKey !== _lastDom) { _lastDom = domKey; }
+  const pool = NLG_D[domKey] || NLG_D.healthcare;
+  const v = Math.floor(Date.now()/8000) % pool.length;
+  const p1 = pool[v];
+
+  let p2 = NLG_T.balanced;
+  if (costPct > 20 && (W.nabh > 14 || W.mep > 14)) p2 = NLG_T.costVsQuality;
+  else if (risk === 'aggressive') p2 = NLG_T.highAmbition;
+  else if (risk === 'safe') p2 = NLG_T.safe;
+
+  const p3 = NLG_A[pos] || NLG_A.functional;
+
+  return `<p>${p1}</p><p>${p2}</p><p>${p3}</p>`;
+}
+
+function refreshNarrative() {
+  const el = document.getElementById('nlg-out');
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = buildNarrative();
+    el.style.opacity = '1';
+  }, 220);
+}
+
+/* ═══════════════════════════════════
+   RENDER COMMAND RANKINGS
+═══════════════════════════════════ */
+function renderRankings() {
+  const list = document.getElementById('clist');
+  if (!list) return;
+  const s = sorted();
+  list.innerHTML = s.map((c,i) => {
+    const sc = wScore(c);
+    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
+    return `<div class="ccard ${rc}">
+      <div class="ranknum">${String(i+1).padStart(2,'0')}</div>
+      <div>
+        <div class="cname">${c.name}</div>
+        <div class="cdomain">${c.domain} · ${c.team}</div>
+        <div class="crole">${c.role}</div>
+      </div>
+      <div class="cscore-area">
+        <div class="cscore">${sc}</div>
+        <div class="cbar-track"><div class="cbar-fill" style="width:${sc}%"></div></div>
+        <span class="gbadge ${gc}">${c.grade}</span>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   FAILURE CASCADE
+═══════════════════════════════════ */
+const CASCADES = {
+  mep: {
+    phases: ['Brief & Design','Coordination','GFC Drawings','Construction','Inspection','Fire NOC','Operations'],
+    origin: 2, hits: [false,true,true,true,true,true,false],
+    desc: 'A MEP–fire services ceiling clash during GFC drawing production triggers a coordination redesign phase. Construction commencement is delayed 6–14 weeks. A cascade of RFIs follows during construction as contractors encounter unresolved space conflicts. Fire NOC inspection readiness is delayed. Operational launch is pushed. The original coordination failure at drawing stage propagates through every subsequent project phase.',
+    pills: [{t:'12 wk delay',c:'delay'},{t:'8–12% cost escalation',c:'cost'},{t:'Fire NOC at risk',c:'risk'}]
+  },
+  nabh: {
+    phases: ['Brief','NABH Planning','Coordination','Construction','Completion','Accreditation','Operations'],
+    origin: 1, hits: [false,true,false,false,true,true,true],
+    desc: 'NABH documentation was not integrated at the design stage. At project completion, a pre-accreditation audit identifies 40+ non-compliant design decisions that cannot be resolved through cosmetic intervention. Forced partial redesign and reconstruction is required. NABH accreditation is withheld until Category 3 rectifications are complete. Operational launch is delayed by 9–18 months beyond the construction programme.',
+    pills: [{t:'9–18 mo delayed opening',c:'delay'},{t:'15–20% CAPEX rework',c:'cost'},{t:'NABH withheld',c:'risk'}]
+  },
+  rfi: {
+    phases: ['Design','Tender','Mobilisation','Construction','Mid-review','Completion','Handover'],
+    origin: 3, hits: [false,false,false,true,true,true,true],
+    desc: 'Poor coordination documentation generates 200+ RFIs during construction. Decision velocity collapses as consultant response bandwidth is overwhelmed. The contractor begins autonomous interpretation of unresolved coordination conflicts. Design intent progressively erodes. Post-completion snag volumes are unmanageable. Consultant-contractor disputes delay handover. The client receives a building that is neither what was designed nor what was built.',
+    pills: [{t:'200+ RFIs',c:'risk'},{t:'Handover delayed',c:'delay'},{t:'Design intent lost',c:'risk'}]
+  },
+  contractor: {
+    phases: ['Procurement','Contract','Construction Ph.1','Construction Ph.2','Emergency','Recovery','Operations'],
+    origin: 3, hits: [false,false,false,true,true,true,false],
+    desc: 'Primary contractor abandons site at approximately 45% construction completion due to cash flow collapse. Emergency re-procurement happens at premium cost and extended timeline. The incoming contractor disputes the quality and completeness of existing works. Insurance claim and arbitration proceedings run in parallel with active construction. Estimated delay: 12–20 months beyond the original programme. Estimated additional cost: 20–35% of original project budget.',
+    pills: [{t:'12–20 mo delay',c:'delay'},{t:'20–35% cost overrun',c:'cost'},{t:'Arbitration risk',c:'risk'}]
+  },
+  noc: {
+    phases: ['Design','Statutory Review','Plan Approval','Construction','Inspection','Fire NOC','Licensing'],
+    origin: 1, hits: [false,true,true,false,false,true,true],
+    desc: 'Statutory compliance gaps in design documentation delay plan approval by 8 months. Construction cannot commence. When construction eventually begins, undocumented mid-design changes create a second statutory review requirement. Fire NOC inspection fails at first attempt. Re-inspection adds 6 months. Hospital licensing — dependent on all statutory clearances — is delayed by 14–22 months from the original target date.',
+    pills: [{t:'14–22 mo total delay',c:'delay'},{t:'₹ idle CAPEX cost',c:'cost'},{t:'KPME at risk',c:'risk'}]
+  },
+  opex: {
+    phases: ['Design','Handover','Month 6','Year 1','Year 3','Year 5','Year 10'],
+    origin: 2, hits: [false,false,true,true,true,true,true],
+    desc: 'Lifecycle OPEX was not evaluated as a design criterion during procurement. By Month 6, HVAC maintenance costs are 40% above projection. Inaccessible MEP risers require partial wall demolition for routine servicing. Energy consumption is 35% above benchmark. By Year 5, a major mechanical systems retrofit costing 18–25% of the original project value is unavoidable. Hospital operational continuity is disrupted during the retrofit period.',
+    pills: [{t:'40% HVAC cost overrun',c:'cost'},{t:'35% energy overspend',c:'cost'},{t:'18–25% retrofit at Yr 5',c:'risk'}]
+  }
+};
+
+function triggerCascade(type) {
+  document.querySelectorAll('.ftrig').forEach(b => b.classList.remove('on'));
+  document.querySelector(`.ftrig[data-cascade="${type}"]`)?.classList.add('on');
+
+  const data = CASCADES[type];
+  const box = document.getElementById('cascade-box');
+  const phasesEl = document.getElementById('cascade-phases');
+  const descEl = document.getElementById('cascade-desc');
+
+  // Build phases
+  phasesEl.innerHTML = data.phases.map((p,i) => {
+    let cls = 'cphase-box';
+    if (i === data.origin) cls += ' origin';
+    const arrow = i < data.phases.length-1 ? '<span class="cphase-arrow">→</span>' : '';
+    return `<div class="cphase"><div class="${cls}" id="cp-${i}">${p}</div>${arrow}</div>`;
+  }).join('');
+
+  descEl.innerHTML = '';
+  box.classList.add('on');
+
+  // Cascade animation
+  data.hits.forEach((hit, i) => {
+    if (!hit || i === data.origin) return;
+    setTimeout(() => {
+      document.getElementById('cp-'+i)?.classList.add('hit');
+    }, i * 280);
+  });
+
+  setTimeout(() => {
+    const pills = data.pills.map(p =>
+      `<span class="impact-pill ${p.c}">${p.t}</span>`
+    ).join('');
+    descEl.innerHTML = data.desc + `<div class="cascade-impact">${pills}</div>`;
+  }, data.phases.length * 280 + 200);
+}
+
+/* ═══════════════════════════════════
+   COMMITTEE MODE
+═══════════════════════════════════ */
+function buildCommitteeWeights() {
+  const grid = document.getElementById('cm-wgrid');
+  if (!grid) return;
+  grid.innerHTML = KEYS.map(k => `
+    <div class="cm-wfield">
+      <label>${LABELS[k]}</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="number" min="0" max="40" value="${W[k]}" data-ck="${k}" class="cm-winput">
+        <span style="font-size:0.8rem;color:#94a3b8">/ 100</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.cm-winput').forEach(inp => {
+    inp.addEventListener('input', () => {
+      W[inp.dataset.ck] = parseInt(inp.value)||0;
+      syncSlider(inp.dataset.ck);
+      updateAll();
+      updateCommitteeTotal();
+    });
+  });
+}
+
+function updateCommitteeTotal() {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  const el = document.getElementById('cm-total');
+  if (el) {
+    el.textContent = tot + '%';
+    el.className = 'cm-total-val ' + (tot === 100 ? 'ok' : 'err');
+  }
+}
+
+function renderCommitteeTable() {
+  const tbody = document.getElementById('cm-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = sorted().map(c => {
+    const sc = wScore(c);
+    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
+    return `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td style="color:#64748b;font-size:0.8rem">${c.domain}</td>
+      ${KEYS.map(k=>`<td class="cm-dim-val">${c.scores[k]}</td>`).join('')}
+      <td class="cm-score">${sc}</td>
+      <td><span class="cm-grade ${gc}">${c.grade}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   SYNC HELPERS
+═══════════════════════════════════ */
+function syncSlider(k) {
+  const s = document.querySelector(`.wslider[data-key="${k}"]`);
+  if (s) s.value = W[k];
+  const v = document.getElementById('sv-'+k);
+  if (v) v.textContent = W[k];
+}
+
+function syncCommitteeInput(k) {
+  const inp = document.querySelector(`.cm-winput[data-ck="${k}"]`);
+  if (inp) inp.value = W[k];
+}
+
+function updateAll() {
+  renderRankings();
+  refreshNarrative();
+  renderCommitteeTable();
+}
+
+/* ═══════════════════════════════════
+   MODE SWITCHING
+═══════════════════════════════════ */
+function setMode(m) {
+  document.querySelectorAll('.modeview').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.mpill').forEach(b => b.classList.remove('on'));
+  const panel = document.getElementById('v-'+m);
+  if (panel) panel.classList.add('on');
+  document.querySelector(`.mpill[data-mode="${m}"]`)?.classList.add('on');
+
+  if (m === 'committee') {
+    buildCommitteeWeights();
+    renderCommitteeTable();
+    updateCommitteeTotal();
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.mpill').forEach(b => {
+  b.addEventListener('click', () => setMode(b.dataset.mode));
 });
+
+/* ═══════════════════════════════════
+   SLIDER EVENTS
+═══════════════════════════════════ */
+document.querySelectorAll('.wslider').forEach(slider => {
+  slider.addEventListener('input', () => {
+    const k = slider.dataset.key;
+    W[k] = parseInt(slider.value);
+    const sv = document.getElementById('sv-'+k);
+    if (sv) sv.textContent = slider.value;
+    syncCommitteeInput(k);
+    updateAll();
+  });
 });
 
-const positioning=document.getElementById('positioning');
-const risk=document.getElementById('riskAppetite');
-const strategy=document.getElementById('strategyType');
+document.getElementById('sel-pos')?.addEventListener('change', refreshNarrative);
+document.getElementById('sel-risk')?.addEventListener('change', refreshNarrative);
 
-[positioning,risk,strategy].forEach(el=>{
-el.addEventListener('change',updateStrategy);
+document.querySelectorAll('.ftrig').forEach(btn => {
+  btn.addEventListener('click', () => triggerCascade(btn.dataset.cascade));
 });
 
-function updateStrategy(){
-const reg=parseInt(document.getElementById('reg').value);
-const mep=parseInt(document.getElementById('mep').value);
-const exec=parseInt(document.getElementById('exec').value);
-const cost=parseInt(document.getElementById('cost').value);
-const riskVal=risk.value;
-const pos=positioning.value;
-
-let message='';
-
-if(pos==='nabh' && reg>80 && mep>80){
-message='The project is behaving like an institutional healthcare ecosystem rather than a conventional building project. Strong recommendation: appoint a healthcare-experienced PMC-led coordination structure with mandatory fire, MEP, NABH, and medical-planning integration from early stages.';
-}
-else if(cost>80){
-message='Current calibration heavily favors cost sensitivity. This may reduce upfront consultant fees but significantly increases lifecycle rework and coordination risks in hospital infrastructure.';
-}
-else if(riskVal==='aggressive'){
-message='The client appetite indicates willingness for ambitious institutional positioning. This supports selecting technically stronger multidisciplinary ecosystems with higher coordination sophistication.';
-}
-else{
-message='A balanced integrated-delivery model is recommended: strong lead consultant supported by specialized healthcare systems consultants with clearly defined accountability matrices.';
-}
-
-if(exec<50){
-message += ' Warning: low emphasis on construction survivability often leads to RFI overload, execution drift, and post-construction retrofits.';
-}
-
-document.getElementById('strategyText').innerText=message;
-}
-
-const weightSliders=['w1','w2','w3','w4','w5','w6','w7'];
-weightSliders.forEach((id,index)=>{
-const slider=document.getElementById(id);
-const val=document.getElementById(id+'v');
-val.innerText=slider.value+'%';
-slider.addEventListener('input',()=>{
-val.innerText=slider.value+'%';
-});
-});
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+renderRankings();
+refreshNarrative();
 </script>
 </body>
 </html>
