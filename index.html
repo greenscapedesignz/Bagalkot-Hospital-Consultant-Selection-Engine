@@ -1,25 +1,1480 @@
-<!-- =========================================================
-INTEGRATED HEALTHCARE PROCUREMENT INTELLIGENCE SYSTEM
-Greenscape Designz
-LIVE CSV-DRIVEN VERSION
-========================================================= -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Healthcare Procurement Intelligence — Greenscape Designz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #080d18;
+  --surface: #0e1525;
+  --surface2: #141e30;
+  --surface3: #1a2640;
+  --border: rgba(255,255,255,0.06);
+  --border-hover: rgba(255,255,255,0.12);
+  --border-teal: rgba(13,180,135,0.28);
+  --text: #dde8f0;
+  --text-muted: #6d8499;
+  --text-dim: #32475c;
+  --teal: #0db487;
+  --teal-glow: rgba(13,180,135,0.12);
+  --amber: #e8a530;
+  --danger: #e84949;
+  --danger-bg: rgba(232,73,73,0.08);
+  --danger-border: rgba(232,73,73,0.22);
+  --good: #0db487;
+  --ff-display: 'Cormorant Garamond', Georgia, serif;
+  --ff-body: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --ff-mono: 'JetBrains Mono', 'Courier New', monospace;
+}
 
-<!-- REPLACE YOUR EXISTING <script> SECTION WITH THIS -->
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: var(--ff-body);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
+
+/* ══════════ MODE BAR ══════════ */
+.modebar {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(8,13,24,0.92);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--border);
+  height: 54px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  gap: 20px;
+}
+
+.brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.brand-mark {
+  width: 28px; height: 28px;
+  border: 1.5px solid var(--teal);
+  border-radius: 6px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-mono);
+  font-size: 0.7rem; font-weight: 700;
+  color: var(--teal);
+  letter-spacing: 0.05em;
+}
+
+.brand-name {
+  font-family: var(--ff-display);
+  font-size: 0.9rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: rgba(255,255,255,0.55);
+}
+
+.brand-name span { color: var(--teal); }
+
+.mode-pills {
+  display: flex;
+  gap: 3px;
+  background: var(--surface);
+  padding: 4px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+
+.mpill {
+  padding: 5px 15px;
+  border: none;
+  background: none;
+  color: var(--text-muted);
+  font-family: var(--ff-body);
+  font-size: 0.73rem;
+  font-weight: 600;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s;
+  white-space: nowrap;
+}
+
+.mpill.on { background: var(--teal); color: #000; }
+.mpill:hover:not(.on) { color: var(--text); background: var(--surface3); }
+
+/* ══════════ MODE PANELS ══════════ */
+.modeview { display: none; }
+.modeview.on { display: block; }
+
+/* ═══════════════════════════════════════
+   COMMAND MODE
+═══════════════════════════════════════ */
+#v-command {}
+
+.cmd-header {
+  padding: 44px 32px 36px;
+  border-bottom: 1px solid var(--border);
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 32px;
+  align-items: end;
+}
+
+.cmd-title {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 3.5vw, 3.2rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.01em;
+}
+
+.cmd-title em { color: var(--teal); font-style: normal; }
+
+.cmd-sub {
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  margin-top: 10px;
+  max-width: 540px;
+  line-height: 1.65;
+}
+
+.live-badge {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--teal);
+  border: 1px solid var(--border-teal);
+  border-radius: 999px;
+  padding: 6px 12px;
+  white-space: nowrap;
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
+.live-dot {
+  width: 6px; height: 6px;
+  background: var(--teal);
+  border-radius: 50%;
+  animation: livepulse 2s ease-in-out infinite;
+}
+
+@keyframes livepulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:0.35; transform:scale(0.7); }
+}
+
+.cmd-body {
+  display: grid;
+  grid-template-columns: 340px 1fr;
+  min-height: calc(100vh - 54px - 110px);
+  align-items: start;
+}
+
+/* ── LEFT PANEL ── */
+.cmd-left {
+  border-right: 1px solid var(--border);
+  padding: 28px 22px;
+  position: sticky;
+  top: 54px;
+  height: calc(100vh - 54px);
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.panel-label {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 22px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.panel-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--border-teal);
+}
+
+.srow { margin-bottom: 18px; }
+
+.shead {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 8px;
+}
+
+.sname {
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+
+.sval {
+  font-family: var(--ff-mono);
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--teal);
+  min-width: 22px;
+  text-align: right;
+}
+
+input[type=range] {
+  width: 100%;
+  height: 2px;
+  -webkit-appearance: none;
+  appearance: none;
+  background: var(--surface3);
+  outline: none;
+  border-radius: 1px;
+  cursor: pointer;
+}
+
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  width: 13px; height: 13px;
+  background: var(--teal);
+  border-radius: 50%;
+  cursor: pointer;
+  transition: transform 0.12s;
+  box-shadow: 0 0 0 3px rgba(13,180,135,0.15);
+}
+
+input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.35); }
+input[type=range]::-moz-range-thumb {
+  width: 13px; height: 13px;
+  background: var(--teal);
+  border-radius: 50%;
+  border: none;
+  cursor: pointer;
+}
+
+.divline {
+  height: 1px;
+  background: var(--border);
+  margin: 24px 0;
+}
+
+.slabel {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  margin-bottom: 7px;
+}
+
+select {
+  width: 100%;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 9px 11px;
+  border-radius: 8px;
+  font-family: var(--ff-body);
+  font-size: 0.82rem;
+  outline: none;
+  cursor: pointer;
+  margin-bottom: 14px;
+  -webkit-appearance: none;
+  appearance: none;
+  transition: border-color 0.15s;
+}
+
+select:focus { border-color: var(--border-teal); }
+select option { background: #141e30; }
+
+/* ── RIGHT PANEL ── */
+.cmd-right { padding: 28px 32px; }
+
+/* NLG */
+.nlg-box {
+  background: var(--surface);
+  border: 1px solid var(--border-teal);
+  border-radius: 14px;
+  padding: 22px 24px;
+  margin-bottom: 28px;
+  position: relative;
+  overflow: hidden;
+}
+
+.nlg-box::before {
+  content: '';
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--teal) 0%, transparent 60%);
+}
+
+.nlg-head {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 14px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+
+.nlg-out {
+  font-size: 0.9rem;
+  color: var(--text);
+  line-height: 1.82;
+  transition: opacity 0.22s ease;
+}
+
+.nlg-out p { margin-bottom: 12px; }
+.nlg-out p:last-child { margin-bottom: 0; }
+
+.nlg-out .hl { color: var(--teal); font-weight: 500; }
+.nlg-out .warn { color: var(--amber); font-weight: 500; }
+.nlg-out .alert { color: var(--danger); font-weight: 500; }
+
+/* Rankings */
+.rankings-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.rankings-hd {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: var(--text-dim);
+}
+
+.rankings-note {
+  font-size: 0.73rem;
+  color: var(--text-dim);
+  font-style: italic;
+}
+
+.clist { display: flex; flex-direction: column; gap: 9px; }
+
+.ccard {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px 18px;
+  display: grid;
+  grid-template-columns: 46px 1fr 68px;
+  gap: 14px;
+  align-items: center;
+  transition: border-color 0.2s, background 0.2s;
+  cursor: default;
+}
+
+.ccard:hover { border-color: var(--border-hover); background: var(--surface2); }
+
+.ccard.r1 { border-color: var(--border-teal); background: rgba(13,180,135,0.04); }
+.ccard.r2 { border-color: rgba(232,165,48,0.2); }
+
+.ranknum {
+  font-family: var(--ff-mono);
+  font-size: 1.3rem;
+  font-weight: 700;
+  text-align: center;
+  line-height: 1;
+}
+
+.r1 .ranknum { color: var(--teal); }
+.r2 .ranknum { color: var(--amber); }
+.r3 .ranknum { color: #4a6070; }
+.ccard:not(.r1):not(.r2):not(.r3) .ranknum { color: var(--text-dim); }
+
+.cname { font-size: 0.92rem; font-weight: 600; margin-bottom: 2px; }
+.cdomain { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
+.crole { font-size: 0.7rem; color: var(--teal); font-weight: 500; }
+
+.cscore-area { text-align: right; }
+
+.cscore {
+  font-family: var(--ff-mono);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--text);
+  line-height: 1;
+}
+
+.cbar-track {
+  width: 56px;
+  height: 2px;
+  background: var(--surface3);
+  border-radius: 1px;
+  margin-top: 6px;
+  margin-left: auto;
+  overflow: hidden;
+}
+
+.cbar-fill {
+  height: 100%;
+  background: var(--teal);
+  border-radius: 1px;
+  transition: width 0.4s ease;
+}
+
+.gbadge {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 0.65rem;
+  font-weight: 700;
+  padding: 2px 6px;
+  border-radius: 4px;
+  margin-top: 5px;
+}
+
+.ga { background: rgba(13,180,135,0.14); color: var(--teal); }
+.gb { background: rgba(232,165,48,0.14); color: var(--amber); }
+.gc { background: rgba(232,73,73,0.14); color: var(--danger); }
+
+/* ── FAILURE CASCADE ── */
+.failure-zone {
+  margin-top: 40px;
+  padding-top: 32px;
+  border-top: 1px solid var(--border);
+}
+
+.failure-hd {
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--danger);
+  margin-bottom: 16px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.failure-hd::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--danger-border);
+}
+
+.ftriggers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+}
+
+.ftrig {
+  padding: 7px 13px;
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: #f4a0a0;
+  font-family: var(--ff-body);
+  font-size: 0.75rem;
+  font-weight: 500;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: all 0.18s;
+  letter-spacing: 0.01em;
+}
+
+.ftrig:hover, .ftrig.on {
+  background: rgba(232,73,73,0.15);
+  border-color: rgba(232,73,73,0.5);
+  color: #ffb3b3;
+}
+
+.cascade-box {
+  display: none;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 22px 24px;
+  animation: fadein 0.3s ease;
+}
+
+@keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
+.cascade-box.on { display: block; }
+
+.cascade-phases {
+  display: flex;
+  align-items: center;
+  gap: 0;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  margin-bottom: 22px;
+}
+
+.cphase {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.cphase-box {
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  font-size: 0.73rem;
+  color: var(--text-muted);
+  background: var(--surface2);
+  transition: all 0.4s ease;
+  white-space: nowrap;
+  font-family: var(--ff-body);
+  font-weight: 500;
+  text-align: center;
+  min-width: 80px;
+}
+
+.cphase-box.origin {
+  border-color: var(--danger);
+  background: rgba(232,73,73,0.14);
+  color: var(--danger);
+  font-weight: 700;
+}
+
+.cphase-box.hit {
+  border-color: rgba(232,73,73,0.45);
+  background: rgba(232,73,73,0.08);
+  color: #f4a0a0;
+}
+
+.cphase-arrow {
+  font-size: 0.75rem;
+  color: var(--text-dim);
+  margin: 0 4px;
+  flex-shrink: 0;
+}
+
+.cascade-desc {
+  font-size: 0.87rem;
+  color: var(--text-muted);
+  line-height: 1.75;
+  padding-top: 18px;
+  border-top: 1px solid var(--border);
+  min-height: 52px;
+  transition: opacity 0.3s;
+}
+
+.cascade-impact {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.impact-pill {
+  font-size: 0.72rem;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-family: var(--ff-mono);
+}
+
+.impact-pill.delay { background: rgba(232,165,48,0.12); color: var(--amber); }
+.impact-pill.cost { background: rgba(232,73,73,0.12); color: var(--danger); }
+.impact-pill.risk { background: rgba(106,90,165,0.14); color: #b4a6e8; }
+
+/* ════════════════════════════════
+   CLIENT MODE
+════════════════════════════════ */
+#v-client { background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
+
+.cl-hero {
+  background: #0a1020;
+  padding: 64px 48px 56px;
+  color: white;
+  position: relative;
+  overflow: hidden;
+}
+
+.cl-hero::after {
+  content: '';
+  position: absolute;
+  bottom: 0; right: 0;
+  width: 400px; height: 300px;
+  background: radial-gradient(ellipse at 80% 100%, rgba(13,180,135,0.07) 0%, transparent 70%);
+  pointer-events: none;
+}
+
+.cl-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 20px;
+}
+
+.cl-hero h1 {
+  font-family: var(--ff-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 600;
+  line-height: 1.1;
+  margin-bottom: 18px;
+}
+
+.cl-hero p {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.55);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.cl-body {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: 52px 32px 80px;
+}
+
+.cl-step {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: 26px;
+  margin-bottom: 56px;
+  align-items: start;
+}
+
+.cl-stepnum {
+  width: 48px; height: 48px;
+  background: #0a1020;
+  color: var(--teal);
+  font-family: var(--ff-mono);
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.cl-step-body h3 {
+  font-family: var(--ff-display);
+  font-size: 1.65rem;
+  font-weight: 600;
+  color: #0a1020;
+  margin-bottom: 12px;
+  line-height: 1.25;
+}
+
+.cl-step-body p {
+  font-size: 0.93rem;
+  color: #4a5568;
+  margin-bottom: 16px;
+  line-height: 1.78;
+}
+
+.cl-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cl-card {
+  background: white;
+  border: 1px solid #e2e8ef;
+  border-radius: 10px;
+  padding: 16px 18px;
+}
+
+.cl-card.r { border-left: 3px solid #e84949; }
+.cl-card.a { border-left: 3px solid #e8a530; }
+.cl-card.g { border-left: 3px solid #0db487; }
+
+.cl-card h4 { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
+.cl-card p { font-size: 0.78rem; color: #64748b; line-height: 1.55; margin: 0; }
+
+.cl-qlist {
+  background: white;
+  border: 1px solid #e2e8ef;
+  border-radius: 12px;
+  padding: 20px;
+  margin-top: 18px;
+}
+
+.cl-q {
+  display: flex;
+  gap: 12px;
+  padding: 13px 0;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.cl-q:last-child { border-bottom: none; padding-bottom: 0; }
+.cl-q:first-child { padding-top: 0; }
+
+.cl-q-arrow { color: #0db487; font-size: 0.9rem; margin-top: 1px; flex-shrink: 0; font-weight: 700; }
+.cl-q-text { font-size: 0.86rem; color: #374151; line-height: 1.6; }
+
+.cl-stat-row {
+  display: grid;
+  grid-template-columns: repeat(3,1fr);
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.cl-stat {
+  background: #0a1020;
+  border-radius: 10px;
+  padding: 20px;
+  text-align: center;
+  color: white;
+}
+
+.cl-stat-n {
+  font-family: var(--ff-mono);
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.cl-stat-l {
+  font-size: 0.75rem;
+  color: rgba(255,255,255,0.45);
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+}
+
+/* ════════════════════════════════
+   COMMITTEE MODE
+════════════════════════════════ */
+#v-committee {
+  background: #eef0f4;
+  color: #1a1a1a;
+  min-height: 100vh;
+  padding: 40px 44px 80px;
+}
+
+.cm-header { margin-bottom: 32px; }
+
+.cm-header h1 {
+  font-family: var(--ff-display);
+  font-size: 2.6rem;
+  font-weight: 600;
+  color: #0a1020;
+  margin-bottom: 6px;
+}
+
+.cm-header p { font-size: 0.88rem; color: #64748b; }
+
+.cm-weight-panel {
+  background: white;
+  border: 1px solid #dde3ec;
+  border-radius: 14px;
+  padding: 26px;
+  margin-bottom: 26px;
+}
+
+.cm-weight-title {
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.13em;
+  text-transform: uppercase;
+  color: #0db487;
+  margin-bottom: 20px;
+}
+
+.cm-wgrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 14px;
+  margin-bottom: 20px;
+}
+
+.cm-wfield label {
+  display: block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  color: #475569;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  margin-bottom: 7px;
+}
+
+.cm-wfield input[type=number] {
+  width: 70px;
+  padding: 8px 10px;
+  border: 1.5px solid #dde3ec;
+  border-radius: 8px;
+  font-family: var(--ff-mono);
+  font-size: 0.92rem;
+  color: #0a1020;
+  background: #f8fafc;
+  outline: none;
+  text-align: center;
+  transition: border-color 0.15s;
+}
+
+.cm-wfield input[type=number]:focus { border-color: #0db487; }
+
+.cm-total-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-top: 18px;
+  border-top: 1px solid #e2e8ef;
+  font-size: 0.87rem;
+  font-weight: 500;
+  color: #475569;
+}
+
+.cm-total-val {
+  font-family: var(--ff-mono);
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.cm-total-val.ok { color: #0db487; }
+.cm-total-val.err { color: #e84949; }
+
+.cm-matrix {
+  background: white;
+  border: 1px solid #dde3ec;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.cm-matrix-hd {
+  padding: 18px 24px;
+  border-bottom: 1px solid #e2e8ef;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #475569;
+}
+
+.cm-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.83rem;
+  min-width: 800px;
+}
+
+.cm-table th {
+  background: #0a1020;
+  color: rgba(255,255,255,0.6);
+  padding: 11px 13px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.cm-table td {
+  padding: 13px;
+  border-bottom: 1px solid #f1f5f9;
+  color: #374151;
+  white-space: nowrap;
+}
+
+.cm-table tr:last-child td { border-bottom: none; }
+.cm-table tr:hover td { background: #f8fafc; }
+
+.cm-score {
+  font-family: var(--ff-mono);
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #0a1020;
+}
+
+.cm-grade {
+  display: inline-block;
+  font-family: var(--ff-mono);
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 3px 7px;
+  border-radius: 5px;
+}
+
+.cm-grade.ga { background: #d1fae5; color: #065f46; }
+.cm-grade.gb { background: #fef3c7; color: #92400e; }
+.cm-grade.gc { background: #fee2e2; color: #991b1b; }
+
+.cm-dim-val {
+  font-family: var(--ff-mono);
+  font-size: 0.82rem;
+}
+
+.overflow-wrap { overflow-x: auto; }
+
+/* ════════════════════════════════
+   PITCH MODE
+════════════════════════════════ */
+#v-pitch { background: #050810; color: white; min-height: 100vh; }
+
+.pitch-hero {
+  padding: 80px 64px 70px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  position: relative;
+  overflow: hidden;
+}
+
+.pitch-hero::before {
+  content: '';
+  position: absolute;
+  top: -100px; right: -100px;
+  width: 600px; height: 600px;
+  background: radial-gradient(circle, rgba(13,180,135,0.06) 0%, transparent 65%);
+  pointer-events: none;
+}
+
+.pitch-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--teal);
+  margin-bottom: 26px;
+}
+
+.pitch-headline {
+  font-family: var(--ff-display);
+  font-size: clamp(2.4rem, 6vw, 5.2rem);
+  font-weight: 600;
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  margin-bottom: 26px;
+  max-width: 800px;
+}
+
+.pitch-headline em { color: var(--teal); font-style: normal; }
+
+.pitch-sub {
+  font-size: 1rem;
+  color: rgba(255,255,255,0.45);
+  max-width: 600px;
+  line-height: 1.78;
+}
+
+.pitch-stats {
+  display: grid;
+  grid-template-columns: repeat(4,1fr);
+  border-top: 1px solid rgba(255,255,255,0.05);
+}
+
+.pstat {
+  padding: 40px 32px;
+  border-right: 1px solid rgba(255,255,255,0.05);
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+  transition: background 0.2s;
+}
+
+.pstat:last-child { border-right: none; }
+.pstat:hover { background: rgba(13,180,135,0.04); }
+
+.pstat-n {
+  font-family: var(--ff-mono);
+  font-size: 2.8rem;
+  font-weight: 700;
+  color: var(--teal);
+  line-height: 1;
+  margin-bottom: 10px;
+  letter-spacing: -0.02em;
+}
+
+.pstat-l {
+  font-size: 0.76rem;
+  color: rgba(255,255,255,0.35);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.pitch-caps {
+  padding: 64px;
+  border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.pitch-caps-title {
+  font-family: var(--ff-display);
+  font-size: 2.4rem;
+  font-weight: 600;
+  margin-bottom: 36px;
+  line-height: 1.15;
+}
+
+.pcap-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 1px;
+  background: rgba(255,255,255,0.05);
+  border: 1px solid rgba(255,255,255,0.05);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+.pcap {
+  background: #050810;
+  padding: 30px 26px;
+  transition: background 0.2s;
+}
+
+.pcap:hover { background: rgba(13,180,135,0.04); }
+
+.pcap-n {
+  font-family: var(--ff-mono);
+  font-size: 0.68rem;
+  color: var(--teal);
+  margin-bottom: 14px;
+  letter-spacing: 0.1em;
+}
+
+.pcap-t {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.pcap-b {
+  font-size: 0.83rem;
+  color: rgba(255,255,255,0.38);
+  line-height: 1.68;
+}
+
+.pitch-cta {
+  padding: 80px 64px;
+  text-align: center;
+}
+
+.pcta-eyebrow {
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.25);
+  margin-bottom: 16px;
+}
+
+.pcta-hl {
+  font-family: var(--ff-display);
+  font-size: 2.6rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.pcta-sub {
+  font-size: 0.9rem;
+  color: rgba(255,255,255,0.35);
+  margin-bottom: 36px;
+}
+
+.pcta-btn {
+  display: inline-block;
+  padding: 15px 40px;
+  background: var(--teal);
+  color: #000;
+  font-family: var(--ff-body);
+  font-size: 0.85rem;
+  font-weight: 700;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+  border-radius: 10px;
+  border: none;
+  cursor: pointer;
+  transition: opacity 0.18s, transform 0.18s;
+}
+
+.pcta-btn:hover { opacity: 0.82; transform: translateY(-1px); }
+
+/* responsive */
+@media (max-width: 900px) {
+  .cmd-body { grid-template-columns: 1fr; }
+  .cmd-left { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
+  .pitch-stats { grid-template-columns: repeat(2,1fr); }
+  .pitch-hero, .pitch-caps, .pitch-cta { padding: 40px 28px; }
+  .cl-hero { padding: 40px 28px; }
+  .cl-body { padding: 32px 20px; }
+  #v-committee { padding: 24px 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- ══════ MODE BAR ══════ -->
+<nav class="modebar">
+  <div class="brand-wrap">
+    <div class="brand-mark">GD</div>
+    <div class="brand-name">Greenscape <span>Designz</span> · Procurement Intelligence</div>
+  </div>
+  <div class="mode-pills">
+    <button class="mpill on" data-mode="command">Command</button>
+    <button class="mpill" data-mode="client">Client</button>
+    <button class="mpill" data-mode="committee">Committee</button>
+    <button class="mpill" data-mode="pitch">Pitch</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════
+     COMMAND MODE
+══════════════════════════════════ -->
+<div id="v-command" class="modeview on">
+
+  <div class="cmd-header">
+    <div>
+      <div class="cmd-title">Procurement <em>Intelligence</em> Command</div>
+      <div class="cmd-sub">Live calibration engine for healthcare consultant evaluation. Adjust weights to rerank all registered firms in real time. Activate failure cascades to simulate downstream delivery risk.</div>
+    </div>
+    <div class="live-badge">
+      <span class="live-dot"></span>
+      Live Engine
+    </div>
+  </div>
+
+  <div class="cmd-body">
+
+    <div class="cmd-left">
+      <div class="panel-label">Weight Calibration</div>
+
+      <div class="srow">
+        <div class="shead"><span class="sname">Healthcare Experience</span><span class="sval" id="sv-healthcare">20</span></div>
+        <input type="range" min="0" max="30" step="1" value="20" data-key="healthcare" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">NABH / Regulatory Readiness</span><span class="sval" id="sv-nabh">18</span></div>
+        <input type="range" min="0" max="30" step="1" value="18" data-key="nabh" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Construction Coordination</span><span class="sval" id="sv-coordination">16</span></div>
+        <input type="range" min="0" max="30" step="1" value="16" data-key="coordination" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">MEP &amp; Systems Integration</span><span class="sval" id="sv-mep">16</span></div>
+        <input type="range" min="0" max="30" step="1" value="16" data-key="mep" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Documentation Maturity</span><span class="sval" id="sv-documentation">12</span></div>
+        <input type="range" min="0" max="30" step="1" value="12" data-key="documentation" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Cost Sensitivity</span><span class="sval" id="sv-cost">8</span></div>
+        <input type="range" min="0" max="30" step="1" value="8" data-key="cost" class="wslider">
+      </div>
+      <div class="srow">
+        <div class="shead"><span class="sname">Long-term OPEX</span><span class="sval" id="sv-opex">10</span></div>
+        <input type="range" min="0" max="30" step="1" value="10" data-key="opex" class="wslider">
+      </div>
+
+      <div class="divline"></div>
+
+      <div class="slabel">Project Positioning</div>
+      <select id="sel-pos">
+        <option value="functional">Functional Mid-Scale Hospital</option>
+        <option value="premium">Premium Neuro-Care Centre</option>
+        <option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
+        <option value="future">Future Expansion-Ready Campus</option>
+      </select>
+
+      <div class="slabel">Decision-maker Risk Appetite</div>
+      <select id="sel-risk">
+        <option value="safe">Low Risk / Stable Delivery</option>
+        <option value="balanced" selected>Balanced</option>
+        <option value="aggressive">Aggressive / High Ambition</option>
+      </select>
+    </div>
+
+    <div class="cmd-right">
+
+      <div class="nlg-box">
+        <div class="nlg-head">
+          <span class="live-dot"></span>
+          Procurement Intelligence Feed
+        </div>
+        <div class="nlg-out" id="nlg-out"></div>
+      </div>
+
+      <div class="rankings-bar">
+        <div class="rankings-hd">Live Consultant Rankings</div>
+        <div class="rankings-note">Re-sorts as weights shift</div>
+      </div>
+
+      <div class="clist" id="clist"></div>
+
+      <div class="failure-zone">
+        <div class="failure-hd">Failure Cascade Simulator</div>
+        <div class="ftriggers">
+          <button class="ftrig" data-cascade="mep">MEP – Fire Ceiling Clash</button>
+          <button class="ftrig" data-cascade="nabh">NABH Audit Failure</button>
+          <button class="ftrig" data-cascade="rfi">RFI Overload Storm</button>
+          <button class="ftrig" data-cascade="contractor">Contractor Abandonment</button>
+          <button class="ftrig" data-cascade="noc">Regulatory NOC Delay</button>
+          <button class="ftrig" data-cascade="opex">Post-Handover Breakdown</button>
+        </div>
+        <div class="cascade-box" id="cascade-box">
+          <div class="cascade-phases" id="cascade-phases"></div>
+          <div class="cascade-desc" id="cascade-desc"></div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     CLIENT MODE
+══════════════════════════════════ -->
+<div id="v-client" class="modeview">
+  <div class="cl-hero">
+    <div class="cl-eyebrow">For Hospital Clients &amp; Decision-Makers</div>
+    <h1>Your hospital project deserves<br>institutional thinking.</h1>
+    <p>A plain-language guide to what really matters when selecting your design and delivery team — and what most clients never think to ask.</p>
+  </div>
+  <div class="cl-body">
+
+    <div class="cl-step">
+      <div class="cl-stepnum">01</div>
+      <div class="cl-step-body">
+        <h3>A hospital is not a building. It is an operational system.</h3>
+        <p>Most failed hospital projects do not fail because of bad architecture. They fail because the architecture, engineering, fire safety, medical planning, and construction teams were never truly coordinated. The most expensive moment in a hospital project is discovering in Month 18 that the HVAC ducts and fire sprinklers cannot occupy the same ceiling zone.</p>
+        <div class="cl-cards">
+          <div class="cl-card r">
+            <h4>What breaks silently</h4>
+            <p>MEP clashes, NABH documentation gaps, and coordination voids appear only after concrete is poured.</p>
+          </div>
+          <div class="cl-card a">
+            <h4>What gets delayed</h4>
+            <p>Fire NOC, KPME licensing, and AERB approvals all require documentation that starts at design, not at completion.</p>
+          </div>
+          <div class="cl-card g">
+            <h4>What protects you</h4>
+            <p>One accountable coordination authority with proven hospital delivery experience prevents most of these failures.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">02</div>
+      <div class="cl-step-body">
+        <h3>Three questions that matter more than any portfolio.</h3>
+        <p>Before selecting any consultant, ask yourself these three things. The answers will tell you more than any presentation.</p>
+        <div class="cl-qlist">
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">Has this firm built a hospital that has received NABH accreditation after completion — and can they show you the documentation they produced to achieve it, not just photos of the building?</div>
+          </div>
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">How many RFIs were raised on their last hospital project, and what was the average resolution time? High RFI volume is a documentation failure, not a construction one.</div>
+          </div>
+          <div class="cl-q">
+            <div class="cl-q-arrow">→</div>
+            <div class="cl-q-text">Ask them to describe, in detail, how they would coordinate an ICU pressure-zoning conflict between the HVAC consultant and the infection-control planner. Process answers reveal real depth.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">03</div>
+      <div class="cl-step-body">
+        <h3>The fee is the smallest number in this decision.</h3>
+        <p>A hospital project typically spends 3–5% of its capital budget on consultant fees. The coordination failures those fees either prevent or cause can cost 10–25% of the capital budget in retrofits, delays, and lost revenue days.</p>
+        <div class="cl-stat-row">
+          <div class="cl-stat">
+            <div class="cl-stat-n">3–5%</div>
+            <div class="cl-stat-l">Consultant fees as % of CAPEX</div>
+          </div>
+          <div class="cl-stat">
+            <div class="cl-stat-n">10–25%</div>
+            <div class="cl-stat-l">Coordination failure cost range</div>
+          </div>
+          <div class="cl-stat">
+            <div class="cl-stat-n">18 mo</div>
+            <div class="cl-stat-l">Avg delay from NABH rework</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="cl-step">
+      <div class="cl-stepnum">04</div>
+      <div class="cl-step-body">
+        <h3>Red flags to watch for in presentations.</h3>
+        <div class="cl-cards">
+          <div class="cl-card r">
+            <h4>No NABH vocabulary</h4>
+            <p>Consultants who don't spontaneously use terms like NABH, KPME, AERB, MGPS, or NBC may lack healthcare documentation depth.</p>
+          </div>
+          <div class="cl-card r">
+            <h4>Solo architect model</h4>
+            <p>A single firm offering to manage all hospital systems coordination without named specialist partners is a significant red flag.</p>
+          </div>
+          <div class="cl-card r">
+            <h4>Portfolio-only defense</h4>
+            <p>Firms who respond to technical coordination questions with portfolio images rather than process descriptions.</p>
+          </div>
+          <div class="cl-card a">
+            <h4>Fee significantly below market</h4>
+            <p>Below-market fees often signal inadequate documentation bandwidth, not efficiency.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     COMMITTEE MODE
+══════════════════════════════════ -->
+<div id="v-committee" class="modeview">
+  <div class="cm-header">
+    <h1>Formal Evaluation Matrix</h1>
+    <p>Adjust criterion weights below (total should reach 100). The scoring matrix re-ranks automatically.</p>
+  </div>
+
+  <div class="cm-weight-panel">
+    <div class="cm-weight-title">Criterion Weights</div>
+    <div class="cm-wgrid" id="cm-wgrid"></div>
+    <div class="cm-total-row">
+      <span>Total weight</span>
+      <span class="cm-total-val ok" id="cm-total">100%</span>
+    </div>
+  </div>
+
+  <div class="cm-matrix">
+    <div class="cm-matrix-hd">Consultant Weighted Evaluation — All Registered Firms</div>
+    <div class="overflow-wrap">
+      <table class="cm-table">
+        <thead>
+          <tr>
+            <th>Firm</th>
+            <th>Domain</th>
+            <th>Healthcare</th>
+            <th>NABH</th>
+            <th>Coordination</th>
+            <th>MEP</th>
+            <th>Docs</th>
+            <th>Cost</th>
+            <th>OPEX</th>
+            <th>Weighted Score</th>
+            <th>Grade</th>
+          </tr>
+        </thead>
+        <tbody id="cm-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     PITCH MODE
+══════════════════════════════════ -->
+<div id="v-pitch" class="modeview">
+
+  <div class="pitch-hero">
+    <div class="pitch-eyebrow">Greenscape Designz · Healthcare Delivery Advisory · Bengaluru</div>
+    <div class="pitch-headline">We don't choose your consultants.<br>We make the choice <em>intelligent.</em></div>
+    <div class="pitch-sub">Greenscape Designz brings a systems-level procurement intelligence layer to healthcare projects — translating technical complexity into defensible, institutionally rigorous decision frameworks that protect client interests at every stage.</div>
+  </div>
+
+  <div class="pitch-stats">
+    <div class="pstat">
+      <div class="pstat-n">9</div>
+      <div class="pstat-l">Firms Evaluated</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">7</div>
+      <div class="pstat-l">Evaluation Dimensions</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">6</div>
+      <div class="pstat-l">Failure Vectors Modeled</div>
+    </div>
+    <div class="pstat">
+      <div class="pstat-n">20+</div>
+      <div class="pstat-l">Years Delivery Experience</div>
+    </div>
+  </div>
+
+  <div class="pitch-caps">
+    <div class="pitch-caps-title">What we bring to your procurement</div>
+    <div class="pcap-grid">
+      <div class="pcap">
+        <div class="pcap-n">01 — Intelligence</div>
+        <div class="pcap-t">Procurement Intelligence Engine</div>
+        <div class="pcap-b">We evaluate consultants on institutional delivery capability — not portfolio aesthetics or fee levels.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">02 — Risk</div>
+        <div class="pcap-t">Failure Risk Modeling</div>
+        <div class="pcap-b">Six hospital delivery failure vectors modeled and stress-tested against your specific procurement configuration.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">03 — Regulatory</div>
+        <div class="pcap-t">NABH Readiness Scoring</div>
+        <div class="pcap-b">Accreditation documentation maturity evaluated as a primary procurement criterion — not a post-completion concern.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">04 — Governance</div>
+        <div class="pcap-t">Coordination Governance</div>
+        <div class="pcap-b">Accountability matrices, coordination protocols, and delivery governance frameworks as standard advisory deliverables.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">05 — Lifecycle</div>
+        <div class="pcap-t">Lifecycle Intelligence</div>
+        <div class="pcap-b">Long-term OPEX, maintainability, and operational viability factored into every recommendation from Day 1.</div>
+      </div>
+      <div class="pcap">
+        <div class="pcap-n">06 — Integrity</div>
+        <div class="pcap-t">Institutional Neutrality</div>
+        <div class="pcap-b">We serve the client's governance interests — not consultant relationships — protecting decision integrity at every stage.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="pitch-cta">
+    <div class="pcta-eyebrow">Engage the intelligence layer</div>
+    <div class="pcta-hl">Ready to protect your procurement?</div>
+    <div class="pcta-sub">Greenscape Designz · SG Palya, Bengaluru · greenscapedesignz.com</div>
+    <button class="pcta-btn" onclick="setMode('command')">Open Command Interface →</button>
+  </div>
+
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
 
 <script>
 
 /* =========================================================
-LIVE CSV SOURCE
+LIVE PROCUREMENT INTELLIGENCE ENGINE
+Greenscape Designz
 ========================================================= */
 
 const CSV_URL =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHrcy8mR6WAzqxaQHAlDwEZ_N9lyagn3aHPItCDV4-NkIsNr1lJb67gWQWcvedllMIOMgiWB-bqHZi/pub?gid=764802717&single=true&output=csv';
-
-/* =========================================================
-GLOBAL DATA
-========================================================= */
 
 let CONSULTANTS = [];
 
@@ -32,6 +1487,16 @@ const KEYS = [
   'cost',
   'opex'
 ];
+
+const LABELS = {
+  healthcare:'Healthcare',
+  nabh:'NABH',
+  coordination:'Coordination',
+  mep:'MEP',
+  documentation:'Documentation',
+  cost:'Cost',
+  opex:'OPEX'
+};
 
 let W = {
   healthcare:20,
@@ -49,16 +1514,16 @@ BOOT
 
 window.addEventListener('DOMContentLoaded', async () => {
 
-  initializeSliders();
+  buildWeightPanel();
 
   await loadCSV();
 
-  renderAll();
+  bindModeButtons();
 
 });
 
 /* =========================================================
-LOAD CSV
+CSV LOADER
 ========================================================= */
 
 async function loadCSV() {
@@ -71,9 +1536,8 @@ async function loadCSV() {
 
     complete: function(results) {
 
-      CONSULTANTS = results.data.map(parseConsultant);
-
-      console.log('LIVE CONSULTANTS:', CONSULTANTS);
+      CONSULTANTS =
+        results.data.map(parseConsultant);
 
       renderAll();
 
@@ -84,239 +1548,196 @@ async function loadCSV() {
 }
 
 /* =========================================================
-PARSE CONSULTANT
+CONSULTANT PARSER
 ========================================================= */
 
 function parseConsultant(row) {
 
-  const raw = JSON.stringify(row).toLowerCase();
+  const raw =
+    JSON.stringify(row).toLowerCase();
 
   const firm =
     row['Legal Corporate Name of Firm'] ||
-    row['Firm Name'] ||
     'Unnamed Consultant';
 
   const domain =
     row['Select your primary engineering/consultancy domain for this project'] ||
-    row['Domain'] ||
     'Unknown';
 
   const team =
     row['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] ||
-    row['Team Size'] ||
     'Undisclosed';
 
-  const healthcare = scoreHealthcare(raw);
-  const nabh = scoreNABH(raw);
-  const coordination = scoreCoordination(raw);
-  const mep = scoreMEP(raw);
-  const documentation = scoreDocumentation(raw);
-  const cost = scoreCost(raw);
-  const opex = scoreOPEX(raw);
+  const scores = {
+
+    healthcare:
+      score(raw,[
+        'hospital',
+        'healthcare',
+        'icu',
+        'clinical',
+        'medical'
+      ],35),
+
+    nabh:
+      score(raw,[
+        'nabh',
+        'fire noc',
+        'aerb',
+        'medical gas',
+        'statutory'
+      ],30),
+
+    coordination:
+      score(raw,[
+        'pmc',
+        'coordination',
+        'execution',
+        'site',
+        'construction'
+      ],35),
+
+    mep:
+      score(raw,[
+        'mep',
+        'hvac',
+        'electrical',
+        'fire',
+        'plumbing',
+        'medical gas'
+      ],30),
+
+    documentation:
+      score(raw,[
+        'gfc',
+        'documentation',
+        'tender',
+        'boq',
+        'rfi'
+      ],35),
+
+    cost:
+      score(raw,[
+        'lean',
+        'efficient'
+      ],65),
+
+    opex:
+      score(raw,[
+        'sustainable',
+        'maintainability',
+        'energy',
+        'lifecycle'
+      ],40)
+
+  };
 
   const weighted =
-    calculateWeighted({
-      healthcare,
-      nabh,
-      coordination,
-      mep,
-      documentation,
-      cost,
-      opex
-    });
+    weightedScore(scores);
 
   return {
 
     name: firm,
-    domain: domain,
-    team: team,
-
-    scores: {
-      healthcare,
-      nabh,
-      coordination,
-      mep,
-      documentation,
-      cost,
-      opex
-    },
-
+    domain,
+    team,
+    scores,
     weighted,
 
-    grade: grade(weighted),
+    grade:
+      grade(weighted),
 
-    risk: riskLabel(weighted),
+    risk:
+      risk(weighted),
 
-    recommendation: recommendation(domain, weighted)
+    role:
+      role(domain,weighted)
 
   };
 
 }
 
 /* =========================================================
-SCORING ENGINE
+SCORING
 ========================================================= */
 
-function contains(raw, arr) {
-  return arr.some(k => raw.includes(k));
-}
+function score(raw,words,base) {
 
-function scoreHealthcare(raw) {
+  let s = base;
 
-  let s = 35;
+  words.forEach(w => {
 
-  if (contains(raw,['hospital'])) s += 20;
-  if (contains(raw,['healthcare'])) s += 15;
-  if (contains(raw,['icu'])) s += 10;
-  if (contains(raw,['medical'])) s += 10;
-  if (contains(raw,['rehabilitation'])) s += 8;
-  if (contains(raw,['institutional'])) s += 5;
+    if (raw.includes(w))
+      s += 10;
 
-  return clamp(s);
-
-}
-
-function scoreNABH(raw) {
-
-  let s = 30;
-
-  if (contains(raw,['nabh'])) s += 25;
-  if (contains(raw,['fire noc'])) s += 15;
-  if (contains(raw,['aerb'])) s += 10;
-  if (contains(raw,['medical gas'])) s += 10;
-  if (contains(raw,['statutory'])) s += 10;
-
-  return clamp(s);
-
-}
-
-function scoreCoordination(raw) {
-
-  let s = 35;
-
-  if (contains(raw,['pmc'])) s += 25;
-  if (contains(raw,['coordination'])) s += 20;
-  if (contains(raw,['site'])) s += 10;
-  if (contains(raw,['execution'])) s += 10;
-  if (contains(raw,['construction'])) s += 10;
-
-  return clamp(s);
-
-}
-
-function scoreMEP(raw) {
-
-  let s = 30;
-
-  if (contains(raw,['mep'])) s += 25;
-  if (contains(raw,['hvac'])) s += 20;
-  if (contains(raw,['electrical'])) s += 15;
-  if (contains(raw,['fire'])) s += 15;
-  if (contains(raw,['plumbing'])) s += 10;
-  if (contains(raw,['medical gas'])) s += 15;
-
-  return clamp(s);
-
-}
-
-function scoreDocumentation(raw) {
-
-  let s = 35;
-
-  if (contains(raw,['gfc'])) s += 20;
-  if (contains(raw,['tender'])) s += 15;
-  if (contains(raw,['boq'])) s += 10;
-  if (contains(raw,['documentation'])) s += 15;
-  if (contains(raw,['rfi'])) s += 10;
-
-  return clamp(s);
-
-}
-
-function scoreCost(raw) {
-
-  let s = 65;
-
-  if (contains(raw,['small'])) s += 10;
-  if (contains(raw,['lean'])) s += 10;
-
-  return clamp(s);
-
-}
-
-function scoreOPEX(raw) {
-
-  let s = 40;
-
-  if (contains(raw,['sustainable'])) s += 15;
-  if (contains(raw,['maintainability'])) s += 15;
-  if (contains(raw,['energy'])) s += 10;
-  if (contains(raw,['lifecycle'])) s += 20;
+  });
 
   return clamp(s);
 
 }
 
 function clamp(v) {
-  return Math.max(0, Math.min(100, v));
+
+  return Math.max(
+    0,
+    Math.min(100,v)
+  );
+
 }
 
-/* =========================================================
-WEIGHTED SCORE
-========================================================= */
+function weightedScore(scores) {
 
-function calculateWeighted(scores) {
+  const total =
+    Object.values(W)
+      .reduce((a,b)=>a+b,0);
 
-  const totalWeight =
-    Object.values(W).reduce((a,b)=>a+b,0);
-
-  let total = 0;
+  let val = 0;
 
   KEYS.forEach(k => {
 
-    total +=
-      (scores[k] * W[k]) / totalWeight;
+    val +=
+      scores[k] * W[k] / total;
 
   });
 
-  return Math.round(total);
+  return Math.round(val);
 
 }
 
 /* =========================================================
-GRADE LOGIC
+GRADE + RISK
 ========================================================= */
 
-function grade(score) {
+function grade(v) {
 
-  if (score >= 85)
+  if (v >= 85)
     return 'Institutional Grade';
 
-  if (score >= 72)
+  if (v >= 72)
     return 'Strong';
 
-  if (score >= 58)
+  if (v >= 58)
     return 'Moderate';
 
   return 'Elevated Risk';
 
 }
 
-function riskLabel(score) {
+function risk(v) {
 
-  if (score >= 82)
+  if (v >= 82)
     return 'Lower Coordination Risk';
 
-  if (score >= 65)
+  if (v >= 65)
     return 'Moderate Coordination Risk';
 
   return 'Elevated Delivery Risk';
 
 }
 
-function recommendation(domain, score) {
+function role(domain,v) {
 
-  const d = domain.toLowerCase();
+  const d =
+    domain.toLowerCase();
 
   if (d.includes('pmc'))
     return 'Suitable for delivery governance';
@@ -324,24 +1745,26 @@ function recommendation(domain, score) {
   if (d.includes('mep'))
     return 'Suitable for specialist healthcare systems';
 
-  if (score >= 80)
+  if (v >= 80)
     return 'Suitable for institutional shortlist';
 
-  if (score >= 65)
+  if (v >= 65)
     return 'Requires coordination validation';
 
-  return 'Not preferred for lead institutional role';
+  return 'Not preferred as lead institutional consultant';
 
 }
 
 /* =========================================================
-SORT
+SORTING
 ========================================================= */
 
 function sorted() {
 
   return [...CONSULTANTS]
-    .sort((a,b)=>b.weighted-a.weighted);
+    .sort((a,b)=>
+      b.weighted - a.weighted
+    );
 
 }
 
@@ -353,16 +1776,16 @@ function renderAll() {
 
   renderRankings();
 
-  renderCommittee();
+  renderMatrix();
 
-  renderPitchStats();
+  renderStats();
 
   renderNarrative();
 
 }
 
 /* =========================================================
-COMMAND RANKINGS
+RANKINGS
 ========================================================= */
 
 function renderRankings() {
@@ -374,23 +1797,10 @@ function renderRankings() {
 
   const data = sorted();
 
-  list.innerHTML = data.map((c,i)=>{
+  list.innerHTML =
+    data.map((c,i)=>`
 
-    const cls =
-      i===0 ? 'r1' :
-      i===1 ? 'r2' :
-      i===2 ? 'r3' : '';
-
-    const gradeClass =
-      c.grade === 'Institutional Grade'
-      ? 'ga'
-      : c.grade === 'Strong'
-      ? 'gb'
-      : 'gc';
-
-    return `
-
-    <div class="ccard ${cls}">
+    <div class="ccard">
 
       <div class="ranknum">
         ${String(i+1).padStart(2,'0')}
@@ -407,7 +1817,7 @@ function renderRankings() {
         </div>
 
         <div class="crole">
-          ${c.recommendation}
+          ${c.role}
         </div>
 
       </div>
@@ -424,7 +1834,7 @@ function renderRankings() {
           </div>
         </div>
 
-        <span class="gbadge ${gradeClass}">
+        <span class="gbadge">
           ${c.grade}
         </span>
 
@@ -432,17 +1842,15 @@ function renderRankings() {
 
     </div>
 
-    `;
-
-  }).join('');
+    `).join('');
 
 }
 
 /* =========================================================
-COMMITTEE TABLE
+MATRIX
 ========================================================= */
 
-function renderCommittee() {
+function renderMatrix() {
 
   const body =
     document.getElementById('cm-tbody');
@@ -465,21 +1873,8 @@ function renderCommittee() {
       <td>${c.scores.cost}</td>
       <td>${c.scores.opex}</td>
 
-      <td class="cm-score">
-        ${c.weighted}
-      </td>
-
-      <td>
-        <span class="cm-grade ${
-          c.grade === 'Institutional Grade'
-          ? 'ga'
-          : c.grade === 'Strong'
-          ? 'gb'
-          : 'gc'
-        }">
-          ${c.grade}
-        </span>
-      </td>
+      <td>${c.weighted}</td>
+      <td>${c.grade}</td>
 
     </tr>
 
@@ -491,65 +1886,56 @@ function renderCommittee() {
 LIVE COUNTS
 ========================================================= */
 
-function renderPitchStats() {
+function renderStats() {
 
-  const stats =
-    document.querySelectorAll('.pstat-n');
+  document
+    .querySelectorAll('.pstat-n')
+    .forEach((el,i)=>{
 
-  if (!stats.length) return;
+      if (i===0)
+        el.innerText =
+          CONSULTANTS.length;
 
-  stats[0].innerText =
-    CONSULTANTS.length;
+    });
 
 }
 
 /* =========================================================
-NARRATIVE ENGINE
+NARRATIVE
 ========================================================= */
 
 function renderNarrative() {
 
-  const el =
+  const out =
     document.getElementById('nlg-out');
 
-  if (!el) return;
+  if (!out) return;
 
-  const top = sorted()[0];
+  const top =
+    sorted()[0];
 
-  el.innerHTML = `
+  out.innerHTML = `
 
   <p>
   <span class="hl">
-  ${CONSULTANTS.length} consultant responses
+  ${CONSULTANTS.length} live consultant responses
   </span>
-  are currently mapped live from the procurement intelligence database.
+  are currently mapped dynamically from the procurement intelligence database.
   </p>
 
   <p>
-  The present calibration favors
-  <span class="hl">
-  institutional survivability
-  </span>,
-  multidisciplinary coordination depth,
-  and healthcare systems maturity over portfolio aesthetics.
+  The current weighting prioritises
+  institutional survivability,
+  healthcare systems maturity,
+  and multidisciplinary coordination depth.
   </p>
 
   <p>
-  The current highest-ranked ecosystem is
+  Current leading ecosystem:
   <span class="hl">
   ${top?.name || 'Awaiting Data'}
   </span>
-  based on the active weighting configuration.
-  </p>
-
-  <p>
-  The intelligence engine continues to dynamically recalculate:
-  coordination risk,
-  NABH readiness,
-  MEP integration maturity,
-  documentation depth,
-  and lifecycle governance capability
-  as new consultant responses enter the live database.
+  based on the active procurement calibration.
   </p>
 
   `;
@@ -557,56 +1943,124 @@ function renderNarrative() {
 }
 
 /* =========================================================
+WEIGHT PANEL
+========================================================= */
+
+function buildWeightPanel() {
+
+  const wrap =
+    document.getElementById('cm-wgrid');
+
+  if (!wrap) return;
+
+  wrap.innerHTML =
+    KEYS.map(k=>`
+
+    <div class="cm-witem">
+
+      <div class="cm-wtop">
+        <span>${LABELS[k]}</span>
+        <span id="sv-${k}">
+          ${W[k]}
+        </span>
+      </div>
+
+      <input
+        type="range"
+        min="0"
+        max="30"
+        value="${W[k]}"
+        class="wslider"
+        data-key="${k}"
+      />
+
+    </div>
+
+    `).join('');
+
+  bindSliders();
+
+}
+
+/* =========================================================
 SLIDERS
 ========================================================= */
 
-function initializeSliders() {
+function bindSliders() {
 
-  const sliders =
-    document.querySelectorAll('.wslider');
+  document
+    .querySelectorAll('.wslider')
+    .forEach(slider => {
 
-  sliders.forEach(slider => {
+      slider.addEventListener('input',e=>{
 
-    slider.addEventListener('input', e => {
+        const key =
+          e.target.dataset.key;
 
-      const key =
-        e.target.dataset.key;
+        W[key] =
+          parseInt(e.target.value);
 
-      const val =
-        parseInt(e.target.value);
-
-      W[key] = val;
-
-      const out =
         document.getElementById(
           `sv-${key}`
-        );
+        ).innerText =
+          W[key];
 
-      if (out)
-        out.innerText = val;
+        CONSULTANTS =
+          CONSULTANTS.map(c=>{
 
-      CONSULTANTS =
-        CONSULTANTS.map(c=>{
+            c.weighted =
+              weightedScore(c.scores);
 
-          c.weighted =
-            calculateWeighted(c.scores);
+            c.grade =
+              grade(c.weighted);
 
-          c.grade =
-            grade(c.weighted);
+            c.risk =
+              risk(c.weighted);
 
-          c.risk =
-            riskLabel(c.weighted);
+            return c;
 
-          return c;
+          });
 
-        });
+        renderAll();
 
-      renderAll();
+      });
 
     });
 
-  });
+}
+
+/* =========================================================
+MODE SWITCH
+========================================================= */
+
+function bindModeButtons() {
+
+  document
+    .querySelectorAll('.modebtn')
+    .forEach(btn=>{
+
+      btn.addEventListener('click',()=>{
+
+        const target =
+          btn.dataset.mode;
+
+        document
+          .querySelectorAll('.modeview')
+          .forEach(v=>
+            v.classList.remove('active')
+          );
+
+        document
+          .querySelector(`#v-${target}`)
+          ?.classList.add('active');
+
+      });
+
+    });
 
 }
 
 </script>
+```
+</body>
+</html>
