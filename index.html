@@ -1464,617 +1464,475 @@ select option { background: #141e30; }
 
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-
 <script>
-
-/* =========================================================
-LIVE PROCUREMENT INTELLIGENCE ENGINE
-Greenscape Designz
-========================================================= */
+/* ═══════════════════════════════════
+   DATA
+═══════════════════════════════════ */
+```javascript id="qmpq1o"
+/* ═══════════════════════════════════
+   LIVE GOOGLE SHEET FETCH
+═══════════════════════════════════ */
 
 const CSV_URL =
 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHrcy8mR6WAzqxaQHAlDwEZ_N9lyagn3aHPItCDV4-NkIsNr1lJb67gWQWcvedllMIOMgiWB-bqHZi/pub?gid=764802717&single=true&output=csv';
 
 let CONSULTANTS = [];
 
-const KEYS = [
-  'healthcare',
-  'nabh',
-  'coordination',
-  'mep',
-  'documentation',
-  'cost',
-  'opex'
-];
-
-const LABELS = {
-  healthcare:'Healthcare',
-  nabh:'NABH',
-  coordination:'Coordination',
-  mep:'MEP',
-  documentation:'Documentation',
-  cost:'Cost',
-  opex:'OPEX'
-};
-
-let W = {
-  healthcare:20,
-  nabh:18,
-  coordination:16,
-  mep:16,
-  documentation:12,
-  cost:8,
-  opex:10
-};
-
-/* =========================================================
-BOOT
-========================================================= */
-
-window.addEventListener('DOMContentLoaded', async () => {
-
-  buildWeightPanel();
-
-  await loadCSV();
-
-  bindModeButtons();
-
-});
-
-/* =========================================================
-CSV LOADER
-========================================================= */
-
-async function loadCSV() {
-
-  Papa.parse(CSV_URL, {
-
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-
-    complete: function(results) {
-
-      CONSULTANTS =
-        results.data.map(parseConsultant);
-
-      renderAll();
-
-    }
-
-  });
-
-}
-
-/* =========================================================
-CONSULTANT PARSER
-========================================================= */
-
-function parseConsultant(row) {
-
-  const raw =
-    JSON.stringify(row).toLowerCase();
-
-  const firm =
-    row['Legal Corporate Name of Firm'] ||
-    'Unnamed Consultant';
-
-  const domain =
-    row['Select your primary engineering/consultancy domain for this project'] ||
-    'Unknown';
-
-  const team =
-    row['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] ||
-    'Undisclosed';
-
-  const scores = {
-
-    healthcare:
-      score(raw,[
-        'hospital',
-        'healthcare',
-        'icu',
-        'clinical',
-        'medical'
-      ],35),
+/* LOAD LIVE DATA */
+async function loadConsultants() {
 
-    nabh:
-      score(raw,[
-        'nabh',
-        'fire noc',
-        'aerb',
-        'medical gas',
-        'statutory'
-      ],30),
+  const response = await fetch(CSV_URL);
 
-    coordination:
-      score(raw,[
-        'pmc',
-        'coordination',
-        'execution',
-        'site',
-        'construction'
-      ],35),
+  const csv = await response.text();
 
-    mep:
-      score(raw,[
-        'mep',
-        'hvac',
-        'electrical',
-        'fire',
-        'plumbing',
-        'medical gas'
-      ],30),
+  const rows = csv.split('\n')
+    .map(r => r.split(','));
 
-    documentation:
-      score(raw,[
-        'gfc',
-        'documentation',
-        'tender',
-        'boq',
-        'rfi'
-      ],35),
+  const headers = rows[0];
 
-    cost:
-      score(raw,[
-        'lean',
-        'efficient'
-      ],65),
+  CONSULTANTS = rows
+    .slice(1)
+    .filter(r => r.length > 5)
+    .map(r => {
 
-    opex:
-      score(raw,[
-        'sustainable',
-        'maintainability',
-        'energy',
-        'lifecycle'
-      ],40)
+      const obj = {};
 
-  };
+      headers.forEach((h,i)=>{
+        obj[h.trim()] = (r[i] || '').trim();
+      });
 
-  const weighted =
-    weightedScore(scores);
+      const raw =
+        JSON.stringify(obj).toLowerCase();
 
-  return {
+      const healthcare =
+        raw.includes('hospital') ? 85 :
+        raw.includes('healthcare') ? 78 :
+        60;
 
-    name: firm,
-    domain,
-    team,
-    scores,
-    weighted,
+      const nabh =
+        raw.includes('nabh') ? 88 :
+        raw.includes('medical gas') ? 72 :
+        58;
 
-    grade:
-      grade(weighted),
+      const coordination =
+        raw.includes('pmc') ? 90 :
+        raw.includes('coordination') ? 78 :
+        60;
 
-    risk:
-      risk(weighted),
+      const mep =
+        raw.includes('hvac') ? 90 :
+        raw.includes('mep') ? 82 :
+        58;
 
-    role:
-      role(domain,weighted)
+      const documentation =
+        raw.includes('gfc') ? 88 :
+        raw.includes('documentation') ? 78 :
+        60;
 
-  };
+      const cost =
+        72;
 
-}
+      const opex =
+        raw.includes('sustainable') ? 82 :
+        65;
 
-/* =========================================================
-SCORING
-========================================================= */
+      return {
 
-function score(raw,words,base) {
+        name:
+          obj['Legal Corporate Name of Firm'] ||
+          'Unnamed Consultant',
 
-  let s = base;
+        domain:
+          obj['Select your primary engineering/consultancy domain for this project'] ||
+          'Consultant',
 
-  words.forEach(w => {
+        team:
+          obj['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] ||
+          'Undisclosed',
 
-    if (raw.includes(w))
-      s += 10;
+        grade:'A',
 
-  });
+        role:
+          coordination > 80
+          ? 'Integrated Delivery Candidate'
+          : mep > 80
+          ? 'Specialist Systems Consultant'
+          : 'Consultant',
 
-  return clamp(s);
+        scores: {
+          healthcare,
+          nabh,
+          coordination,
+          mep,
+          documentation,
+          cost,
+          opex
+        }
 
-}
+      };
 
-function clamp(v) {
-
-  return Math.max(
-    0,
-    Math.min(100,v)
-  );
-
-}
-
-function weightedScore(scores) {
-
-  const total =
-    Object.values(W)
-      .reduce((a,b)=>a+b,0);
-
-  let val = 0;
-
-  KEYS.forEach(k => {
-
-    val +=
-      scores[k] * W[k] / total;
-
-  });
-
-  return Math.round(val);
-
-}
-
-/* =========================================================
-GRADE + RISK
-========================================================= */
-
-function grade(v) {
-
-  if (v >= 85)
-    return 'Institutional Grade';
-
-  if (v >= 72)
-    return 'Strong';
-
-  if (v >= 58)
-    return 'Moderate';
-
-  return 'Elevated Risk';
-
-}
-
-function risk(v) {
-
-  if (v >= 82)
-    return 'Lower Coordination Risk';
-
-  if (v >= 65)
-    return 'Moderate Coordination Risk';
-
-  return 'Elevated Delivery Risk';
-
-}
-
-function role(domain,v) {
-
-  const d =
-    domain.toLowerCase();
-
-  if (d.includes('pmc'))
-    return 'Suitable for delivery governance';
-
-  if (d.includes('mep'))
-    return 'Suitable for specialist healthcare systems';
-
-  if (v >= 80)
-    return 'Suitable for institutional shortlist';
-
-  if (v >= 65)
-    return 'Requires coordination validation';
-
-  return 'Not preferred as lead institutional consultant';
-
-}
-
-/* =========================================================
-SORTING
-========================================================= */
-
-function sorted() {
-
-  return [...CONSULTANTS]
-    .sort((a,b)=>
-      b.weighted - a.weighted
-    );
-
-}
-
-/* =========================================================
-RENDER ALL
-========================================================= */
-
-function renderAll() {
+    });
 
   renderRankings();
 
-  renderMatrix();
+  renderCommittee();
 
-  renderStats();
+  refreshNarrative();
 
-  renderNarrative();
+  updatePitchStats();
 
 }
 
-/* =========================================================
-RANKINGS
-========================================================= */
+/* AUTO LOAD */
+window.addEventListener(
+  'DOMContentLoaded',
+  loadConsultants
+);
 
+/* UPDATE LIVE COUNT */
+function updatePitchStats() {
+
+  const stat =
+    document.querySelector('.pstat-n');
+
+  if (stat) {
+    stat.innerText =
+      CONSULTANTS.length;
+  }
+
+}
+const KEYS = ['healthcare','nabh','coordination','mep','documentation','cost','opex'];
+const LABELS = {healthcare:'Healthcare',nabh:'NABH',coordination:'Coordination',mep:'MEP',documentation:'Documentation',cost:'Cost',opex:'OPEX'};
+
+let W = {healthcare:20,nabh:18,coordination:16,mep:16,documentation:12,cost:8,opex:10};
+
+/* ═══════════════════════════════════
+   SCORING
+═══════════════════════════════════ */
+function wScore(c) {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  if (!tot) return 0;
+  return Math.round(KEYS.reduce((s,k)=>s + c.scores[k]*W[k]/tot, 0));
+}
+
+function sorted() {
+  return [...CONSULTANTS]
+    .sort((a,b)=>wScore(b)-wScore(a));
+}
+
+  return [...CONSULTANTS].sort((a,b)=>wScore(b)-wScore(a));
+}
+
+/* ═══════════════════════════════════
+   NLG ENGINE
+═══════════════════════════════════ */
+const NLG_D = {
+  nabh: [
+    "The current weight distribution places <span class='hl'>NABH regulatory preparedness</span> as the dominant procurement signal. This shifts the evaluation axis decisively from aesthetic portfolio strength toward accreditation documentation maturity. Consultants with demonstrated NABH process literacy — not merely healthcare project experience — consistently float to the top of the ranking in this configuration.",
+    "With <span class='hl'>regulatory readiness</span> as the leading criterion, the scoring engine interprets this as an institutional-benchmark project where licensing viability from Day 1 is non-negotiable. The ability to produce NABH-compliant documentation from the design stage — not retroactively — becomes the primary differentiator. Firms that have only designed hospitals without subsequently managing their accreditation are systematically disadvantaged."
+  ],
+  healthcare: [
+    "Healthcare experience dominates the current calibration. The engine prioritises consultants who have navigated the full delivery cycle of <span class='hl'>operational hospital facilities</span> — not institutional buildings in the general sense. The distinction matters critically: a completed school or corporate campus shares almost no coordination complexity with a functioning ICU or sterile surgical suite.",
+    "With healthcare experience weighted highest, the evaluation favours consultants with genuine <span class='hl'>clinical workflow literacy</span>. The ability to distinguish between infection control zones, patient and staff circulation sequencing, and biomedical equipment clearances is not a design skill — it is an operational one. Consultants without field evidence of this literacy are unlikely to survive site conditions on a hospital project."
+  ],
+  coordination: [
+    "Construction coordination is the dominant criterion in this configuration. This is <span class='hl'>the most frequently underweighted dimension</span> in standard consultant evaluation — and the one most directly correlated with mid-construction cost escalation and schedule collapse. Consultants scoring highest here demonstrate a systematic approach to interdisciplinary coordination, not merely coordination claims in their presentations.",
+    "<span class='hl'>Coordination intelligence</span> carries the highest evaluative weight. This signals a client or advisor who understands that the highest delivery risk in hospital construction is not conceptual design failure — it is good design that cannot survive contact with the site. Firms with documented RFI management discipline and interdisciplinary coordination protocols score significantly above competitors."
+  ],
+  mep: [
+    "MEP and systems integration carries the highest evaluative weight. This is appropriate for critical care environments where <span class='hl'>HVAC pressure zoning, MGPS coordination, and electrical redundancy</span> are not secondary engineering concerns — they define operational safety. Specialists without dedicated healthcare MEP track records are significantly disadvantaged at this calibration.",
+    "Systems integration dominates the evaluation logic. In hospital construction, research consistently shows that <span class='hl'>over 60% of post-construction defects</span> originate from MEP-architecture interface failures. The current weighting appropriately treats interdisciplinary systems coordination as a primary selection criterion, not a specialist subcategory added late to the consultant ecosystem."
+  ],
+  cost: [
+    "<span class='warn'>Cost sensitivity is elevated as the primary criterion</span> — a configuration that historically correlates with higher post-construction risk in hospital delivery. Consultant fee savings of 1–2% of project cost frequently generate coordination deficits that produce 8–15% rework and delay costs downstream. This tension is flagged as the primary procurement risk in the current calibration.",
+    "The current calibration prioritises <span class='warn'>cost control above institutional quality criteria</span>. This is a legitimate business decision, but the intelligence engine recommends pairing it with a significantly strengthened accountability matrix to compensate for the reduced coordination bandwidth that lower-fee consultant ecosystems typically carry into construction."
+  ],
+  documentation: [
+    "Documentation maturity is the primary criterion in this configuration — an unusually sophisticated calibration signal. It indicates a client or advisor who understands that <span class='hl'>hospital project failures are predominantly documentation failures</span>, not design failures. Consultants with GFC drawing discipline, RFI protocols, and construction-stage document governance score highest.",
+    "The dominant weight on documentation intelligence reflects a mature understanding that hospitals are not delivered by architectural drawings — they are delivered by <span class='hl'>the entire document ecosystem</span> that flows from those drawings. Contractors, authorities, and future hospital operators all depend on documentation quality that is determined, and cannot be recovered, at the design stage."
+  ],
+  opex: [
+    "Long-term OPEX and lifecycle maintainability carries the highest weight — a configuration that signals a client committed to <span class='hl'>operational sustainability</span> over initial delivery cost. This decision typically produces 15–25% lower lifecycle costs over a 20-year operational period for hospital facilities when reflected in early procurement choices.",
+    "Lifecycle intelligence dominates the evaluation. The current calibration rewards consultants who design with <span class='hl'>operational maintainability as a primary constraint</span> — not a post-handover consideration. This directly reduces the risk of high-maintenance mechanical systems, inaccessible MEP infrastructure, and energy-inefficient clinical environments emerging after opening."
+  ]
+};
+
+const NLG_T = {
+  costVsQuality: "There is a <span class='warn'>visible tension</span> in the weight distribution between cost sensitivity and institutional quality criteria. This is one of the most dangerous configurations in healthcare procurement — the saving on consultant fees is real and immediate; the rework costs are deferred by 18–36 months and are exponentially larger.",
+  highAmbition: "The project positioning and risk appetite signal institutional ambition that <span class='hl'>aligns with the technically deeper ecosystems</span> in this evaluation. The scoring engine consistently elevates firms with multidisciplinary depth and documented healthcare systems coordination experience at this configuration.",
+  balanced: "The weight distribution reflects a <span class='hl'>balanced institutional approach</span> — prioritising healthcare coordination quality without ignoring commercial realities. This is the appropriate configuration for an NABH-ready benchmark project seeking long-term operational viability alongside fiscal discipline.",
+  safe: "The low-risk appetite calibration produces a <span class='hl'>stable, proven-ecosystem preference</span>. The scoring engine elevates firms with the strongest institutional survivability scores — prioritising delivery certainty over technical ambition."
+};
+
+const NLG_A = {
+  nabh: "For NABH-benchmark positioning, the most critical procurement risk is <span class='hl'>pre-construction documentation incompleteness</span>. Every approval delay, accreditation failure, and licensing rejection in Indian hospital projects traces back to documentation not structured correctly at the design stage — not to construction quality. Consultants should be evaluated on their NABH documentation track record, not their hospital portfolio count.",
+  functional: "For a functional mid-scale hospital, the key structural risk is over-reliance on a single architectural lead without named specialist systems consultants. A <span class='hl'>two-stage evaluation</span> — technical prequalification followed by a live coordination scenario workshop — dramatically reduces the likelihood of appointment regret.",
+  premium: "Premium neuro-care environments require MEP consultants with specific experience in <span class='hl'>electromagnetic interference management, critical power redundancy, and laminar airflow design</span>. These are non-standard capabilities that demand specialist shortlisting, not general MEP firms with hospital project references.",
+  future: "Future-expansion readiness must be specified as a design constraint from Day 1 — not a vague aspiration. Consultants should demonstrate how they would design <span class='hl'>MEP service void redundancy, structural grid flexibility, and floor-to-floor height provision</span> to accommodate future clinical departments without structural intervention."
+};
+
+let _lastDom = null;
+
+function buildNarrative() {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  if (!tot) return '<p>Awaiting calibration.</p>';
+
+  const domKey = [...KEYS].sort((a,b)=>W[b]-W[a])[0];
+  const costPct = W.cost / tot * 100;
+  const pos = document.getElementById('sel-pos')?.value || 'nabh';
+  const risk = document.getElementById('sel-risk')?.value || 'balanced';
+
+  // pick variant: alternate when dominant changes
+  if (domKey !== _lastDom) { _lastDom = domKey; }
+  const pool = NLG_D[domKey] || NLG_D.healthcare;
+  const v = Math.floor(Date.now()/8000) % pool.length;
+  const p1 = pool[v];
+
+  let p2 = NLG_T.balanced;
+  if (costPct > 20 && (W.nabh > 14 || W.mep > 14)) p2 = NLG_T.costVsQuality;
+  else if (risk === 'aggressive') p2 = NLG_T.highAmbition;
+  else if (risk === 'safe') p2 = NLG_T.safe;
+
+  const p3 = NLG_A[pos] || NLG_A.functional;
+
+  return `<p>${p1}</p><p>${p2}</p><p>${p3}</p>`;
+}
+
+function refreshNarrative() {
+  const el = document.getElementById('nlg-out');
+  if (!el) return;
+  el.style.opacity = '0';
+  setTimeout(() => {
+    el.innerHTML = buildNarrative();
+    el.style.opacity = '1';
+  }, 220);
+}
+
+/* ═══════════════════════════════════
+   RENDER COMMAND RANKINGS
+═══════════════════════════════════ */
 function renderRankings() {
-
-  const list =
-    document.getElementById('clist');
-
+  const list = document.getElementById('clist');
   if (!list) return;
-
-  const data = sorted();
-
-  list.innerHTML =
-    data.map((c,i)=>`
-
-    <div class="ccard">
-
-      <div class="ranknum">
-        ${String(i+1).padStart(2,'0')}
-      </div>
-
+  const s = sorted();
+  list.innerHTML = s.map((c,i) => {
+    const sc = wScore(c);
+    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
+    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
+    return `<div class="ccard ${rc}">
+      <div class="ranknum">${String(i+1).padStart(2,'0')}</div>
       <div>
-
-        <div class="cname">
-          ${c.name}
-        </div>
-
-        <div class="cdomain">
-          ${c.domain} · ${c.team}
-        </div>
-
-        <div class="crole">
-          ${c.role}
-        </div>
-
+        <div class="cname">${c.name}</div>
+        <div class="cdomain">${c.domain} · ${c.team}</div>
+        <div class="crole">${c.role}</div>
       </div>
-
       <div class="cscore-area">
-
-        <div class="cscore">
-          ${c.weighted}
-        </div>
-
-        <div class="cbar-track">
-          <div class="cbar-fill"
-            style="width:${c.weighted}%">
-          </div>
-        </div>
-
-        <span class="gbadge">
-          ${c.grade}
-        </span>
-
+        <div class="cscore">${sc}</div>
+        <div class="cbar-track"><div class="cbar-fill" style="width:${sc}%"></div></div>
+        <span class="gbadge ${gc}">${c.grade}</span>
       </div>
-
-    </div>
-
-    `).join('');
-
+    </div>`;
+  }).join('');
 }
 
-/* =========================================================
-MATRIX
-========================================================= */
-
-function renderMatrix() {
-
-  const body =
-    document.getElementById('cm-tbody');
-
-  if (!body) return;
-
-  body.innerHTML =
-    sorted().map(c=>`
-
-    <tr>
-
-      <td>${c.name}</td>
-      <td>${c.domain}</td>
-
-      <td>${c.scores.healthcare}</td>
-      <td>${c.scores.nabh}</td>
-      <td>${c.scores.coordination}</td>
-      <td>${c.scores.mep}</td>
-      <td>${c.scores.documentation}</td>
-      <td>${c.scores.cost}</td>
-      <td>${c.scores.opex}</td>
-
-      <td>${c.weighted}</td>
-      <td>${c.grade}</td>
-
-    </tr>
-
-    `).join('');
-
-}
-
-/* =========================================================
-LIVE COUNTS
-========================================================= */
-
-function renderStats() {
-
-  document
-    .querySelectorAll('.pstat-n')
-    .forEach((el,i)=>{
-
-      if (i===0)
-        el.innerText =
-          CONSULTANTS.length;
-
-    });
-
-}
-
-/* =========================================================
-NARRATIVE
-========================================================= */
-
-function renderNarrative() {
-
-  const out =
-    document.getElementById('nlg-out');
-
-  if (!out) return;
-
-  const top =
-    sorted()[0];
-
-  out.innerHTML = `
-
-  <p>
-  <span class="hl">
-  ${CONSULTANTS.length} live consultant responses
-  </span>
-  are currently mapped dynamically from the procurement intelligence database.
-  </p>
-
-  <p>
-  The current weighting prioritises
-  institutional survivability,
-  healthcare systems maturity,
-  and multidisciplinary coordination depth.
-  </p>
-
-  <p>
-  Current leading ecosystem:
-  <span class="hl">
-  ${top?.name || 'Awaiting Data'}
-  </span>
-  based on the active procurement calibration.
-  </p>
-
-  `;
-
-}
-
-/* =========================================================
-WEIGHT PANEL
-========================================================= */
-
-function buildWeightPanel() {
-
-  const wrap =
-    document.getElementById('cm-wgrid');
-
-  if (!wrap) return;
-
-  wrap.innerHTML =
-    KEYS.map(k=>`
-
-    <div class="cm-witem">
-
-      <div class="cm-wtop">
-        <span>${LABELS[k]}</span>
-        <span id="sv-${k}">
-          ${W[k]}
-        </span>
-      </div>
-
-      <input
-        type="range"
-        min="0"
-        max="30"
-        value="${W[k]}"
-        class="wslider"
-        data-key="${k}"
-      />
-
-    </div>
-
-    `).join('');
-
-  bindSliders();
-
-}
-
-/* =========================================================
-SLIDERS
-========================================================= */
-
-function bindSliders() {
-
-  document
-    .querySelectorAll('.wslider')
-    .forEach(slider => {
-
-      slider.addEventListener('input',e=>{
-
-        const key =
-          e.target.dataset.key;
-
-        W[key] =
-          parseInt(e.target.value);
-
-        document.getElementById(
-          `sv-${key}`
-        ).innerText =
-          W[key];
-
-        CONSULTANTS =
-          CONSULTANTS.map(c=>{
-
-            c.weighted =
-              weightedScore(c.scores);
-
-            c.grade =
-              grade(c.weighted);
-
-            c.risk =
-              risk(c.weighted);
-
-            return c;
-
-          });
-
-        renderAll();
-
-      });
-
-    });
-
-}
-
-/* =========================================================
-MODE SWITCH
-========================================================= */
-
-```javascript id="f5m4mv"
-function bindModeButtons() {
-
-  const buttons = document.querySelectorAll(
-    '.modebtn, .mode-btn'
-  );
-
-  buttons.forEach(btn => {
-
-    btn.addEventListener('click', () => {
-
-      const target =
-        btn.dataset.mode ||
-        btn.dataset.view;
-
-      document
-        .querySelectorAll('.modeview')
-        .forEach(v => {
-          v.classList.remove('active');
-        });
-
-      const activeView =
-        document.querySelector(
-          `#v-${target}`
-        );
-
-      if (activeView) {
-        activeView.classList.add('active');
-      }
-
-      buttons.forEach(b =>
-        b.classList.remove('active')
-      );
-
-      btn.classList.add('active');
-
-    });
-
+/* ═══════════════════════════════════
+   FAILURE CASCADE
+═══════════════════════════════════ */
+const CASCADES = {
+  mep: {
+    phases: ['Brief & Design','Coordination','GFC Drawings','Construction','Inspection','Fire NOC','Operations'],
+    origin: 2, hits: [false,true,true,true,true,true,false],
+    desc: 'A MEP–fire services ceiling clash during GFC drawing production triggers a coordination redesign phase. Construction commencement is delayed 6–14 weeks. A cascade of RFIs follows during construction as contractors encounter unresolved space conflicts. Fire NOC inspection readiness is delayed. Operational launch is pushed. The original coordination failure at drawing stage propagates through every subsequent project phase.',
+    pills: [{t:'12 wk delay',c:'delay'},{t:'8–12% cost escalation',c:'cost'},{t:'Fire NOC at risk',c:'risk'}]
+  },
+  nabh: {
+    phases: ['Brief','NABH Planning','Coordination','Construction','Completion','Accreditation','Operations'],
+    origin: 1, hits: [false,true,false,false,true,true,true],
+    desc: 'NABH documentation was not integrated at the design stage. At project completion, a pre-accreditation audit identifies 40+ non-compliant design decisions that cannot be resolved through cosmetic intervention. Forced partial redesign and reconstruction is required. NABH accreditation is withheld until Category 3 rectifications are complete. Operational launch is delayed by 9–18 months beyond the construction programme.',
+    pills: [{t:'9–18 mo delayed opening',c:'delay'},{t:'15–20% CAPEX rework',c:'cost'},{t:'NABH withheld',c:'risk'}]
+  },
+  rfi: {
+    phases: ['Design','Tender','Mobilisation','Construction','Mid-review','Completion','Handover'],
+    origin: 3, hits: [false,false,false,true,true,true,true],
+    desc: 'Poor coordination documentation generates 200+ RFIs during construction. Decision velocity collapses as consultant response bandwidth is overwhelmed. The contractor begins autonomous interpretation of unresolved coordination conflicts. Design intent progressively erodes. Post-completion snag volumes are unmanageable. Consultant-contractor disputes delay handover. The client receives a building that is neither what was designed nor what was built.',
+    pills: [{t:'200+ RFIs',c:'risk'},{t:'Handover delayed',c:'delay'},{t:'Design intent lost',c:'risk'}]
+  },
+  contractor: {
+    phases: ['Procurement','Contract','Construction Ph.1','Construction Ph.2','Emergency','Recovery','Operations'],
+    origin: 3, hits: [false,false,false,true,true,true,false],
+    desc: 'Primary contractor abandons site at approximately 45% construction completion due to cash flow collapse. Emergency re-procurement happens at premium cost and extended timeline. The incoming contractor disputes the quality and completeness of existing works. Insurance claim and arbitration proceedings run in parallel with active construction. Estimated delay: 12–20 months beyond the original programme. Estimated additional cost: 20–35% of original project budget.',
+    pills: [{t:'12–20 mo delay',c:'delay'},{t:'20–35% cost overrun',c:'cost'},{t:'Arbitration risk',c:'risk'}]
+  },
+  noc: {
+    phases: ['Design','Statutory Review','Plan Approval','Construction','Inspection','Fire NOC','Licensing'],
+    origin: 1, hits: [false,true,true,false,false,true,true],
+    desc: 'Statutory compliance gaps in design documentation delay plan approval by 8 months. Construction cannot commence. When construction eventually begins, undocumented mid-design changes create a second statutory review requirement. Fire NOC inspection fails at first attempt. Re-inspection adds 6 months. Hospital licensing — dependent on all statutory clearances — is delayed by 14–22 months from the original target date.',
+    pills: [{t:'14–22 mo total delay',c:'delay'},{t:'₹ idle CAPEX cost',c:'cost'},{t:'KPME at risk',c:'risk'}]
+  },
+  opex: {
+    phases: ['Design','Handover','Month 6','Year 1','Year 3','Year 5','Year 10'],
+    origin: 2, hits: [false,false,true,true,true,true,true],
+    desc: 'Lifecycle OPEX was not evaluated as a design criterion during procurement. By Month 6, HVAC maintenance costs are 40% above projection. Inaccessible MEP risers require partial wall demolition for routine servicing. Energy consumption is 35% above benchmark. By Year 5, a major mechanical systems retrofit costing 18–25% of the original project value is unavoidable. Hospital operational continuity is disrupted during the retrofit period.',
+    pills: [{t:'40% HVAC cost overrun',c:'cost'},{t:'35% energy overspend',c:'cost'},{t:'18–25% retrofit at Yr 5',c:'risk'}]
+  }
+};
+
+function triggerCascade(type) {
+  document.querySelectorAll('.ftrig').forEach(b => b.classList.remove('on'));
+  document.querySelector(`.ftrig[data-cascade="${type}"]`)?.classList.add('on');
+
+  const data = CASCADES[type];
+  const box = document.getElementById('cascade-box');
+  const phasesEl = document.getElementById('cascade-phases');
+  const descEl = document.getElementById('cascade-desc');
+
+  // Build phases
+  phasesEl.innerHTML = data.phases.map((p,i) => {
+    let cls = 'cphase-box';
+    if (i === data.origin) cls += ' origin';
+    const arrow = i < data.phases.length-1 ? '<span class="cphase-arrow">→</span>' : '';
+    return `<div class="cphase"><div class="${cls}" id="cp-${i}">${p}</div>${arrow}</div>`;
+  }).join('');
+
+  descEl.innerHTML = '';
+  box.classList.add('on');
+
+  // Cascade animation
+  data.hits.forEach((hit, i) => {
+    if (!hit || i === data.origin) return;
+    setTimeout(() => {
+      document.getElementById('cp-'+i)?.classList.add('hit');
+    }, i * 280);
   });
 
+  setTimeout(() => {
+    const pills = data.pills.map(p =>
+      `<span class="impact-pill ${p.c}">${p.t}</span>`
+    ).join('');
+    descEl.innerHTML = data.desc + `<div class="cascade-impact">${pills}</div>`;
+  }, data.phases.length * 280 + 200);
 }
 
+/* ═══════════════════════════════════
+   COMMITTEE MODE
+═══════════════════════════════════ */
+function buildCommitteeWeights() {
+  const grid = document.getElementById('cm-wgrid');
+  if (!grid) return;
+  grid.innerHTML = KEYS.map(k => `
+    <div class="cm-wfield">
+      <label>${LABELS[k]}</label>
+      <div style="display:flex;align-items:center;gap:8px">
+        <input type="number" min="0" max="40" value="${W[k]}" data-ck="${k}" class="cm-winput">
+        <span style="font-size:0.8rem;color:#94a3b8">/ 100</span>
+      </div>
+    </div>
+  `).join('');
+
+  document.querySelectorAll('.cm-winput').forEach(inp => {
+    inp.addEventListener('input', () => {
+      W[inp.dataset.ck] = parseInt(inp.value)||0;
+      syncSlider(inp.dataset.ck);
+      updateAll();
+      updateCommitteeTotal();
+    });
+  });
+}
+
+function updateCommitteeTotal() {
+  const tot = KEYS.reduce((s,k)=>s+W[k],0);
+  const el = document.getElementById('cm-total');
+  if (el) {
+    el.textContent = tot + '%';
+    el.className = 'cm-total-val ' + (tot === 100 ? 'ok' : 'err');
+  }
+}
+
+function renderCommitteeTable() {
+  const tbody = document.getElementById('cm-tbody');
+  if (!tbody) return;
+  tbody.innerHTML = sorted().map(c => {
+    const sc = wScore(c);
+    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
+    return `<tr>
+      <td><strong>${c.name}</strong></td>
+      <td style="color:#64748b;font-size:0.8rem">${c.domain}</td>
+      ${KEYS.map(k=>`<td class="cm-dim-val">${c.scores[k]}</td>`).join('')}
+      <td class="cm-score">${sc}</td>
+      <td><span class="cm-grade ${gc}">${c.grade}</span></td>
+    </tr>`;
+  }).join('');
+}
+
+/* ═══════════════════════════════════
+   SYNC HELPERS
+═══════════════════════════════════ */
+function syncSlider(k) {
+  const s = document.querySelector(`.wslider[data-key="${k}"]`);
+  if (s) s.value = W[k];
+  const v = document.getElementById('sv-'+k);
+  if (v) v.textContent = W[k];
+}
+
+function syncCommitteeInput(k) {
+  const inp = document.querySelector(`.cm-winput[data-ck="${k}"]`);
+  if (inp) inp.value = W[k];
+}
+
+function updateAll() {
+  renderRankings();
+  refreshNarrative();
+  renderCommitteeTable();
+}
+
+/* ═══════════════════════════════════
+   MODE SWITCHING
+═══════════════════════════════════ */
+function setMode(m) {
+  document.querySelectorAll('.modeview').forEach(p => p.classList.remove('on'));
+  document.querySelectorAll('.mpill').forEach(b => b.classList.remove('on'));
+  const panel = document.getElementById('v-'+m);
+  if (panel) panel.classList.add('on');
+  document.querySelector(`.mpill[data-mode="${m}"]`)?.classList.add('on');
+
+  if (m === 'committee') {
+    buildCommitteeWeights();
+    renderCommitteeTable();
+    updateCommitteeTotal();
+  }
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+document.querySelectorAll('.mpill').forEach(b => {
+  b.addEventListener('click', () => setMode(b.dataset.mode));
+});
+
+/* ═══════════════════════════════════
+   SLIDER EVENTS
+═══════════════════════════════════ */
+document.querySelectorAll('.wslider').forEach(slider => {
+  slider.addEventListener('input', () => {
+    const k = slider.dataset.key;
+    W[k] = parseInt(slider.value);
+    const sv = document.getElementById('sv-'+k);
+    if (sv) sv.textContent = slider.value;
+    syncCommitteeInput(k);
+    updateAll();
+  });
+});
+
+document.getElementById('sel-pos')?.addEventListener('change', refreshNarrative);
+document.getElementById('sel-risk')?.addEventListener('change', refreshNarrative);
+
+document.querySelectorAll('.ftrig').forEach(btn => {
+  btn.addEventListener('click', () => triggerCascade(btn.dataset.cascade));
+});
+
+/* ═══════════════════════════════════
+   INIT
+═══════════════════════════════════ */
+renderRankings();
+refreshNarrative();
 </script>
 </body>
 </html>
