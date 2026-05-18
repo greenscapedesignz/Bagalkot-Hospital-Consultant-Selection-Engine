@@ -1615,12 +1615,10 @@ function wScore(c) {
   return Math.round(KEYS.reduce((s,k)=>s + c.scores[k]*W[k]/tot, 0));
 }
 
+```javascript id="vz1d2g"
 function sorted() {
   return [...CONSULTANTS]
     .sort((a,b)=>wScore(b)-wScore(a));
-}
-
-  return [...CONSULTANTS].sort((a,b)=>wScore(b)-wScore(a));
 }
 
 /* ═══════════════════════════════════
