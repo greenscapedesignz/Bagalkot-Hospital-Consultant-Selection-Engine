@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bagalkot Neuro-Care Hospital | Consultant Selection Intelligence Engine</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{
+--bg:#f4f6f8;
+--card:#ffffff;
+--ink:#14202b;
+--muted:#5f6b77;
+--line:#dde5ec;
+--accent:#0f766e;
+--accent2:#0b4f4a;
+--warn:#c2410c;
+--danger:#b91c1c;
+--good:#15803d;
+--shadow:0 10px 30px rgba(0,0,0,.08);
+--radius:18px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+font-family:'Inter',sans-serif;
+background:var(--bg);
+color:var(--ink);
+line-height:1.6;
+}
+header{
+background:linear-gradient(135deg,#0f172a,#0f766e);
+color:white;
+padding:60px 40px;
+}
+header h1{
+font-size:clamp(2rem,4vw,3.8rem);
+font-weight:800;
+line-height:1.1;
+margin-bottom:18px;
+}
+header p{
+max-width:950px;
+font-size:1.05rem;
+opacity:.9;
+}
+.container{
+width:min(1450px,95%);
+margin:30px auto 80px;
+display:grid;
+grid-template-columns:430px 1fr;
+gap:24px;
+align-items:start;
+}
+.panel{
+background:var(--card);
+border-radius:var(--radius);
+box-shadow:var(--shadow);
+padding:28px;
+border:1px solid var(--line);
+}
+.sticky{
+position:sticky;
+top:20px;
+max-height:95vh;
+overflow:auto;
+}
+.section-title{
+font-size:1.1rem;
+font-weight:700;
+margin-bottom:20px;
+color:var(--accent2);
+}
+.control-group{
+margin-bottom:26px;
+padding-bottom:20px;
+border-bottom:1px solid var(--line);
+}
+.control-group:last-child{border-bottom:none}
+label{
+font-weight:600;
+display:block;
+margin-bottom:8px;
+}
+.helper{
+font-size:.88rem;
+color:var(--muted);
+margin-bottom:12px;
+}
+.range-wrap{
+display:flex;
+align-items:center;
+gap:14px;
+}
+input[type=range]{
+width:100%;
+accent-color:var(--accent);
+}
+.range-value{
+min-width:44px;
+font-weight:700;
+color:var(--accent2);
+}
+select, textarea{
+width:100%;
+padding:12px 14px;
+border-radius:12px;
+border:1px solid var(--line);
+font-family:inherit;
+font-size:.95rem;
+background:white;
+}
+.grid{
+display:grid;
+grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+gap:18px;
+}
+.card{
+background:white;
+border-radius:16px;
+padding:22px;
+border:1px solid var(--line);
+box-shadow:var(--shadow);
+}
+.rank{
+width:42px;
+height:42px;
+border-radius:50%;
+display:flex;
+align-items:center;
+justify-content:center;
+font-weight:800;
+background:#d1fae5;
+color:var(--good);
+margin-bottom:14px;
+}
+.score{
+font-size:2.4rem;
+font-weight:800;
+margin:8px 0;
+}
+.metric{
+display:flex;
+justify-content:space-between;
+font-size:.9rem;
+padding:8px 0;
+border-bottom:1px dashed #d7dde3;
+}
+.metric:last-child{border-bottom:none}
+.badge{
+display:inline-block;
+padding:6px 12px;
+border-radius:999px;
+font-size:.76rem;
+font-weight:700;
+letter-spacing:.04em;
+text-transform:uppercase;
+margin:8px 6px 8px 0;
+}
+.good{background:#dcfce7;color:#166534}
+.medium{background:#fef3c7;color:#92400e}
+.high{background:#fee2e2;color:#991b1b}
+.note{
+background:#eff6ff;
+border-left:4px solid #2563eb;
+padding:18px;
+border-radius:12px;
+margin-top:20px;
+font-size:.95rem;
+}
+.strategy{
+margin-top:26px;
+padding:22px;
+border-radius:16px;
+background:linear-gradient(135deg,#ecfeff,#f0fdf4);
+border:1px solid #cce7e4;
+}
+.strategy h3{
+margin-bottom:12px;
+}
+.matrix{
+margin-top:22px;
+overflow:auto;
+}
+table{
+width:100%;
+border-collapse:collapse;
+font-size:.9rem;
+}
+th,td{
+padding:12px;
+border:1px solid var(--line);
+text-align:left;
+vertical-align:top;
+}
+th{
+background:#0f172a;
+color:white;
+}
+.slider-title{
+display:flex;
+justify-content:space-between;
+gap:10px;
+align-items:center;
+}
+.priority{
+font-size:.82rem;
+font-weight:700;
+color:var(--accent2);
+}
+footer{
+margin-top:30px;
+font-size:.85rem;
+color:var(--muted);
+}
+@media(max-width:1100px){
+.container{grid-template-columns:1fr}
+.sticky{position:relative;max-height:none}
+}
+</style>
+</head>
+<body>
+<header>
+<h1>Bagalkot Neuro-Care Hospital<br>Consultant Selection Intelligence Engine</h1>
+<p>
+An interactive prequalification and final appointment framework for evaluating PMC-led integrated healthcare delivery teams, specialist consultants, and multidisciplinary coordination ecosystems for a NABH-oriented neuro-care hospital.
+</p>
+</header>
+
+<div class="container">
+
+<div class="panel sticky">
+<div class="section-title">Client Decision Calibration Panel</div>
+
+<div class="control-group">
+<label>Project Positioning</label>
+<select id="positioning">
+<option value="functional">Functional Mid-Scale Hospital</option>
+<option value="premium">Premium Neuro-Care Center</option>
+<option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
+<option value="future">Future Expansion-Ready Medical Campus</option>
+</select>
+</div>
+
+<div class="control-group">
+<label>Execution Strategy</label>
+<select id="strategyType">
+<option>PMC-led Integrated Delivery</option>
+<option>Lead Consultant + Specialist Partners</option>
+<option>Fast-track Design Build Hybrid</option>
+<option>Independent Multi-consultant Coordination</option>
+</select>
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Healthcare Experience Priority</label>
+<span class="priority" id="expVal">80</span>
+</div>
+<div class="helper">How important is prior healthcare and hospital experience?</div>
+<div class="range-wrap">
+<input type="range" min="0" max="100" value="80" id="exp">
+</div>
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Regulatory & NABH Preparedness</label>
+<span class="priority" id="regVal">92</span>
+</div>
+<div class="helper">Importance of Fire NOC, KPME, NBC, AERB and accreditation maturity.</div>
+<input type="range" min="0" max="100" value="92" id="reg">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Construction Survivability</label>
+<span class="priority" id="execVal">88</span>
+</div>
+<div class="helper">Ability to survive site realities, RFIs, coordination conflicts and revisions.</div>
+<input type="range" min="0" max="100" value="88" id="exec">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>MEP + Systems Coordination</label>
+<span class="priority" id="mepVal">90</span>
+</div>
+<div class="helper">Importance of HVAC, MGPS, electrical, fire and low-current integration maturity.</div>
+<input type="range" min="0" max="100" value="90" id="mep">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Cost Sensitivity</label>
+<span class="priority" id="costVal">55</span>
+</div>
+<div class="helper">Higher score prioritizes cost control over long-term sophistication.</div>
+<input type="range" min="0" max="100" value="55" id="cost">
+</div>
+
+<div class="control-group">
+<div class="slider-title">
+<label>Long-term OPEX & Maintainability</label>
+<span class="priority" id="opexVal">86</span>
+</div>
+<div class="helper">Importance of lifecycle efficiency, maintainability and future operations.</div>
+<input type="range" min="0" max="100" value="86" id="opex">
+</div>
+
+<div class="control-group">
+<label>Decision-maker Risk Appetite</label>
+<select id="riskAppetite">
+<option value="safe">Low Risk / Stable Delivery</option>
+<option value="balanced" selected>Balanced</option>
+<option value="aggressive">Aggressive Upgrade / High Ambition</option>
+</select>
+</div>
+
+<div class="control-group">
+<label>Additional Client Notes</label>
+<textarea rows="5" placeholder="Add concerns regarding timelines, budget, local approvals, coordination issues, or future expansion."></textarea>
+</div>
+
+<div class="strategy">
+<h3>Suggested Governance Structure</h3>
+<p id="strategyText">
+For this project typology, a PMC-led integrated delivery ecosystem with a strong healthcare architect, dedicated MEP healthcare consultant, fire consultant, and statutory coordination lead is strongly recommended.
+</p>
+</div>
+</div>
+
+<div>
+<div class="panel">
+<div class="section-title">Strategic Recommendation Framework</div>
+
+<div class="note">
+<strong>Suggested Approach (As Independent Advisor):</strong><br><br>
+Since you are not the final decision-maker, your role should be positioned as a systems-level risk interpreter rather than a consultant selector. Instead of recommending “Firm A vs Firm B,” create a transparent weighted evaluation ecosystem where the client understands the implications of each strategic choice.
+<br><br>
+This protects your professional neutrality while simultaneously increasing your institutional credibility.
+</div>
+
+<div class="matrix">
+<table>
+<thead>
+<tr>
+<th>Evaluation Layer</th>
+<th>Why It Matters</th>
+<th>Suggested Weight</th>
+<th>Failure Risk if Ignored</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Healthcare Experience</strong></td>
+<td>Hospital workflows are fundamentally different from residential/commercial projects.</td>
+<td>18–22%</td>
+<td>Workflow collapse, infection-control issues</td>
+</tr>
+<tr>
+<td><strong>NABH & Regulatory Readiness</strong></td>
+<td>Determines long-term accreditation viability.</td>
+<td>16–20%</td>
+<td>Licensing delays and retrofits</td>
+</tr>
+<tr>
+<td><strong>Construction Coordination</strong></td>
+<td>Critical for avoiding site conflicts and rework.</td>
+<td>14–18%</td>
+<td>Massive rework and delays</td>
+</tr>
+<tr>
+<td><strong>MEP & Fire Integration</strong></td>
+<td>Most hospital failures emerge from systems clashes.</td>
+<td>12–16%</td>
+<td>Unsafe operations and ceiling rework</td>
+</tr>
+<tr>
+<td><strong>Documentation Quality</strong></td>
+<td>Determines contractor clarity and legal defensibility.</td>
+<td>10–12%</td>
+<td>RFI overload and disputes</td>
+</tr>
+<tr>
+<td><strong>Lifecycle OPEX Intelligence</strong></td>
+<td>Long-term sustainability and operational viability.</td>
+<td>8–12%</td>
+<td>High maintenance burden</td>
+</tr>
+<tr>
+<td><strong>Institutional Stability</strong></td>
+<td>Ensures long-term support continuity.</td>
+<td>6–8%</td>
+<td>Consultant abandonment risk</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+
+<div style="margin-top:24px" class="grid">
+
+<div class="card">
+<div class="rank">1</div>
+<h3>Integrated Healthcare PMC Team</h3>
+<div class="score">92</div>
+<span class="badge good">Recommended</span>
+<span class="badge good">Scalable</span>
+<div class="metric"><span>Coordination Capability</span><strong>Excellent</strong></div>
+<div class="metric"><span>Regulatory Survivability</span><strong>High</strong></div>
+<div class="metric"><span>Future Expansion Readiness</span><strong>Strong</strong></div>
+<div class="metric"><span>Lifecycle OPEX Logic</span><strong>Strong</strong></div>
+<div class="metric"><span>Initial Cost</span><strong>Higher</strong></div>
+<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
+Best suited if the client wants institutional-grade delivery with lower long-term operational and compliance risk.
+</p>
+</div>
+
+<div class="card">
+<div class="rank" style="background:#fef3c7;color:#92400e">2</div>
+<h3>Lead Architect + Specialist Consultants</h3>
+<div class="score">81</div>
+<span class="badge medium">Balanced</span>
+<span class="badge medium">Moderate Risk</span>
+<div class="metric"><span>Coordination Capability</span><strong>Dependent on Lead</strong></div>
+<div class="metric"><span>Documentation Control</span><strong>Moderate–High</strong></div>
+<div class="metric"><span>Cost Control</span><strong>Moderate</strong></div>
+<div class="metric"><span>Execution Risk</span><strong>Moderate</strong></div>
+<div class="metric"><span>Adaptability</span><strong>Good</strong></div>
+<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
+Works well if the lead consultant has proven healthcare integration experience and strong site coordination culture.
+</p>
+</div>
+
+<div class="card">
+<div class="rank" style="background:#fee2e2;color:#991b1b">3</div>
+<h3>Fragmented Multi-Consultant Model</h3>
+<div class="score">63</div>
+<span class="badge high">High Coordination Risk</span>
+<div class="metric"><span>Consultant Alignment</span><strong>Weak</strong></div>
+<div class="metric"><span>Site Decision Speed</span><strong>Slow</strong></div>
+<div class="metric"><span>Change Order Probability</span><strong>High</strong></div>
+<div class="metric"><span>Responsibility Clarity</span><strong>Diffuse</strong></div>
+<div class="metric"><span>Long-term Stability</span><strong>Variable</strong></div>
+<p style="margin-top:16px;font-size:.92rem;color:var(--muted)">
+Should only be used if a powerful owner-side coordinator or PMC exists to govern the ecosystem.
+</p>
+</div>
+
+</div>
+
+<div class="panel" style="margin-top:24px;">
+<div class="section-title">What I Would Suggest Strategically</div>
+
+<div class="grid">
+<div class="card">
+<h3>1. Avoid Lowest-Cost Selection Logic</h3>
+<p>
+Hospitals are operational ecosystems. Poor coordination during design and MEP integration often creates exponentially higher downstream costs than consultant fees.
+</p>
+</div>
+
+<div class="card">
+<h3>2. Select for Coordination Intelligence</h3>
+<p>
+The winning ecosystem should demonstrate evidence of interdisciplinary coordination, not just attractive drawings or isolated technical claims.
+</p>
+</div>
+
+<div class="card">
+<h3>3. Prioritize Healthcare Documentation Maturity</h3>
+<p>
+Most failures in hospitals happen between architecture, HVAC, electrical, fire, biomedical, and operations—not in concept design.
+</p>
+</div>
+
+<div class="card">
+<h3>4. Use Two-Stage Selection</h3>
+<p>
+Stage 1: Technical prequalification.<br>
+Stage 2: Scenario-based interview and coordination workshop.
+</p>
+</div>
+
+<div class="card">
+<h3>5. Interview Through Problem Simulation</h3>
+<p>
+Instead of asking for portfolios alone, ask candidates to solve real project conflicts:
+- ICU airflow clash
+- Fire staircase integration
+- OT sterile movement sequencing
+- Basement smoke extraction
+</p>
+</div>
+
+<div class="card">
+<h3>6. Keep Governance Transparent</h3>
+<p>
+Create a weighted evaluation matrix signed by the client to reduce future bias allegations and protect decision integrity.
+</p>
+</div>
+</div>
+</div>
+
+<div class="panel" style="margin-top:24px;">
+<div class="section-title">Suggested Final Appointment Structure</div>
+
+<table>
+<thead>
+<tr>
+<th>Role</th>
+<th>Suggested Appointment Logic</th>
+<th>Priority</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lead Healthcare Architect / PMC</td>
+<td>Single accountable coordination authority</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>Healthcare MEP Consultant</td>
+<td>Separate specialist with hospital experience</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>Fire & Life Safety Consultant</td>
+<td>Independent NBC and Fire NOC specialist</td>
+<td>Critical</td>
+</tr>
+<tr>
+<td>NABH Consultant</td>
+<td>Integrated from design stage</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Structural Consultant</td>
+<td>Integrated with MEP routing coordination</td>
+<td>High</td>
+</tr>
+<tr>
+<td>Landscape + Healing Environment Consultant</td>
+<td>Patient recovery, microclimate and therapeutic design</td>
+<td>Moderate–High</td>
+</tr>
+<tr>
+<td>Medical Planning Specialist</td>
+<td>Workflow optimization and equipment planning</td>
+<td>High</td>
+</tr>
+</tbody>
+</table>
+</div>
+
+<footer>
+Prepared as a strategic decision-support interface for institutional healthcare consultant selection and governance calibration. This interface is intended to help clients understand the implications of procurement decisions rather than merely comparing fee quotations.
+</footer>
+</div>
+
+</div>
+
+<script>
+const sliders = [
+['exp','expVal'],
+['reg','regVal'],
+['exec','execVal'],
+['mep','mepVal'],
+['cost','costVal'],
+['opex','opexVal']
+];
+
+sliders.forEach(([slider,val])=>{
+const s=document.getElementById(slider);
+const v=document.getElementById(val);
+v.innerText=s.value;
+s.addEventListener('input',()=>{
+v.innerText=s.value;
+updateStrategy();
+});
+});
+
+const positioning=document.getElementById('positioning');
+const risk=document.getElementById('riskAppetite');
+const strategy=document.getElementById('strategyType');
+
+[positioning,risk,strategy].forEach(el=>{
+el.addEventListener('change',updateStrategy);
+});
+
+function updateStrategy(){
+const reg=parseInt(document.getElementById('reg').value);
+const mep=parseInt(document.getElementById('mep').value);
+const exec=parseInt(document.getElementById('exec').value);
+const cost=parseInt(document.getElementById('cost').value);
+const riskVal=risk.value;
+const pos=positioning.value;
+
+let message='';
+
+if(pos==='nabh' && reg>80 && mep>80){
+message='The project is behaving like an institutional healthcare ecosystem rather than a conventional building project. Strong recommendation: appoint a healthcare-experienced PMC-led coordination structure with mandatory fire, MEP, NABH, and medical-planning integration from early stages.';
+}
+else if(cost>80){
+message='Current calibration heavily favors cost sensitivity. This may reduce upfront consultant fees but significantly increases lifecycle rework and coordination risks in hospital infrastructure.';
+}
+else if(riskVal==='aggressive'){
+message='The client appetite indicates willingness for ambitious institutional positioning. This supports selecting technically stronger multidisciplinary ecosystems with higher coordination sophistication.';
+}
+else{
+message='A balanced integrated-delivery model is recommended: strong lead consultant supported by specialized healthcare systems consultants with clearly defined accountability matrices.';
+}
+
+if(exec<50){
+message += ' Warning: low emphasis on construction survivability often leads to RFI overload, execution drift, and post-construction retrofits.';
+}
+
+document.getElementById('strategyText').innerText=message;
+}
+</script>
+</body>
+</html>
