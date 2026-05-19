@@ -1,1399 +1,464 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Healthcare Procurement Intelligence — Greenscape Designz</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
-  <style>
-    :root {
-      --bg: #080d18;
-      --surface: #0e1525;
-      --surface2: #141e30;
-      --surface3: #1a2640;
-      --border: rgba(255,255,255,0.06);
-      --border-hover: rgba(255,255,255,0.12);
-      --border-teal: rgba(13,180,135,0.28);
-      --text: #dde8f0;
-      --text-muted: #6d8499;
-      --text-dim: #32475c;
-      --teal: #0db487;
-      --teal-glow: rgba(13,180,135,0.12);
-      --amber: #e8a530;
-      --danger: #e84949;
-      --danger-bg: rgba(232,73,73,0.08);
-      --danger-border: rgba(232,73,73,0.22);
-      --good: #0db487;
-      --ff-display: 'Cormorant Garamond', Georgia, serif;
-      --ff-body: 'Plus Jakarta Sans', system-ui, sans-serif;
-      --ff-mono: 'JetBrains Mono', 'Courier New', monospace;
-    }
-
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--ff-body);
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.6;
-      min-height: 100vh;
-      overflow-x: hidden;
-    }
-
-    /* ── SCROLLBAR ── */
-    ::-webkit-scrollbar { width: 5px; height: 5px; }
-    ::-webkit-scrollbar-track { background: transparent; }
-    ::-webkit-scrollbar-thumb { background: var(--surface3); border-radius: 3px; }
-
-    /* ══════════ MODE BAR ══════════ */
-    .modebar {
-      position: sticky; top: 0; z-index: 200;
-      background: rgba(8,13,24,0.92);
-      backdrop-filter: blur(14px);
-      border-bottom: 1px solid var(--border);
-      height: 54px;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 0 28px;
-      gap: 20px;
-    }
-
-    .brand-wrap {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      flex-shrink: 0;
-    }
-
-    .brand-mark {
-      width: 28px; height: 28px;
-      border: 1.5px solid var(--teal);
-      border-radius: 6px;
-      display: flex; align-items: center; justify-content: center;
-      font-family: var(--ff-mono);
-      font-size: 0.7rem; font-weight: 700;
-      color: var(--teal);
-      letter-spacing: 0.05em;
-    }
-
-    .brand-name {
-      font-family: var(--ff-display);
-      font-size: 0.9rem;
-      font-weight: 600;
-      letter-spacing: 0.04em;
-      color: rgba(255,255,255,0.55);
-    }
-
-    .brand-name span { color: var(--teal); }
-
-    .mode-pills {
-      display: flex;
-      gap: 3px;
-      background: var(--surface);
-      padding: 4px;
-      border-radius: 10px;
-      border: 1px solid var(--border);
-    }
-
-    .mpill {
-      padding: 5px 15px;
-      border: none;
-      background: none;
-      color: var(--text-muted);
-      font-family: var(--ff-body);
-      font-size: 0.73rem;
-      font-weight: 600;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.18s;
-      white-space: nowrap;
-    }
-
-    .mpill.on { background: var(--teal); color: #000; }
-    .mpill:hover:not(.on) { color: var(--text); background: var(--surface3); }
-
-    /* ══════════ MODE PANELS ══════════ */
-    .modeview { display: none; }
-    .modeview.on { display: block; }
-
-    /* ═══════════════════════════════════
-       COMMAND MODE
-    ═══════════════════════════════════ */
-    .cmd-header {
-      padding: 44px 32px 36px;
-      border-bottom: 1px solid var(--border);
-      display: grid;
-      grid-template-columns: 1fr auto;
-      gap: 32px;
-      align-items: end;
-    }
-
-    .cmd-title {
-      font-family: var(--ff-display);
-      font-size: clamp(2rem, 3.5vw, 3.2rem);
-      font-weight: 600;
-      line-height: 1.1;
-      letter-spacing: -0.01em;
-    }
-
-    .cmd-title em { color: var(--teal); font-style: normal; }
-
-    .cmd-sub {
-      font-size: 0.87rem;
-      color: var(--text-muted);
-      margin-top: 10px;
-      max-width: 540px;
-      line-height: 1.65;
-    }
-
-    .live-badge {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 0.72rem;
-      font-weight: 600;
-      letter-spacing: 0.09em;
-      text-transform: uppercase;
-      color: var(--teal);
-      border: 1px solid var(--border-teal);
-      border-radius: 999px;
-      padding: 6px 12px;
-      white-space: nowrap;
-      align-self: flex-start;
-      margin-top: 4px;
-    }
-
-    .live-dot {
-      width: 6px; height: 6px;
-      background: var(--teal);
-      border-radius: 50%;
-      animation: livepulse 2s ease-in-out infinite;
-    }
-
-    @keyframes livepulse {
-      0%,100% { opacity:1; transform:scale(1); }
-      50% { opacity:0.35; transform:scale(0.7); }
-    }
-
-    .cmd-body {
-      display: grid;
-      grid-template-columns: 340px 1fr;
-      min-height: calc(100vh - 54px - 110px);
-      align-items: start;
-    }
-
-    /* ── LEFT PANEL ── */
-    .cmd-left {
-      border-right: 1px solid var(--border);
-      padding: 28px 22px;
-      position: sticky;
-      top: 54px;
-      height: calc(100vh - 54px);
-      overflow-y: auto;
-      overflow-x: hidden;
-    }
-
-    .panel-label {
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 22px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .panel-label::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--border-teal);
-    }
-
-    .srow { margin-bottom: 18px; }
-
-    .shead {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 8px;
-    }
-
-    .sname {
-      font-size: 0.8rem;
-      font-weight: 500;
-      color: var(--text-muted);
-    }
-
-    .sval {
-      font-family: var(--ff-mono);
-      font-size: 0.8rem;
-      font-weight: 700;
-      color: var(--teal);
-      min-width: 22px;
-      text-align: right;
-    }
-
-    input[type=range] {
-      width: 100%;
-      height: 2px;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--surface3);
-      outline: none;
-      border-radius: 1px;
-      cursor: pointer;
-    }
-
-    input[type=range]::-webkit-slider-thumb {
-      -webkit-appearance: none;
-      width: 13px; height: 13px;
-      background: var(--teal);
-      border-radius: 50%;
-      cursor: pointer;
-      transition: transform 0.12s;
-      box-shadow: 0 0 0 3px rgba(13,180,135,0.15);
-    }
-
-    input[type=range]::-webkit-slider-thumb:hover { transform: scale(1.35); }
-    input[type=range]::-moz-range-thumb {
-      width: 13px; height: 13px;
-      background: var(--teal);
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
-    }
-
-    .divline {
-      height: 1px;
-      background: var(--border);
-      margin: 24px 0;
-    }
-
-    .slabel {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 7px;
-    }
-
-    select {
-      width: 100%;
-      background: var(--surface2);
-      border: 1px solid var(--border);
-      color: var(--text);
-      padding: 9px 11px;
-      border-radius: 8px;
-      font-family: var(--ff-body);
-      font-size: 0.82rem;
-      outline: none;
-      cursor: pointer;
-      margin-bottom: 14px;
-      -webkit-appearance: none;
-      appearance: none;
-      transition: border-color 0.15s;
-    }
-
-    select:focus { border-color: var(--border-teal); }
-    select option { background: #141e30; }
-
-    /* ── RIGHT PANEL ── */
-    .cmd-right { padding: 28px 32px; }
-
-    /* NLG */
-    .nlg-box {
-      background: var(--surface);
-      border: 1px solid var(--border-teal);
-      border-radius: 14px;
-      padding: 22px 24px;
-      margin-bottom: 28px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .nlg-box::before {
-      content: '';
-      position: absolute;
-      inset: 0 0 auto 0;
-      height: 1.5px;
-      background: linear-gradient(90deg, var(--teal) 0%, transparent 60%);
-    }
-
-    .nlg-head {
-      font-size: 0.65rem;
-      font-weight: 700;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 14px;
-      display: flex;
-      align-items: center;
-      gap: 7px;
-    }
-
-    .nlg-out {
-      font-size: 0.9rem;
-      color: var(--text);
-      line-height: 1.82;
-      transition: opacity 0.22s ease;
-    }
-
-    .nlg-out p { margin-bottom: 12px; }
-    .nlg-out p:last-child { margin-bottom: 0; }
-
-    .nlg-out .hl { color: var(--teal); font-weight: 500; }
-    .nlg-out .warn { color: var(--amber); font-weight: 500; }
-    .nlg-out .alert { color: var(--danger); font-weight: 500; }
-
-    /* Rankings */
-    .rankings-bar {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 14px;
-    }
-
-    .rankings-hd {
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-    }
-
-    .rankings-note {
-      font-size: 0.73rem;
-      color: var(--text-dim);
-      font-style: italic;
-    }
-
-    .clist { display: flex; flex-direction: column; gap: 9px; }
-
-    .ccard {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 14px 18px;
-      display: grid;
-      grid-template-columns: 46px 1fr 68px;
-      gap: 14px;
-      align-items: center;
-      transition: border-color 0.2s, background 0.2s;
-      cursor: default;
-    }
-
-    .ccard:hover { border-color: var(--border-hover); background: var(--surface2); }
-
-    .ccard.r1 { border-color: var(--border-teal); background: rgba(13,180,135,0.04); }
-    .ccard.r2 { border-color: rgba(232,165,48,0.2); }
-
-    .ranknum {
-      font-family: var(--ff-mono);
-      font-size: 1.3rem;
-      font-weight: 700;
-      text-align: center;
-      line-height: 1;
-    }
-
-    .r1 .ranknum { color: var(--teal); }
-    .r2 .ranknum { color: var(--amber); }
-    .r3 .ranknum { color: #4a6070; }
-    .ccard:not(.r1):not(.r2):not(.r3) .ranknum { color: var(--text-dim); }
-
-    .cname { font-size: 0.92rem; font-weight: 600; margin-bottom: 2px; }
-    .cdomain { font-size: 0.75rem; color: var(--text-muted); margin-bottom: 4px; }
-    .crole { font-size: 0.72rem; color: var(--teal); font-weight: 500; }
-
-    .cscore-area { text-align: right; }
-
-    .cscore {
-      font-family: var(--ff-mono);
-      font-size: 1.5rem;
-      font-weight: 700;
-      color: var(--text);
-      line-height: 1;
-    }
-
-    .cbar-track {
-      width: 56px;
-      height: 2px;
-      background: var(--surface3);
-      border-radius: 1px;
-      margin-top: 6px;
-      margin-left: auto;
-      overflow: hidden;
-    }
-
-    .cbar-fill {
-      height: 100%;
-      background: var(--teal);
-      border-radius: 1px;
-      transition: width 0.4s ease;
-    }
-
-    .gbadge {
-      display: inline-block;
-      font-family: var(--ff-mono);
-      font-size: 0.65rem;
-      font-weight: 700;
-      padding: 2px 6px;
-      border-radius: 4px;
-      margin-top: 5px;
-    }
-
-    .ga { background: rgba(13,180,135,0.14); color: var(--teal); }
-    .gb { background: rgba(232,165,48,0.14); color: var(--amber); }
-    .gc { background: rgba(232,73,73,0.14); color: var(--danger); }
-
-    /* ── FAILURE CASCADE ── */
-    .failure-zone {
-      margin-top: 40px;
-      padding-top: 32px;
-      border-top: 1px solid var(--border);
-    }
-
-    .failure-hd {
-      font-size: 0.66rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--danger);
-      margin-bottom: 16px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .failure-hd::after {
-      content: '';
-      flex: 1;
-      height: 1px;
-      background: var(--danger-border);
-    }
-
-    .ftriggers {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 8px;
-      margin-bottom: 24px;
-    }
-
-    .ftrig {
-      padding: 7px 13px;
-      background: var(--danger-bg);
-      border: 1px solid var(--danger-border);
-      color: #f4a0a0;
-      font-family: var(--ff-body);
-      font-size: 0.75rem;
-      font-weight: 500;
-      border-radius: 7px;
-      cursor: pointer;
-      transition: all 0.18s;
-      letter-spacing: 0.01em;
-    }
-
-    .ftrig:hover, .ftrig.on {
-      background: rgba(232,73,73,0.15);
-      border-color: rgba(232,73,73,0.5);
-      color: #ffb3b3;
-    }
-
-    .cascade-box {
-      display: none;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 14px;
-      padding: 22px 24px;
-      animation: fadein 0.3s ease;
-    }
-
-    @keyframes fadein { from { opacity:0; transform:translateY(6px); } to { opacity:1; transform:none; } }
-    .cascade-box.on { display: block; }
-
-    .cascade-phases {
-      display: flex;
-      align-items: center;
-      gap: 0;
-      overflow-x: auto;
-      padding-bottom: 4px;
-      margin-bottom: 22px;
-    }
-
-    .cphase {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-    }
-
-    .cphase-box {
-      padding: 8px 12px;
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      font-size: 0.73rem;
-      color: var(--text-muted);
-      background: var(--surface2);
-      transition: all 0.4s ease;
-      white-space: nowrap;
-      font-family: var(--ff-body);
-      font-weight: 500;
-      text-align: center;
-      min-width: 80px;
-    }
-
-    .cphase-box.origin {
-      border-color: var(--danger);
-      background: rgba(232,73,73,0.14);
-      color: var(--danger);
-      font-weight: 700;
-    }
-
-    .cphase-box.hit {
-      border-color: rgba(232,73,73,0.45);
-      background: rgba(232,73,73,0.08);
-      color: #f4a0a0;
-    }
-
-    .cphase-arrow {
-      font-size: 0.75rem;
-      color: var(--text-dim);
-      margin: 0 4px;
-      flex-shrink: 0;
-    }
-
-    .cascade-desc {
-      font-size: 0.87rem;
-      color: var(--text-muted);
-      line-height: 1.75;
-      padding-top: 18px;
-      border-top: 1px solid var(--border);
-      min-height: 52px;
-      transition: opacity 0.3s;
-    }
-
-    .cascade-impact {
-      margin-top: 10px;
-      display: flex;
-      gap: 10px;
-      flex-wrap: wrap;
-    }
-
-    .impact-pill {
-      font-size: 0.72rem;
-      font-weight: 600;
-      padding: 3px 10px;
-      border-radius: 999px;
-      font-family: var(--ff-mono);
-    }
-
-    .impact-pill.delay { background: rgba(232,165,48,0.12); color: var(--amber); }
-    .impact-pill.cost { background: rgba(232,73,73,0.12); color: var(--danger); }
-    .impact-pill.risk { background: rgba(106,90,165,0.14); color: #b4a6e8; }
-
-    /* ════════════════════════════════
-       CLIENT MODE
-    ════════════════════════════════ */
-    #v-client { background: #f5f4f0; color: #1a1a1a; min-height: 100vh; }
-
-    .cl-hero {
-      background: #0a1020;
-      padding: 64px 48px 56px;
-      color: white;
-      position: relative;
-      overflow: hidden;
-    }
-
-    .cl-hero::after {
-      content: '';
-      position: absolute;
-      bottom: 0; right: 0;
-      width: 400px; height: 300px;
-      background: radial-gradient(ellipse at 80% 100%, rgba(13,180,135,0.07) 0%, transparent 70%);
-      pointer-events: none;
-    }
-
-    .cl-eyebrow {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 20px;
-    }
-
-    .cl-hero h1 {
-      font-family: var(--ff-display);
-      font-size: clamp(2rem, 5vw, 4rem);
-      font-weight: 600;
-      line-height: 1.1;
-      margin-bottom: 18px;
-    }
-
-    .cl-hero p {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.55);
-      max-width: 560px;
-      line-height: 1.7;
-    }
-
-    .cl-body {
-      max-width: 860px;
-      margin: 0 auto;
-      padding: 52px 32px 80px;
-    }
-
-    .cl-step {
-      display: grid;
-      grid-template-columns: 56px 1fr;
-      gap: 26px;
-      margin-bottom: 56px;
-      align-items: start;
-    }
-
-    .cl-stepnum {
-      width: 48px; height: 48px;
-      background: #0a1020;
-      color: var(--teal);
-      font-family: var(--ff-mono);
-      font-size: 1rem;
-      font-weight: 700;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      flex-shrink: 0;
-    }
-
-    .cl-step-body h3 {
-      font-family: var(--ff-display);
-      font-size: 1.65rem;
-      font-weight: 600;
-      color: #0a1020;
-      margin-bottom: 12px;
-      line-height: 1.25;
-    }
-
-    .cl-step-body p {
-      font-size: 0.93rem;
-      color: #4a5568;
-      margin-bottom: 16px;
-      line-height: 1.78;
-    }
-
-    .cl-cards {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .cl-card {
-      background: white;
-      border: 1px solid #e2e8ef;
-      border-radius: 10px;
-      padding: 16px 18px;
-    }
-
-    .cl-card.r { border-left: 3px solid #e84949; }
-    .cl-card.a { border-left: 3px solid #e8a530; }
-    .cl-card.g { border-left: 3px solid #0db487; }
-
-    .cl-card h4 { font-size: 0.82rem; font-weight: 700; color: #1a1a1a; margin-bottom: 6px; }
-    .cl-card p { font-size: 0.78rem; color: #64748b; line-height: 1.55; margin: 0; }
-
-    .cl-qlist {
-      background: white;
-      border: 1px solid #e2e8ef;
-      border-radius: 12px;
-      padding: 20px;
-      margin-top: 18px;
-    }
-
-    .cl-q {
-      display: flex;
-      gap: 12px;
-      padding: 13px 0;
-      border-bottom: 1px solid #f1f5f9;
-    }
-
-    .cl-q:last-child { border-bottom: none; padding-bottom: 0; }
-    .cl-q:first-child { padding-top: 0; }
-
-    .cl-q-arrow { color: #0db487; font-size: 0.9rem; margin-top: 1px; flex-shrink: 0; font-weight: 700; }
-    .cl-q-text { font-size: 0.86rem; color: #374151; line-height: 1.6; }
-
-    .cl-stat-row {
-      display: grid;
-      grid-template-columns: repeat(3,1fr);
-      gap: 12px;
-      margin-top: 18px;
-    }
-
-    .cl-stat {
-      background: #0a1020;
-      border-radius: 10px;
-      padding: 20px;
-      text-align: center;
-      color: white;
-    }
-
-    .cl-stat-n {
-      font-family: var(--ff-mono);
-      font-size: 2rem;
-      font-weight: 700;
-      color: var(--teal);
-      line-height: 1;
-      margin-bottom: 6px;
-    }
-
-    .cl-stat-l {
-      font-size: 0.75rem;
-      color: rgba(255,255,255,0.45);
-      text-transform: uppercase;
-      letter-spacing: 0.07em;
-    }
-
-    /* ── COMMITTEE MODE ── */
-    #v-committee {
-      background: #eef0f4;
-      color: #1a1a1a;
-      min-height: 100vh;
-      padding: 40px 44px 80px;
-    }
-
-    .cm-header { margin-bottom: 32px; }
-
-    .cm-header h1 {
-      font-family: var(--ff-display);
-      font-size: 2.6rem;
-      font-weight: 600;
-      color: #0a1020;
-      margin-bottom: 6px;
-    }
-
-    .cm-header p { font-size: 0.88rem; color: #64748b; }
-
-    .cm-weight-panel {
-      background: white;
-      border: 1px solid #dde3ec;
-      border-radius: 14px;
-      padding: 26px;
-      margin-bottom: 26px;
-    }
-
-    .cm-weight-title {
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.13em;
-      text-transform: uppercase;
-      color: #0db487;
-      margin-bottom: 20px;
-    }
-
-    .cm-wgrid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-      gap: 14px;
-      margin-bottom: 20px;
-    }
-
-    .cm-wfield label {
-      display: block;
-      font-size: 0.72rem;
-      font-weight: 700;
-      color: #475569;
-      text-transform: uppercase;
-      letter-spacing: 0.06em;
-      margin-bottom: 7px;
-    }
-
-    .cm-wfield input[type=number] {
-      width: 70px;
-      padding: 8px 10px;
-      border: 1.5px solid #dde3ec;
-      border-radius: 8px;
-      font-family: var(--ff-mono);
-      font-size: 0.92rem;
-      color: #0a1020;
-      background: #f8fafc;
-      outline: none;
-      text-align: center;
-      transition: border-color 0.15s;
-    }
-
-    .cm-wfield input[type=number]:focus { border-color: #0db487; }
-
-    .cm-total-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding-top: 18px;
-      border-top: 1px solid #e2e8ef;
-      font-size: 0.87rem;
-      font-weight: 500;
-      color: #475569;
-    }
-
-    .cm-total-val {
-      font-family: var(--ff-mono);
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .cm-total-val.ok { color: #0db487; }
-    .cm-total-val.err { color: #e84949; }
-
-    .cm-matrix {
-      background: white;
-      border: 1px solid #dde3ec;
-      border-radius: 14px;
-      overflow: hidden;
-    }
-
-    .cm-matrix-hd {
-      padding: 18px 24px;
-      border-bottom: 1px solid #e2e8ef;
-      font-size: 0.72rem;
-      font-weight: 700;
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      color: #475569;
-    }
-
-    .cm-table {
-      width: 100%;
-      border-collapse: collapse;
-      font-size: 0.83rem;
-      min-width: 800px;
-    }
-
-    .cm-table th {
-      background: #0a1020;
-      color: rgba(255,255,255,0.6);
-      padding: 11px 13px;
-      font-size: 0.68rem;
-      font-weight: 700;
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-      text-align: left;
-      white-space: nowrap;
-    }
-
-    .cm-table td {
-      padding: 13px;
-      border-bottom: 1px solid #f1f5f9;
-      color: #374151;
-      white-space: nowrap;
-    }
-
-    .cm-table tr:last-child td { border-bottom: none; }
-    .cm-table tr:hover td { background: #f8fafc; }
-
-    .cm-score {
-      font-family: var(--ff-mono);
-      font-size: 1.1rem;
-      font-weight: 700;
-      color: #0a1020;
-    }
-
-    .cm-grade {
-      display: inline-block;
-      font-family: var(--ff-mono);
-      font-size: 0.72rem;
-      font-weight: 700;
-      padding: 3px 7px;
-      border-radius: 5px;
-    }
-
-    .cm-grade.ga { background: #d1fae5; color: #065f46; }
-    .cm-grade.gb { background: #fef3c7; color: #92400e; }
-    .cm-grade.gc { background: #fee2e2; color: #991b1b; }
-
-    .cm-dim-val { font-family: var(--ff-mono); font-size: 0.82rem; }
-
-    .overflow-wrap { overflow-x: auto; }
-
-    /* ════════════════════════════════
-       PITCH MODE
-    ════════════════════════════════ */
-    #v-pitch { background: #050810; color: white; min-height: 100vh; }
-
-    .pitch-hero {
-      padding: 80px 64px 70px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .pitch-hero::before {
-      content: '';
-      position: absolute;
-      top: -100px; right: -100px;
-      width: 600px; height: 600px;
-      background: radial-gradient(circle, rgba(13,180,135,0.06) 0%, transparent 65%);
-      pointer-events: none;
-    }
-
-    .pitch-eyebrow {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.15em;
-      text-transform: uppercase;
-      color: var(--teal);
-      margin-bottom: 26px;
-    }
-
-    .pitch-headline {
-      font-family: var(--ff-display);
-      font-size: clamp(2.4rem, 6vw, 5.2rem);
-      font-weight: 600;
-      line-height: 1.05;
-      letter-spacing: -0.02em;
-      margin-bottom: 26px;
-      max-width: 800px;
-    }
-
-    .pitch-headline em { color: var(--teal); font-style: normal; }
-
-    .pitch-sub {
-      font-size: 1rem;
-      color: rgba(255,255,255,0.45);
-      max-width: 600px;
-      line-height: 1.78;
-    }
-
-    .pitch-stats {
-      display: grid;
-      grid-template-columns: repeat(4,1fr);
-      border-top: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .pstat {
-      padding: 40px 32px;
-      border-right: 1px solid rgba(255,255,255,0.05);
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-      transition: background 0.2s;
-    }
-
-    .pstat:last-child { border-right: none; }
-    .pstat:hover { background: rgba(13,180,135,0.04); }
-
-    .pstat-n {
-      font-family: var(--ff-mono);
-      font-size: 2.8rem;
-      font-weight: 700;
-      color: var(--teal);
-      line-height: 1;
-      margin-bottom: 10px;
-      letter-spacing: -0.02em;
-    }
-
-    .pstat-l {
-      font-size: 0.76rem;
-      color: rgba(255,255,255,0.35);
-      text-transform: uppercase;
-      letter-spacing: 0.08em;
-    }
-
-    .pitch-caps {
-      padding: 64px;
-      border-bottom: 1px solid rgba(255,255,255,0.05);
-    }
-
-    .pitch-caps-title {
-      font-family: var(--ff-display);
-      font-size: 2.4rem;
-      font-weight: 600;
-      margin-bottom: 36px;
-      line-height: 1.15;
-    }
-
-    .pcap-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-      gap: 1px;
-      background: rgba(255,255,255,0.05);
-      border: 1px solid rgba(255,255,255,0.05);
-      border-radius: 16px;
-      overflow: hidden;
-    }
-
-    .pcap {
-      background: #050810;
-      padding: 30px 26px;
-      transition: background 0.2s;
-    }
-
-    .pcap:hover { background: rgba(13,180,135,0.04); }
-
-    .pcap-n {
-      font-family: var(--ff-mono);
-      font-size: 0.68rem;
-      color: var(--teal);
-      margin-bottom: 14px;
-      letter-spacing: 0.1em;
-    }
-
-    .pcap-t {
-      font-size: 1rem;
-      font-weight: 600;
-      margin-bottom: 10px;
-      line-height: 1.3;
-    }
-
-    .pcap-b {
-      font-size: 0.83rem;
-      color: rgba(255,255,255,0.38);
-      line-height: 1.68;
-    }
-
-    .pitch-cta {
-      padding: 80px 64px;
-      text-align: center;
-    }
-
-    .pcta-eyebrow {
-      font-size: 0.7rem;
-      font-weight: 700;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      margin-bottom: 16px;
-    }
-
-    .pcta-hl {
-      font-family: var(--ff-display);
-      font-size: 2.6rem;
-      font-weight: 600;
-      margin-bottom: 12px;
-    }
-
-    .pcta-sub {
-      font-size: 0.9rem;
-      color: rgba(255,255,255,0.35);
-      margin-bottom: 36px;
-    }
-
-    .pcta-btn {
-      display: inline-block;
-      padding: 15px 40px;
-      background: var(--teal);
-      color: #000;
-      font-family: var(--ff-body);
-      font-size: 0.85rem;
-      font-weight: 700;
-      letter-spacing: 0.07em;
-      text-transform: uppercase;
-      border-radius: 10px;
-      border: none;
-      cursor: pointer;
-      transition: opacity 0.18s, transform 0.18s;
-    }
-
-    .pcta-btn:hover { opacity: 0.82; transform: translateY(-1px); }
-
-    /* responsive */
-    @media (max-width: 900px) {
-      .cmd-body { grid-template-columns: 1fr; }
-      .cmd-left { position: static; height: auto; border-right: none; border-bottom: 1px solid var(--border); }
-      .pitch-stats { grid-template-columns: repeat(2,1fr); }
-      .pitch-hero, .pitch-caps, .pitch-cta { padding: 40px 28px; }
-      .cl-hero { padding: 40px 28px; }
-      .cl-body { padding: 32px 20px; }
-      #v-committee { padding: 24px 16px; }
-    }
-  </style>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Healthcare Procurement Intelligence — Greenscape Designz</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+<style>
+/* ════════════ VARIABLES ════════════ */
+:root{
+  --bg:#060c17;--sf:#0c1726;--sf2:#111f30;--sf3:#18273c;
+  --b:rgba(255,255,255,.06);--b2:rgba(255,255,255,.11);
+  --tx:#d6e4f0;--mu:#607a8f;--di:#243648;
+  --tl:#0db487;--tl-bg:rgba(13,180,135,.08);--tl-bd:rgba(13,180,135,.26);
+  --am:#e8a530;--am-bg:rgba(232,165,48,.08);--am-bd:rgba(232,165,48,.26);
+  --bl:#6c8eff;--bl-bg:rgba(108,142,255,.08);--bl-bd:rgba(108,142,255,.26);
+  --dg:#e84949;--dg-bg:rgba(232,73,73,.08);--dg-bd:rgba(232,73,73,.26);
+  --ff-d:'Cormorant Garamond',Georgia,serif;
+  --ff-b:'Plus Jakarta Sans',system-ui,sans-serif;
+  --ff-m:'JetBrains Mono',monospace;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{font-family:var(--ff-b);background:var(--bg);color:var(--tx);line-height:1.6;min-height:100vh;overflow-x:hidden}
+::-webkit-scrollbar{width:5px;height:5px}
+::-webkit-scrollbar-thumb{background:var(--sf3);border-radius:3px}
+::-webkit-scrollbar-track{background:transparent}
+
+/* ════════════ MODE BAR ════════════ */
+.mbar{
+  position:sticky;top:0;z-index:200;
+  height:52px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 28px;gap:16px;
+  background:rgba(6,12,23,.93);backdrop-filter:blur(14px);
+  border-bottom:1px solid var(--b);
+}
+.brand{display:flex;align-items:center;gap:10px;flex-shrink:0}
+.brand-m{
+  width:26px;height:26px;border:1.5px solid var(--tl);border-radius:6px;
+  display:flex;align-items:center;justify-content:center;
+  font-family:var(--ff-m);font-size:.66rem;font-weight:700;color:var(--tl);letter-spacing:.04em;
+}
+.brand-n{font-family:var(--ff-d);font-size:.88rem;font-weight:600;color:rgba(255,255,255,.45);letter-spacing:.04em}
+.brand-n span{color:var(--tl)}
+.pills{display:flex;gap:3px;background:var(--sf);padding:4px;border-radius:10px;border:1px solid var(--b)}
+.pill{
+  padding:5px 14px;border:none;background:none;cursor:pointer;
+  font-family:var(--ff-b);font-size:.7rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  color:var(--mu);border-radius:7px;transition:all .18s;white-space:nowrap;
+}
+.pill.on{background:var(--tl);color:#000}
+.pill:hover:not(.on){color:var(--tx);background:var(--sf3)}
+.step-flow{display:flex;align-items:center;gap:6px;font-size:.68rem;color:var(--di);flex-shrink:0}
+.step-flow span{color:var(--mu);font-weight:600;letter-spacing:.06em;text-transform:uppercase}
+.step-flow .sep{color:var(--di)}
+
+/* ════════════ MODE PANELS ════════════ */
+.mv{display:none}
+.mv.on{display:block}
+
+/* ═══════════════════════════════════════
+   PITCH — LANDING MODE
+═══════════════════════════════════════ */
+#v-pitch{background:var(--bg)}
+
+.p-hero{
+  padding:88px 64px 72px;border-bottom:1px solid var(--b);
+  position:relative;overflow:hidden;
+}
+.p-hero::before{
+  content:'';position:absolute;top:-120px;right:-80px;
+  width:700px;height:700px;
+  background:radial-gradient(circle,rgba(13,180,135,.05) 0%,transparent 65%);
+  pointer-events:none;
+}
+.p-hero::after{
+  content:'';position:absolute;bottom:-60px;left:200px;
+  width:400px;height:400px;
+  background:radial-gradient(circle,rgba(108,142,255,.04) 0%,transparent 65%);
+  pointer-events:none;
+}
+.p-eyebrow{
+  font-size:.68rem;font-weight:700;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--tl);margin-bottom:26px;display:flex;align-items:center;gap:8px;
+}
+.p-eyebrow::before{content:'';width:20px;height:1px;background:var(--tl)}
+.p-hl{
+  font-family:var(--ff-d);font-size:clamp(2.6rem,6vw,5.4rem);
+  font-weight:600;line-height:1.04;letter-spacing:-.02em;
+  margin-bottom:28px;max-width:820px;
+}
+.p-hl em{color:var(--tl);font-style:normal}
+.p-sub{font-size:1rem;color:rgba(255,255,255,.42);max-width:580px;line-height:1.8;margin-bottom:40px}
+.p-ctas{display:flex;gap:12px;flex-wrap:wrap;align-items:center}
+.btn-primary{
+  padding:14px 36px;background:var(--tl);color:#000;
+  font-family:var(--ff-b);font-size:.82rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  border:none;border-radius:10px;cursor:pointer;transition:opacity .18s,transform .18s;
+}
+.btn-primary:hover{opacity:.83;transform:translateY(-1px)}
+.btn-ghost{
+  padding:14px 28px;background:transparent;color:var(--tx);
+  font-family:var(--ff-b);font-size:.82rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;
+  border:1px solid var(--b2);border-radius:10px;cursor:pointer;transition:all .18s;
+}
+.btn-ghost:hover{border-color:var(--tl);color:var(--tl)}
+
+.p-stats{
+  display:grid;grid-template-columns:repeat(4,1fr);
+  border-top:1px solid var(--b);border-left:1px solid var(--b);
+}
+.pstat{
+  padding:36px 28px;border-bottom:1px solid var(--b);border-right:1px solid var(--b);
+  transition:background .2s;cursor:default;
+}
+.pstat:hover{background:var(--tl-bg)}
+.pstat-n{font-family:var(--ff-m);font-size:2.6rem;font-weight:700;color:var(--tl);line-height:1;margin-bottom:8px;letter-spacing:-.02em}
+.pstat-l{font-size:.72rem;color:rgba(255,255,255,.32);text-transform:uppercase;letter-spacing:.08em}
+
+.p-caps{padding:60px 64px;border-bottom:1px solid var(--b)}
+.p-caps-hl{font-family:var(--ff-d);font-size:2rem;font-weight:600;margin-bottom:32px}
+
+.p-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:1px;background:var(--b);border:1px solid var(--b);
+  border-radius:16px;overflow:hidden;
+}
+.pcap{background:var(--bg);padding:28px 24px;transition:background .2s;cursor:default}
+.pcap:hover{background:var(--tl-bg)}
+.pcap-n{font-family:var(--ff-m);font-size:.65rem;color:var(--tl);margin-bottom:12px;letter-spacing:.1em}
+.pcap-t{font-size:.96rem;font-weight:600;margin-bottom:8px}
+.pcap-b{font-size:.82rem;color:rgba(255,255,255,.37);line-height:1.66}
+
+.p-workflow{padding:60px 64px;background:var(--sf)}
+.p-wf-hl{font-family:var(--ff-d);font-size:1.8rem;font-weight:600;margin-bottom:36px}
+.wf-steps{display:grid;grid-template-columns:repeat(3,1fr);gap:24px;align-items:start}
+.wf-step{position:relative}
+.wf-step::after{
+  content:'→';position:absolute;top:16px;right:-16px;
+  font-size:1.2rem;color:var(--di);
+}
+.wf-step:last-child::after{display:none}
+.wf-num{
+  font-family:var(--ff-m);font-size:.68rem;font-weight:700;
+  color:var(--tl);letter-spacing:.1em;margin-bottom:12px;
+}
+.wf-t{font-size:1rem;font-weight:600;margin-bottom:8px}
+.wf-b{font-size:.82rem;color:var(--mu);line-height:1.65}
+
+/* ═══════════════════════════════════════
+   EVALUATE MODE (Committee)
+═══════════════════════════════════════ */
+#v-eval{background:var(--bg)}
+
+.ev-header{
+  padding:36px 36px 28px;border-bottom:1px solid var(--b);
+  display:flex;align-items:start;justify-content:space-between;gap:20px;flex-wrap:wrap;
+}
+.ev-hl{font-family:var(--ff-d);font-size:2.4rem;font-weight:600;margin-bottom:6px}
+.ev-sub{font-size:.87rem;color:var(--mu);max-width:580px;line-height:1.65}
+
+.ev-controls-bar{
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:10px;
+}
+.ev-select-wrap{display:flex;flex-direction:column;gap:4px}
+.ev-select-label{font-size:.65rem;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--di)}
+select{
+  background:var(--sf2);border:1px solid var(--b);color:var(--tx);
+  padding:8px 11px;border-radius:8px;font-family:var(--ff-b);font-size:.81rem;
+  outline:none;cursor:pointer;-webkit-appearance:none;appearance:none;transition:border-color .15s;
+}
+select:focus{border-color:var(--tl-bd)}
+select option{background:#111f30}
+
+.feed-badge{
+  display:flex;align-items:center;gap:6px;padding:5px 12px;border-radius:999px;
+  font-size:.7rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  border:1px solid var(--tl-bd);color:var(--tl);white-space:nowrap;
+}
+.feed-dot{width:6px;height:6px;background:var(--tl);border-radius:50%;animation:pulse 2s infinite}
+.feed-badge.static{border-color:var(--am-bd);color:var(--am)}
+.feed-badge.static .feed-dot{background:var(--am);animation:none}
+
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.3;transform:scale(.7)}}
+
+.ev-actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+
+.btn-print{
+  display:flex;align-items:center;gap:7px;
+  padding:9px 18px;background:transparent;
+  border:1px solid var(--b2);color:var(--tx);
+  font-family:var(--ff-b);font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:8px;cursor:pointer;transition:all .18s;
+}
+.btn-print:hover{border-color:var(--tl-bd);color:var(--tl)}
+.btn-next{
+  padding:9px 20px;background:var(--tl);color:#000;
+  font-family:var(--ff-b);font-size:.75rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  border:none;border-radius:8px;cursor:pointer;transition:opacity .18s;
+}
+.btn-next:hover{opacity:.82}
+
+.ev-body{padding:28px 36px 80px}
+
+/* Category section */
+.cat-section{margin-bottom:36px}
+
+.cat-header{
+  display:flex;align-items:center;justify-content:space-between;gap:16px;
+  padding:20px 24px;border-radius:14px 14px 0 0;
+  border:1px solid;border-bottom:none;cursor:pointer;transition:background .18s;
+  user-select:none;
+}
+.cat-header:hover{filter:brightness(1.1)}
+.cat-header.arch{background:var(--tl-bg);border-color:var(--tl-bd)}
+.cat-header.pmc{background:var(--am-bg);border-color:var(--am-bd)}
+.cat-header.mep{background:var(--bl-bg);border-color:var(--bl-bd)}
+
+.cat-header-left{display:flex;align-items:center;gap:14px}
+.cat-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.arch .cat-dot{background:var(--tl)}
+.pmc .cat-dot{background:var(--am)}
+.mep .cat-dot{background:var(--bl)}
+
+.cat-name{font-size:1.05rem;font-weight:700}
+.arch .cat-name{color:var(--tl)}
+.pmc .cat-name{color:var(--am)}
+.mep .cat-name{color:var(--bl)}
+
+.cat-count{
+  font-family:var(--ff-m);font-size:.7rem;font-weight:600;
+  padding:3px 9px;border-radius:999px;
+}
+.arch .cat-count{background:var(--tl-bg);color:var(--tl);border:1px solid var(--tl-bd)}
+.pmc .cat-count{background:var(--am-bg);color:var(--am);border:1px solid var(--am-bd)}
+.mep .cat-count{background:var(--bl-bg);color:var(--bl);border:1px solid var(--bl-bd)}
+
+.cat-toggle{font-size:.78rem;color:var(--mu);display:flex;align-items:center;gap:6px}
+.cat-toggle-arrow{transition:transform .22s}
+.cat-toggle-arrow.open{transform:rotate(180deg)}
+
+.cat-body{
+  border:1px solid;border-top:none;border-radius:0 0 14px 14px;overflow:hidden;
+}
+.cat-body.arch{border-color:var(--tl-bd)}
+.cat-body.pmc{border-color:var(--am-bd)}
+.cat-body.mep{border-color:var(--bl-bd)}
+
+/* weight editor */
+.weight-editor{
+  padding:20px 24px;border-bottom:1px solid var(--b);background:var(--sf);
+}
+.we-title{font-size:.65rem;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--mu);margin-bottom:16px}
+.we-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px}
+.we-row{margin-bottom:0}
+.we-head{display:flex;justify-content:space-between;margin-bottom:6px}
+.we-name{font-size:.78rem;font-weight:500;color:var(--tx)}
+.we-val{font-family:var(--ff-m);font-size:.78rem;font-weight:700;min-width:30px;text-align:right}
+.arch-c .we-val{color:var(--tl)}
+.pmc-c .we-val{color:var(--am)}
+.mep-c .we-val{color:var(--bl)}
+.we-total{
+  margin-top:14px;padding-top:14px;border-top:1px solid var(--b);
+  display:flex;justify-content:space-between;align-items:center;font-size:.8rem;color:var(--mu);
+}
+.we-total-val{font-family:var(--ff-m);font-size:1rem;font-weight:700}
+.we-total-val.ok{color:var(--tl)}
+.we-total-val.warn{color:var(--am)}
+.we-total-val.err{color:var(--dg)}
+
+input[type=range]{
+  width:100%;height:2px;-webkit-appearance:none;appearance:none;
+  background:var(--sf3);outline:none;border-radius:1px;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;width:13px;height:13px;
+  border-radius:50%;cursor:pointer;transition:transform .12s;
+  box-shadow:0 0 0 3px rgba(0,0,0,.4);
+}
+.arch-c input::-webkit-slider-thumb{background:var(--tl)}
+.pmc-c input::-webkit-slider-thumb{background:var(--am)}
+.mep-c input::-webkit-slider-thumb{background:var(--bl)}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.3)}
+
+/* consultant table */
+.ct-wrap{overflow-x:auto;background:var(--sf)}
+table.ct{width:100%;border-collapse:collapse;font-size:.82rem;min-width:600px}
+.ct th{
+  background:#0b1520;color:rgba(255,255,255,.5);padding:10px 14px;
+  font-size:.65rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;
+  text-align:left;white-space:nowrap;border-bottom:1px solid var(--b);
+}
+.ct td{
+  padding:13px 14px;border-bottom:1px solid var(--b);color:var(--tx);
+  transition:background .15s;vertical-align:middle;
+}
+.ct tr:last-child td{border-bottom:none}
+.ct tr:hover td{background:var(--sf2)}
+.ct tr.top-rank td{background:rgba(13,180,135,.04)}
+.ct tr.top-rank td:first-child{border-left:2px solid var(--tl)}
+.ct .firm-name{font-weight:600;font-size:.9rem}
+.ct .firm-team{font-size:.72rem;color:var(--mu);margin-top:2px}
+.score-cell{font-family:var(--ff-m);font-size:1.1rem;font-weight:700}
+.dim-score{font-family:var(--ff-m);font-size:.82rem;color:var(--mu)}
+.grade-pill{
+  display:inline-block;font-family:var(--ff-m);font-size:.68rem;font-weight:700;
+  padding:2px 8px;border-radius:5px;
+}
+.grade-a{background:rgba(13,180,135,.14);color:var(--tl)}
+.grade-b{background:rgba(232,165,48,.14);color:var(--am)}
+.grade-c{background:rgba(232,73,73,.14);color:var(--dg)}
+.rank-badge{
+  font-family:var(--ff-m);font-size:1.1rem;font-weight:700;
+  text-align:center;line-height:1;
+}
+.r1 .rank-badge{color:var(--tl)}
+.r2 .rank-badge{color:var(--am)}
+.r3 .rank-badge{color:#4a6070}
+.no-data-row td{
+  text-align:center;padding:28px;color:var(--mu);font-style:italic;font-size:.87rem;
+}
+.cat-winner{
+  padding:14px 24px;background:var(--sf);border-top:1px solid var(--b);
+  font-size:.82rem;color:var(--mu);display:flex;align-items:center;gap:8px;
+}
+.cat-winner strong{color:var(--tx)}
+
+/* ══════════════════════════════
+   ADVISORY MODE (Client)
+══════════════════════════════ */
+#v-advisory{background:#f5f4f0;color:#1a1a1a;min-height:100vh}
+
+.ad-hero{
+  background:#070d1c;padding:60px 52px 52px;color:white;
+  position:relative;overflow:hidden;
+}
+.ad-hero::after{
+  content:'';position:absolute;bottom:0;right:0;
+  width:350px;height:250px;
+  background:radial-gradient(ellipse at 80% 100%,rgba(13,180,135,.06) 0%,transparent 70%);
+}
+.ad-eyebrow{font-size:.68rem;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--tl);margin-bottom:20px}
+.ad-hero h1{font-family:var(--ff-d);font-size:clamp(1.8rem,4.5vw,3.4rem);font-weight:600;line-height:1.12;margin-bottom:16px}
+.ad-hero p{font-size:.95rem;color:rgba(255,255,255,.5);max-width:540px;line-height:1.72}
+
+.ad-nav{display:flex;gap:8px;padding:20px 52px;background:#070d1c;border-top:1px solid rgba(255,255,255,.05);flex-wrap:wrap}
+.ad-nav-btn{
+  padding:7px 16px;background:rgba(255,255,255,.06);color:rgba(255,255,255,.55);
+  border:1px solid rgba(255,255,255,.1);border-radius:8px;font-size:.75rem;font-weight:600;
+  cursor:pointer;transition:all .18s;
+}
+.ad-nav-btn.on,.ad-nav-btn:hover{background:rgba(13,180,135,.12);color:var(--tl);border-color:var(--tl-bd)}
+
+.ad-body{max-width:840px;margin:0 auto;padding:48px 32px 80px}
+
+.ad-step{display:grid;grid-template-columns:52px 1fr;gap:24px;margin-bottom:52px;align-items:start}
+.ad-num{
+  width:46px;height:46px;background:#070d1c;color:var(--tl);
+  font-family:var(--ff-m);font-size:.95rem;font-weight:700;
+  border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.ad-step-body h3{font-family:var(--ff-d);font-size:1.6rem;font-weight:600;color:#0a1020;margin-bottom:12px;line-height:1.2}
+.ad-step-body p{font-size:.92rem;color:#4a5568;margin-bottom:16px;line-height:1.78}
+
+.ad-cards{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-top:16px}
+.ad-card{background:white;border:1px solid #dde5ef;border-radius:10px;padding:15px 17px}
+.ad-card.r{border-left:3px solid var(--dg)}
+.ad-card.a{border-left:3px solid var(--am)}
+.ad-card.g{border-left:3px solid var(--tl)}
+.ad-card h4{font-size:.8rem;font-weight:700;color:#1a1a1a;margin-bottom:6px}
+.ad-card p{font-size:.77rem;color:#64748b;line-height:1.55;margin:0}
+
+.ad-qlist{background:white;border:1px solid #dde5ef;border-radius:12px;padding:18px;margin-top:16px}
+.ad-q{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid #f1f5f9}
+.ad-q:last-child{border-bottom:none;padding-bottom:0}
+.ad-q:first-child{padding-top:0}
+.ad-q-arrow{color:#0db487;font-weight:700;font-size:.88rem;margin-top:1px;flex-shrink:0}
+.ad-q-text{font-size:.85rem;color:#374151;line-height:1.62}
+
+.ad-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:16px}
+.ad-stat{background:#070d1c;border-radius:10px;padding:20px;text-align:center;color:white}
+.ad-stat-n{font-family:var(--ff-m);font-size:1.9rem;font-weight:700;color:var(--tl);line-height:1;margin-bottom:6px}
+.ad-stat-l{font-size:.72rem;color:rgba(255,255,255,.38);text-transform:uppercase;letter-spacing:.07em}
+
+.ad-next{
+  text-align:center;padding-top:16px;
+}
+.btn-print-big{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:13px 32px;background:white;color:#0a1020;
+  font-family:var(--ff-b);font-size:.8rem;font-weight:700;letter-spacing:.07em;text-transform:uppercase;
+  border:1.5px solid #dde5ef;border-radius:10px;cursor:pointer;transition:all .18s;
+}
+.btn-print-big:hover{border-color:#0db487;color:#0db487}
+
+/* ════════════ RESPONSIVE ════════════ */
+@media(max-width:900px){
+  .p-hero,.p-caps,.p-workflow,.pitch-cta{padding:40px 24px}
+  .p-stats{grid-template-columns:repeat(2,1fr)}
+  .wf-steps{grid-template-columns:1fr}
+  .wf-step::after{display:none}
+  .ev-header{flex-direction:column;gap:12px}
+  .ev-body{padding:20px 16px 60px}
+  .ad-hero,.ad-nav{padding:32px 24px}
+  .ad-body{padding:32px 16px 60px}
+}
+@media(max-width:600px){
+  .mbar{padding:0 12px}
+  .step-flow{display:none}
+  .p-hl{font-size:2.2rem}
+  .p-stats{grid-template-columns:1fr 1fr}
+}
+</style>
 </head>
 <body>
 
 <!-- ══════ MODE BAR ══════ -->
-<nav class="modebar">
-  <div class="brand-wrap">
-    <div class="brand-mark">GD</div>
-    <div class="brand-name">Greenscape <span>Designz</span> · Procurement Intelligence</div>
+<nav class="mbar">
+  <div class="brand">
+    <div class="brand-m">GD</div>
+    <div class="brand-n">Greenscape <span>Designz</span> · Procurement Intelligence</div>
   </div>
-  <div class="mode-pills">
-    <button class="mpill on" data-mode="command">Command</button>
-    <button class="mpill" data-mode="client">Client</button>
-    <button class="mpill" data-mode="committee">Committee</button>
-    <button class="mpill" data-mode="pitch">Pitch</button>
+  <div class="step-flow">
+    <span id="s1" class="sep">Pitch</span>
+    <span class="sep">→</span>
+    <span id="s2" class="sep">Evaluate</span>
+    <span class="sep">→</span>
+    <span id="s3" class="sep">Advisory</span>
+  </div>
+  <div class="pills">
+    <button class="pill on" data-mode="pitch">Pitch</button>
+    <button class="pill" data-mode="eval">Evaluate</button>
+    <button class="pill" data-mode="advisory">Advisory</button>
   </div>
 </nav>
 
-<!-- ═══════════════════════════════════
-     COMMAND MODE
-═══════════════════════════════════ -->
-<div id="v-command" class="modeview on">
-  <div class="cmd-header">
-    <div>
-      <div class="cmd-title">Procurement <em>Intelligence</em> Command</div>
-      <div class="cmd-sub">Live calibration engine for healthcare consultant evaluation. Adjust weights to rerank all registered firms in real time. Activate failure cascades to simulate downstream delivery risk.</div>
-    </div>
-    <div class="live-badge">
-      <span class="live-dot"></span>
-      Live Engine
-    </div>
-  </div>
+<!-- ══════════════════════════════════
+     PITCH MODE — LANDING
+══════════════════════════════════ -->
+<div id="v-pitch" class="mv on">
 
-  <div class="cmd-body">
-    <div class="cmd-left">
-      <div class="panel-label">Weight Calibration</div>
-      <div class="srow">
-        <div class="shead"><span class="sname">Healthcare Experience</span><span class="sval" id="sv-healthcare">20</span></div>
-        <input type="range" min="0" max="30" step="1" value="20" data-key="healthcare" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">NABH / Regulatory Readiness</span><span class="sval" id="sv-nabh">18</span></div>
-        <input type="range" min="0" max="30" step="1" value="18" data-key="nabh" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">Construction Coordination</span><span class="sval" id="sv-coordination">16</span></div>
-        <input type="range" min="0" max="30" step="1" value="16" data-key="coordination" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">MEP &amp; Systems Integration</span><span class="sval" id="sv-mep">16</span></div>
-        <input type="range" min="0" max="30" step="1" value="16" data-key="mep" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">Documentation Maturity</span><span class="sval" id="sv-documentation">12</span></div>
-        <input type="range" min="0" max="30" step="1" value="12" data-key="documentation" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">Cost Sensitivity</span><span class="sval" id="sv-cost">8</span></div>
-        <input type="range" min="0" max="30" step="1" value="8" data-key="cost" class="wslider">
-      </div>
-      <div class="srow">
-        <div class="shead"><span class="sname">Long-term OPEX</span><span class="sval" id="sv-opex">10</span></div>
-        <input type="range" min="0" max="30" step="1" value="10" data-key="opex" class="wslider">
-      </div>
-
-      <div class="divline"></div>
-
-      <div class="slabel">Project Positioning</div>
-      <select id="sel-pos">
-        <option value="functional">Functional Mid-Scale Hospital</option>
-        <option value="premium">Premium Neuro-Care Centre</option>
-        <option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
-        <option value="future">Future Expansion-Ready Campus</option>
-      </select>
-
-      <div class="slabel">Decision-maker Risk Appetite</div>
-      <select id="sel-risk">
-        <option value="safe">Low Risk / Stable Delivery</option>
-        <option value="balanced" selected>Balanced</option>
-        <option value="aggressive">Aggressive / High Ambition</option>
-      </select>
-    </div>
-
-    <div class="cmd-right">
-      <div class="nlg-box">
-        <div class="nlg-head">
-          <span class="live-dot"></span>
-          Procurement Intelligence Feed
-        </div>
-        <div class="nlg-out" id="nlg-out"></div>
-      </div>
-
-      <div class="rankings-bar">
-        <div class="rankings-hd">Live Consultant Rankings</div>
-        <div class="rankings-note">Re-sorts as weights shift</div>
-      </div>
-
-      <div class="clist" id="clist"></div>
-
-      <div class="failure-zone">
-        <div class="failure-hd">Failure Cascade Simulator</div>
-        <div class="ftriggers">
-          <button class="ftrig" data-cascade="mep">MEP – Fire Ceiling Clash</button>
-          <button class="ftrig" data-cascade="nabh">NABH Audit Failure</button>
-          <button class="ftrig" data-cascade="rfi">RFI Overload Storm</button>
-          <button class="ftrig" data-cascade="contractor">Contractor Abandonment</button>
-          <button class="ftrig" data-cascade="noc">Regulatory NOC Delay</button>
-          <button class="ftrig" data-cascade="opex">Post-Handover Breakdown</button>
-        </div>
-        <div class="cascade-box" id="cascade-box">
-          <div class="cascade-phases" id="cascade-phases"></div>
-          <div class="cascade-desc" id="cascade-desc"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     CLIENT MODE
-═══════════════════════════════════ -->
-<div id="v-client" class="modeview">
-  <div class="cl-hero">
-    <div class="cl-eyebrow">For Hospital Clients &amp; Decision-Makers</div>
-    <h1>Your hospital project deserves<br>institutional thinking.</h1>
-    <p>A plain-language guide to what really matters when selecting your design and delivery team — and what most clients never think to ask.</p>
-  </div>
-  <div class="cl-body">
-    <div class="cl-step">
-      <div class="cl-stepnum">01</div>
-      <div class="cl-step-body">
-        <h3>A hospital is not a building. It is an operational system.</h3>
-        <p>Most failed hospital projects do not fail because of bad architecture. They fail because the architecture, engineering, fire safety, medical planning, and construction teams were never truly coordinated. The most expensive moment in a hospital project is discovering in Month 18 that the HVAC ducts and fire sprinklers cannot occupy the same ceiling zone.</p>
-        <div class="cl-cards">
-          <div class="cl-card r">
-            <h4>What breaks silently</h4>
-            <p>MEP clashes, NABH documentation gaps, and coordination voids appear only after concrete is poured.</p>
-          </div>
-          <div class="cl-card a">
-            <h4>What gets delayed</h4>
-            <p>Fire NOC, KPME licensing, and AERB approvals all require documentation that starts at design, not at completion.</p>
-          </div>
-          <div class="cl-card g">
-            <h4>What protects you</h4>
-            <p>One accountable coordination authority with proven hospital delivery experience prevents most of these failures.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cl-step">
-      <div class="cl-stepnum">02</div>
-      <div class="cl-step-body">
-        <h3>Three questions that matter more than any portfolio.</h3>
-        <p>Before selecting any consultant, ask yourself these three things. The answers will tell you more than any presentation.</p>
-        <div class="cl-qlist">
-          <div class="cl-q">
-            <div class="cl-q-arrow">→</div>
-            <div class="cl-q-text">Has this firm built a hospital that has received NABH accreditation after completion — and can they show you the documentation they produced to achieve it, not just photos of the building?</div>
-          </div>
-          <div class="cl-q">
-            <div class="cl-q-arrow">→</div>
-            <div class="cl-q-text">How many RFIs were raised on their last hospital project, and what was the average resolution time? High RFI volume is a documentation failure, not a construction one.</div>
-          </div>
-          <div class="cl-q">
-            <div class="cl-q-arrow">→</div>
-            <div class="cl-q-text">Ask them to describe, in detail, how they would coordinate an ICU pressure-zoning conflict between the HVAC consultant and the infection-control planner. Process answers reveal real depth.</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cl-step">
-      <div class="cl-stepnum">03</div>
-      <div class="cl-step-body">
-        <h3>The fee is the smallest number in this decision.</h3>
-        <p>A hospital project typically spends 3–5% of its capital budget on consultant fees. The coordination failures those fees either prevent or cause can cost 10–25% of the capital budget in retrofits, delays, and lost revenue days.</p>
-        <div class="cl-stat-row">
-          <div class="cl-stat">
-            <div class="cl-stat-n">3–5%</div>
-            <div class="cl-stat-l">Consultant fees as % of CAPEX</div>
-          </div>
-          <div class="cl-stat">
-            <div class="cl-stat-n">10–25%</div>
-            <div class="cl-stat-l">Coordination failure cost range</div>
-          </div>
-          <div class="cl-stat">
-            <div class="cl-stat-n">18 mo</div>
-            <div class="cl-stat-l">Avg delay from NABH rework</div>
-          </div>
-        </div>
-      </div>
-    </div>
-
-    <div class="cl-step">
-      <div class="cl-stepnum">04</div>
-      <div class="cl-step-body">
-        <h3>Red flags to watch for in presentations.</h3>
-        <div class="cl-cards">
-          <div class="cl-card r">
-            <h4>No NABH vocabulary</h4>
-            <p>Consultants who don't spontaneously use terms like NABH, KPME, AERB, MGPS, or NBC may lack healthcare documentation depth.</p>
-          </div>
-          <div class="cl-card r">
-            <h4>Solo architect model</h4>
-            <p>A single firm offering to manage all hospital systems coordination without named specialist partners is a significant red flag.</p>
-          </div>
-          <div class="cl-card r">
-            <h4>Portfolio-only defense</h4>
-            <p>Firms who respond to technical coordination questions with portfolio images rather than process descriptions.</p>
-          </div>
-          <div class="cl-card a">
-            <h4>Fee significantly below market</h4>
-            <p>Below-market fees often signal inadequate documentation bandwidth, not efficiency.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     COMMITTEE MODE
-═══════════════════════════════════ -->
-<div id="v-committee" class="modeview">
-  <div class="cm-header">
-    <h1>Formal Evaluation Matrix</h1>
-    <p>Adjust criterion weights below (total should reach 100). The scoring matrix re-ranks automatically.</p>
-  </div>
-
-  <div class="cm-weight-panel">
-    <div class="cm-weight-title">Criterion Weights</div>
-    <div class="cm-wgrid" id="cm-wgrid"></div>
-    <div class="cm-total-row">
-      <span>Total weight</span>
-      <span class="cm-total-val ok" id="cm-total">100%</span>
+  <div class="p-hero">
+    <div class="p-eyebrow">Greenscape Designz · Healthcare Delivery Advisory · Bengaluru</div>
+    <div class="p-hl">We don't choose your<br>consultants. We make<br>the choice <em>intelligent.</em></div>
+    <div class="p-sub">A systems-level procurement intelligence platform for hospital projects — evaluating firms across healthcare experience, NABH readiness, coordination maturity, and lifecycle governance. Live-scored from EOI response data.</div>
+    <div class="p-ctas">
+      <button class="btn-primary" onclick="setMode('eval')">Begin Evaluation →</button>
+      <button class="btn-ghost" onclick="setMode('advisory')">Client Advisory Guide</button>
     </div>
   </div>
 
-  <div class="cm-matrix">
-    <div class="cm-matrix-hd">Consultant Weighted Evaluation — All Registered Firms</div>
-    <div class="overflow-wrap">
-      <table class="cm-table">
-        <thead>
-          <tr>
-            <th>Firm</th>
-            <th>Domain</th>
-            <th>Healthcare</th>
-            <th>NABH</th>
-            <th>Coordination</th>
-            <th>MEP</th>
-            <th>Docs</th>
-            <th>Cost</th>
-            <th>OPEX</th>
-            <th>Weighted Score</th>
-            <th>Grade</th>
-          </tr>
-        </thead>
-        <tbody id="cm-tbody"></tbody>
-      </table>
-    </div>
-  </div>
-</div>
-
-<!-- ═══════════════════════════════════
-     PITCH MODE
-═══════════════════════════════════ -->
-<div id="v-pitch" class="modeview">
-  <div class="pitch-hero">
-    <div class="pitch-eyebrow">Greenscape Designz · Healthcare Delivery Advisory · Bengaluru</div>
-    <div class="pitch-headline">We don't choose your consultants.<br>We make the choice <em>intelligent.</em></div>
-    <div class="pitch-sub">Greenscape Designz brings a systems-level procurement intelligence layer to healthcare projects — translating technical complexity into defensible, institutionally rigorous decision frameworks that protect client interests at every stage.</div>
-  </div>
-
-  <div class="pitch-stats">
+  <div class="p-stats">
     <div class="pstat">
-      <div class="pstat-n">0</div>
+      <div class="pstat-n" id="ps-firms">—</div>
       <div class="pstat-l">Firms Evaluated</div>
     </div>
     <div class="pstat">
-      <div class="pstat-n">7</div>
-      <div class="pstat-l">Evaluation Dimensions</div>
+      <div class="pstat-n">3</div>
+      <div class="pstat-l">Consultant Categories</div>
     </div>
     <div class="pstat">
       <div class="pstat-n">6</div>
@@ -1405,476 +470,844 @@
     </div>
   </div>
 
-  <div class="pitch-caps">
-    <div class="pitch-caps-title">What we bring to your procurement</div>
-    <div class="pcap-grid">
+  <div class="p-caps">
+    <div class="p-caps-hl">What this platform delivers</div>
+    <div class="p-grid">
       <div class="pcap">
         <div class="pcap-n">01 — Intelligence</div>
-        <div class="pcap-t">Procurement Intelligence Engine</div>
-        <div class="pcap-b">We evaluate consultants on institutional delivery capability — not portfolio aesthetics or fee levels.</div>
+        <div class="pcap-t">Live EOI Response Scoring</div>
+        <div class="pcap-b">Responses are pulled from the live Google Form dataset and scored in real time — no manual data entry, no stale information.</div>
       </div>
       <div class="pcap">
-        <div class="pcap-n">02 — Risk</div>
-        <div class="pcap-t">Failure Risk Modeling</div>
-        <div class="pcap-b">Six hospital delivery failure vectors modeled and stress-tested against your specific procurement configuration.</div>
+        <div class="pcap-n">02 — Segregation</div>
+        <div class="pcap-t">Category-Specific Criteria</div>
+        <div class="pcap-b">Architecture firms, PMC firms, and MEP-F specialists are evaluated against entirely different criteria. Comparing them on the same scale produces misleading results.</div>
       </div>
       <div class="pcap">
-        <div class="pcap-n">03 — Regulatory</div>
-        <div class="pcap-t">NABH Readiness Scoring</div>
-        <div class="pcap-b">Accreditation documentation maturity evaluated as a primary procurement criterion — not a post-completion concern.</div>
+        <div class="pcap-n">03 — Governance</div>
+        <div class="pcap-t">Adjustable Weight Engine</div>
+        <div class="pcap-b">Each category's evaluation criteria carries adjustable weights — shift them to reflect the specific risk priorities of this project and client.</div>
       </div>
       <div class="pcap">
-        <div class="pcap-n">04 — Governance</div>
-        <div class="pcap-t">Coordination Governance</div>
-        <div class="pcap-b">Accountability matrices, coordination protocols, and delivery governance frameworks as standard advisory deliverables.</div>
+        <div class="pcap-n">04 — Risk</div>
+        <div class="pcap-t">Failure Cascade Visibility</div>
+        <div class="pcap-b">Six hospital delivery failure vectors are modeled — MEP clash, NABH audit failure, RFI storm, contractor abandonment, NOC delay, and OPEX collapse.</div>
       </div>
       <div class="pcap">
-        <div class="pcap-n">05 — Lifecycle</div>
-        <div class="pcap-t">Lifecycle Intelligence</div>
-        <div class="pcap-b">Long-term OPEX, maintainability, and operational viability factored into every recommendation from Day 1.</div>
+        <div class="pcap-n">05 — Advisory</div>
+        <div class="pcap-t">Client Language Translation</div>
+        <div class="pcap-b">A plain-language advisory layer translates procurement intelligence into decisions the hospital client can understand and act on without technical intermediaries.</div>
       </div>
       <div class="pcap">
-        <div class="pcap-n">06 — Integrity</div>
-        <div class="pcap-t">Institutional Neutrality</div>
-        <div class="pcap-b">We serve the client's governance interests — not consultant relationships — protecting decision integrity at every stage.</div>
+        <div class="pcap-n">06 — Output</div>
+        <div class="pcap-t">Print-Ready Summary Report</div>
+        <div class="pcap-b">Generate a formal procurement intelligence summary — by category, with weighted scores, grades, and strategic recommendation — ready for committee circulation.</div>
       </div>
     </div>
   </div>
 
-  <div class="pitch-cta">
-    <div class="pcta-eyebrow">Engage the intelligence layer</div>
-    <div class="pcta-hl">Ready to protect your procurement?</div>
-    <div class="pcta-sub">Greenscape Designz · SG Palya, Bengaluru · greenscapedesignz.com</div>
-    <button class="pcta-btn" onclick="setMode('command')">Open Command Interface →</button>
+  <div class="p-workflow">
+    <div class="p-workflow-hl">How to use this platform</div>
+    <div class="wf-steps">
+      <div class="wf-step">
+        <div class="wf-num">Step 01 — Evaluate</div>
+        <div class="wf-t">Load EOI responses &amp; calibrate weights</div>
+        <div class="wf-b">The system pulls live responses from the Google Form. Adjust criteria weights per category to reflect this project's strategic priorities.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-num">Step 02 — Advisory</div>
+        <div class="wf-t">Prepare client for the conversation</div>
+        <div class="wf-b">Review the plain-language advisory guide to position the right questions and red flags before the client presentation.</div>
+      </div>
+      <div class="wf-step">
+        <div class="wf-num">Step 03 — Print</div>
+        <div class="wf-t">Generate the procurement summary report</div>
+        <div class="wf-b">Print a formatted summary with all category rankings, weighted scores, and strategic recommendations for committee distribution.</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- ══════════════════════════════════
+     EVALUATE MODE
+══════════════════════════════════ -->
+<div id="v-eval" class="mv">
+
+  <div class="ev-header">
+    <div>
+      <div class="ev-hl">Consultant Evaluation Engine</div>
+      <div class="ev-sub">Firms segregated by category. Each category uses purpose-specific evaluation criteria. Adjust weights to reflect project priorities — rankings update live.</div>
+      <div class="ev-controls-bar">
+        <div class="ev-select-wrap">
+          <div class="ev-select-label">Project Type</div>
+          <select id="sel-pos">
+            <option value="nabh" selected>NABH-Ready Institutional Benchmark</option>
+            <option value="premium">Premium Neuro-Care Centre</option>
+            <option value="functional">Functional Mid-Scale Hospital</option>
+            <option value="future">Future Expansion-Ready Campus</option>
+          </select>
+        </div>
+        <div class="ev-select-wrap">
+          <div class="ev-select-label">Risk Appetite</div>
+          <select id="sel-risk">
+            <option value="balanced" selected>Balanced</option>
+            <option value="safe">Low Risk / Stable</option>
+            <option value="aggressive">High Ambition</option>
+          </select>
+        </div>
+        <div id="feed-status" class="feed-badge static">
+          <span class="feed-dot"></span>
+          <span id="feed-label">Loading…</span>
+        </div>
+      </div>
+    </div>
+    <div class="ev-actions">
+      <button class="btn-print" onclick="doPrint()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+        Print Summary
+      </button>
+      <button class="btn-next" onclick="setMode('advisory')">Advisory Guide →</button>
+    </div>
+  </div>
+
+  <div class="ev-body">
+
+    <!-- ── ARCHITECTURE ── -->
+    <div class="cat-section" id="cs-arch">
+      <div class="cat-header arch" onclick="toggleCat('arch')">
+        <div class="cat-header-left">
+          <span class="cat-dot"></span>
+          <span class="cat-name">Architecture Firms</span>
+          <span class="cat-count" id="arch-count">0 firms</span>
+        </div>
+        <div class="cat-toggle">
+          <span>Criteria &amp; Weights</span>
+          <svg class="cat-toggle-arrow" id="arch-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="cat-body arch">
+        <div class="weight-editor arch-c" id="we-arch" style="display:none">
+          <div class="we-title">Evaluation Criteria Weights — Architecture</div>
+          <div class="we-grid" id="wg-arch"></div>
+          <div class="we-total">
+            <span>Total</span>
+            <span class="we-total-val ok" id="wt-arch">100%</span>
+          </div>
+        </div>
+        <div class="ct-wrap">
+          <table class="ct">
+            <thead id="th-arch"></thead>
+            <tbody id="tb-arch"></tbody>
+          </table>
+        </div>
+        <div class="cat-winner" id="winner-arch"></div>
+      </div>
+    </div>
+
+    <!-- ── PMC ── -->
+    <div class="cat-section" id="cs-pmc">
+      <div class="cat-header pmc" onclick="toggleCat('pmc')">
+        <div class="cat-header-left">
+          <span class="cat-dot"></span>
+          <span class="cat-name">PMC / Project Management</span>
+          <span class="cat-count" id="pmc-count">0 firms</span>
+        </div>
+        <div class="cat-toggle">
+          <span>Criteria &amp; Weights</span>
+          <svg class="cat-toggle-arrow" id="pmc-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="cat-body pmc">
+        <div class="weight-editor pmc-c" id="we-pmc" style="display:none">
+          <div class="we-title">Evaluation Criteria Weights — PMC</div>
+          <div class="we-grid" id="wg-pmc"></div>
+          <div class="we-total">
+            <span>Total</span>
+            <span class="we-total-val ok" id="wt-pmc">100%</span>
+          </div>
+        </div>
+        <div class="ct-wrap">
+          <table class="ct">
+            <thead id="th-pmc"></thead>
+            <tbody id="tb-pmc"></tbody>
+          </table>
+        </div>
+        <div class="cat-winner" id="winner-pmc"></div>
+      </div>
+    </div>
+
+    <!-- ── MEP ── -->
+    <div class="cat-section" id="cs-mep">
+      <div class="cat-header mep" onclick="toggleCat('mep')">
+        <div class="cat-header-left">
+          <span class="cat-dot"></span>
+          <span class="cat-name">MEP-F Engineering</span>
+          <span class="cat-count" id="mep-count">0 firms</span>
+        </div>
+        <div class="cat-toggle">
+          <span>Criteria &amp; Weights</span>
+          <svg class="cat-toggle-arrow" id="mep-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+      </div>
+      <div class="cat-body mep">
+        <div class="weight-editor mep-c" id="we-mep" style="display:none">
+          <div class="we-title">Evaluation Criteria Weights — MEP-F Engineering</div>
+          <div class="we-grid" id="wg-mep"></div>
+          <div class="we-total">
+            <span>Total</span>
+            <span class="we-total-val ok" id="wt-mep">100%</span>
+          </div>
+        </div>
+        <div class="ct-wrap">
+          <table class="ct">
+            <thead id="th-mep"></thead>
+            <tbody id="tb-mep"></tbody>
+          </table>
+        </div>
+        <div class="cat-winner" id="winner-mep"></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════════
+     ADVISORY MODE
+══════════════════════════════════ -->
+<div id="v-advisory" class="mv">
+  <div class="ad-hero">
+    <div class="ad-eyebrow">For Hospital Clients &amp; Steering Committees</div>
+    <h1>Your hospital project deserves<br>institutional thinking.</h1>
+    <p>A plain-language guide to what really matters when selecting your design and delivery team — and what most clients never think to ask.</p>
+  </div>
+  <div class="ad-nav">
+    <button class="ad-nav-btn on" onclick="adTab(this,'tab1')">Why coordination beats aesthetics</button>
+    <button class="ad-nav-btn" onclick="adTab(this,'tab2')">The three questions that matter</button>
+    <button class="ad-nav-btn" onclick="adTab(this,'tab3')">The fee is the wrong number</button>
+    <button class="ad-nav-btn" onclick="adTab(this,'tab4')">Red flags to watch for</button>
+  </div>
+  <div class="ad-body">
+
+    <div id="tab1" class="ad-tab">
+      <div class="ad-step">
+        <div class="ad-num">01</div>
+        <div class="ad-step-body">
+          <h3>A hospital is not a building. It is an operational system.</h3>
+          <p>Most failed hospital projects do not fail because of bad architecture. They fail because the architecture, engineering, fire safety, medical planning, and construction teams were never truly coordinated. The most expensive moment in any hospital project is discovering in Month 18 that the HVAC ducts and fire sprinkler mains cannot occupy the same ceiling zone.</p>
+          <p>Every approval delay, every NABH rejection, every post-construction retrofit traces back to a coordination void that was present in the design documentation — invisible until it became unavoidable.</p>
+          <div class="ad-cards">
+            <div class="ad-card r">
+              <h4>What breaks silently</h4>
+              <p>MEP clashes, NABH documentation gaps, and coordination voids appear only after concrete is poured — and cost exponentially more to fix.</p>
+            </div>
+            <div class="ad-card a">
+              <h4>What gets delayed</h4>
+              <p>Fire NOC, KPME licensing, and AERB approvals all require documentation that starts at design stage, not at project completion.</p>
+            </div>
+            <div class="ad-card g">
+              <h4>What protects you</h4>
+              <p>One accountable coordination authority with proven hospital delivery experience prevents most of these failures from occurring.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab2" class="ad-tab" style="display:none">
+      <div class="ad-step">
+        <div class="ad-num">02</div>
+        <div class="ad-step-body">
+          <h3>Three questions that matter more than any portfolio presentation.</h3>
+          <p>Before selecting any consultant, ask these three questions directly. The quality and specificity of the answers will tell you more about a firm's true capability than any slideshow or photograph collection.</p>
+          <div class="ad-qlist">
+            <div class="ad-q">
+              <div class="ad-q-arrow">→</div>
+              <div class="ad-q-text">Has this firm built a hospital that has <strong>successfully received NABH accreditation after completion</strong> — and can they show you the documentation they produced to achieve it, not just photos of the finished building?</div>
+            </div>
+            <div class="ad-q">
+              <div class="ad-q-arrow">→</div>
+              <div class="ad-q-text">How many RFIs (Requests for Information) were raised on their last hospital project, and what was the average resolution time? <strong>High RFI volume is a documentation failure</strong>, not a construction one.</div>
+            </div>
+            <div class="ad-q">
+              <div class="ad-q-arrow">→</div>
+              <div class="ad-q-text">Ask them to describe, in detail, how they would coordinate an <strong>ICU pressure-zoning conflict</strong> between the HVAC consultant and the infection-control planner. Superficial answers reveal real depth.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab3" class="ad-tab" style="display:none">
+      <div class="ad-step">
+        <div class="ad-num">03</div>
+        <div class="ad-step-body">
+          <h3>The consultant fee is the smallest number in this decision.</h3>
+          <p>A hospital project typically spends 3–5% of its capital budget on all consultant fees combined. The coordination failures that those fees either prevent or allow to happen can cost 10–25% of the capital budget in retrofits, rework, delays, and lost revenue days from deferred operations.</p>
+          <p>Choosing the lowest-fee consultant ecosystem is not cost management. It is risk accumulation with a deferred payment date.</p>
+          <div class="ad-stats">
+            <div class="ad-stat">
+              <div class="ad-stat-n">3–5%</div>
+              <div class="ad-stat-l">Consultant fees as % of project CAPEX</div>
+            </div>
+            <div class="ad-stat">
+              <div class="ad-stat-n">10–25%</div>
+              <div class="ad-stat-l">Coordination failure cost range (rework + delay)</div>
+            </div>
+            <div class="ad-stat">
+              <div class="ad-stat-n">18 mo</div>
+              <div class="ad-stat-l">Average delay from NABH documentation rework</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="tab4" class="ad-tab" style="display:none">
+      <div class="ad-step">
+        <div class="ad-num">04</div>
+        <div class="ad-step-body">
+          <h3>Red flags to watch for during presentations.</h3>
+          <div class="ad-cards">
+            <div class="ad-card r">
+              <h4>No NABH vocabulary</h4>
+              <p>Consultants who don't spontaneously use terms like NABH, KPME, AERB, MGPS, or NBC likely lack healthcare documentation depth.</p>
+            </div>
+            <div class="ad-card r">
+              <h4>Solo architect model</h4>
+              <p>A single firm offering to manage all hospital systems coordination independently, without named specialist partners, is a high-risk appointment.</p>
+            </div>
+            <div class="ad-card r">
+              <h4>Portfolio-only defense</h4>
+              <p>Firms who respond to technical coordination questions with portfolio images rather than process descriptions are showing you what they lack, not what they have.</p>
+            </div>
+            <div class="ad-card a">
+              <h4>Fee significantly below market</h4>
+              <p>Below-market consultant fees usually signal inadequate documentation bandwidth or understaffed delivery — not efficiency.</p>
+            </div>
+          </div>
+          <div class="ad-next" style="margin-top:28px">
+            <button class="btn-print-big" onclick="doPrint()">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+              Print Procurement Summary Report
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
 <script>
-/* ═══════════════════════════════════
-   DATA & CONFIGURATION MANAGEMENT
-   ═══════════════════════════════════ */
+/* ══════════════════════════════
+   CATEGORY DEFINITIONS
+══════════════════════════════ */
+const CATS = {
+  arch: {
+    id:'arch', label:'Architecture Firms',
+    criteria:[
+      {key:'healthcare', label:'Healthcare Design Experience', w:25, desc:'Hospital, clinical, and healthcare facility design portfolio depth'},
+      {key:'nabh',       label:'NABH Documentation Readiness', w:20, desc:'Evidence of NABH-compliant design documentation and accreditation support'},
+      {key:'coordination',label:'Interdisciplinary Coordination', w:18, desc:'Proven multi-disciplinary coordination across MEP, structural, fire, and medical planning'},
+      {key:'documentation',label:'GFC & Documentation Quality',   w:17, desc:'GFC drawing discipline, BIM maturity, and construction document quality'},
+      {key:'scale',      label:'Team Scale & Institutional Capacity', w:12, desc:'Active technical personnel as a proxy for delivery bandwidth'},
+      {key:'cost',       label:'Cost Proposition',               w:8,  desc:'Fee efficiency relative to institutional capability signals'}
+    ]
+  },
+  pmc: {
+    id:'pmc', label:'PMC / Project Management',
+    criteria:[
+      {key:'governance',    label:'Delivery Governance & Accountability', w:28, desc:'Frameworks for accountability, escalation, and multi-party coordination'},
+      {key:'coordination',  label:'Construction Coordination',            w:25, desc:'Active site coordination, clash resolution, and RFI management depth'},
+      {key:'survivability', label:'Site Survivability',                   w:22, desc:'Ability to manage contractor conflicts, design changes, and field realities'},
+      {key:'healthcare',    label:'Healthcare Delivery Track Record',     w:15, desc:'Demonstrated hospital project delivery experience specifically as PMC'},
+      {key:'contractual',   label:'Contractual Management Maturity',      w:10, desc:'Tender, procurement, and contract administration depth'}
+    ]
+  },
+  mep: {
+    id:'mep', label:'MEP-F Engineering',
+    criteria:[
+      {key:'systems',     label:'Healthcare Systems Depth',       w:30, desc:'HVAC pressure zoning, MGPS, electrical redundancy, and fire integration'},
+      {key:'hospital',    label:'Hospital Project Experience',    w:22, desc:'Specific MEP delivery in hospital environments including OT, ICU, and sterile areas'},
+      {key:'integration', label:'Architecture Integration',       w:18, desc:'BIM coordination, spatial clash management, and interdisciplinary documentation'},
+      {key:'regulatory',  label:'Regulatory Compliance Depth',   w:18, desc:'NBC, fire NOC, AERB, and statutory MEP approval track record'},
+      {key:'scale',       label:'Specialist Team Scale',          w:12, desc:'Dedicated healthcare MEP technical personnel bandwidth'}
+    ]
+  }
+};
+
+/* weights are mutable per category */
+const W = {};
+for(const cat of Object.values(CATS)){
+  W[cat.id] = {};
+  cat.criteria.forEach(c => W[cat.id][c.key] = c.w);
+}
+
+/* ══════════════════════════════
+   STATIC FALLBACK DATA
+══════════════════════════════ */
+const STATIC = [
+  {name:'Design Alphabet',     domain:'Architecture',            team:'~170',   cat:'arch', scores:{healthcare:82,nabh:75,coordination:85,documentation:88,scale:95,cost:45}},
+  {name:'Interface Architects',domain:'Architecture',            team:'Medium', cat:'arch', scores:{healthcare:68,nabh:65,coordination:65,documentation:65,scale:65,cost:72}},
+  {name:'Rainmaker Studio',    domain:'Architecture',            team:'Small',  cat:'arch', scores:{healthcare:62,nabh:58,coordination:60,documentation:58,scale:48,cost:78}},
+  {name:'Synergic Designs',    domain:'Architecture',            team:'Medium', cat:'arch', scores:{healthcare:60,nabh:55,coordination:58,documentation:55,scale:62,cost:80}},
+  {name:'Pavan Architects',    domain:'Architecture',            team:'Small',  cat:'arch', scores:{healthcare:45,nabh:42,coordination:40,documentation:42,scale:35,cost:88}},
+  {name:'Wellness Bridge',     domain:'PMC',                     team:'PMC',    cat:'pmc',  scores:{governance:85,coordination:90,survivability:80,healthcare:82,contractual:72}},
+  {name:'Infrabees PMC',       domain:'Project Management',      team:'Medium', cat:'pmc',  scores:{governance:70,coordination:75,survivability:68,healthcare:65,contractual:65}},
+  {name:'MEPCO Engineering',   domain:'MEP-F Engineering',       team:'30+',    cat:'mep',  scores:{systems:92,hospital:78,integration:72,regulatory:80,scale:70}},
+  {name:'Audvic Solutions',    domain:'MEP Engineering',         team:'Small',  cat:'mep',  scores:{systems:70,hospital:65,integration:58,regulatory:65,scale:48}}
+];
+
+let FIRMS = [];
+let dataSource = 'loading';
+
+/* ══════════════════════════════
+   SCORING UTILITIES
+══════════════════════════════ */
 const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRHrcy8mR6WAzqxaQHAlDwEZ_N9lyagn3aHPItCDV4-NkIsNr1lJb67gWQWcvedllMIOMgiWB-bqHZi/pub?gid=764802717&single=true&output=csv';
 
-let CONSULTANTS = [];
-const KEYS = ['healthcare','nabh','coordination','mep','documentation','cost','opex'];
-const LABELS = {healthcare:'Healthcare',nabh:'NABH',coordination:'Coordination',mep:'MEP',documentation:'Documentation',cost:'Cost',opex:'OPEX'};
-let W = {healthcare:20,nabh:18,coordination:16,mep:16,documentation:12,cost:8,opex:10};
+function kw(text, pairs){
+  let s=30;
+  for(const [k,p] of pairs){ if(text.includes(k.toLowerCase())) s+=p; }
+  return Math.min(Math.round(s),100);
+}
 
-/* LOAD LIVE DATA WITH AUTOMATIC LOCAL EXPEDIENT COLD-FAILOVER */
-async function loadConsultants() {
-  Papa.parse(CSV_URL, {
-    download: true,
-    header: true,
-    skipEmptyLines: true,
-    complete: function(results) {
-      if (!results.data || results.data.length === 0) {
-        console.warn("Spreadsheet parsed empty. Launching high-fidelity fallback layer.");
-        useFallbackEcosystem();
-        return;
-      }
+function teamScale(n){
+  const t=parseInt(n)||5;
+  if(t>=150)return 95; if(t>=100)return 88; if(t>=50)return 78;
+  if(t>=25)return 65; if(t>=10)return 50; return 35;
+}
 
-      CONSULTANTS = results.data.map(obj => {
-        if (!obj || Object.keys(obj).length <= 1) return null;
-        const raw = JSON.stringify(obj).toLowerCase();
+function detectCat(row){
+  const d=(row['Select your primary engineering/consultancy domain for this project']||'').toLowerCase();
+  const all=JSON.stringify(row).toLowerCase();
+  if(d.includes('pmc')||d.includes('project management')||d.includes('management consultant'))return 'pmc';
+  if(d.includes('mep')||d.includes('mechanical')||d.includes('electrical engineering')||d.includes('mep-f')||
+     all.includes('hvac')&&all.includes('mep'))return 'mep';
+  return 'arch';
+}
 
-        const healthcare = raw.includes('hospital') ? 85 : raw.includes('healthcare') ? 78 : 60;
-        const nabh = raw.includes('nabh') ? 88 : raw.includes('medical gas') ? 72 : 58;
-        const coordination = raw.includes('pmc') ? 90 : raw.includes('coordination') ? 78 : 60;
-        const mep = raw.includes('hvac') ? 90 : raw.includes('mep') ? 82 : 58;
-        const documentation = raw.includes('gfc') ? 88 : raw.includes('documentation') ? 78 : 60;
-        const cost = 72;
-        const opex = raw.includes('sustainable') ? 82 : 65;
+function scoreRow(row, cat){
+  const t=JSON.stringify(row).toLowerCase();
+  const tn=parseInt(row['Total Strength of Active Full-Time Technical Personnel (Firm Size)'])||5;
 
-        return {
-          name: obj['Legal Corporate Name of Firm'] || 'Unnamed Consultant',
-          domain: obj['Select your primary engineering/consultancy domain for this project'] || 'Consultant Specialist',
-          team: obj['Total Strength of Active Full-Time Technical Personnel (Firm Size)'] || 'Undisclosed Size',
-          grade: 'A',
-          role: coordination > 80 ? 'Integrated Delivery Candidate' : mep > 80 ? 'Specialist Systems Consultant' : 'Consultant',
-          scores: { healthcare, nabh, coordination, mep, documentation, cost, opex }
-        };
-      }).filter(item => item !== null);
+  if(cat==='arch') return {
+    healthcare: kw(t,[['hospital',12],['healthcare',10],['clinical',8],['ot ',7],['icu',7],['rehabilitation',6],['medical facility',8],['nabh',5]]),
+    nabh:       kw(t,[['nabh',22],['accreditation',12],['kpme',10],['compliance',6],['regulatory',5],['infection control',8]]),
+    coordination:kw(t,[['coordination',12],['multidisciplinary',10],['interdisciplinary',10],['site',6],['gfc',10],['clash',8],['mep coordination',12]]),
+    documentation:kw(t,[['gfc',15],['documentation',12],['bim',12],['tender drawing',10],['specification',8],['drawing',8]]),
+    scale: teamScale(tn),
+    cost: Math.max(100-teamScale(tn),35)
+  };
 
-      if (CONSULTANTS.length === 0) {
-        useFallbackEcosystem();
-      } else {
-        updateAllInterfaces();
-      }
+  if(cat==='pmc') return {
+    governance:   kw(t,[['pmc',15],['project management',12],['governance',12],['accountability',10],['management consultant',10],['project director',8]]),
+    coordination: kw(t,[['coordination',12],['rfi',15],['site',10],['construction management',12],['clash',10],['supervision',8]]),
+    survivability:kw(t,[['construction',10],['site supervision',12],['inspection',8],['execution',8],['delivery management',10],['field',8]]),
+    healthcare:   kw(t,[['hospital',12],['healthcare',10],['clinical',8],['medical',6],['nabh',10]]),
+    contractual:  kw(t,[['contract',12],['tender',12],['procurement',10],['bid management',10],['commercial',8]])
+  };
+
+  return {
+    systems:    kw(t,[['hvac',22],['medical gas',20],['mgps',20],['fire suppression',14],['mep',10],['electrical',8],['plumbing',6],['bms',10]]),
+    hospital:   kw(t,[['hospital',15],['healthcare',12],['clinical',10],['ot ',10],['icu',10],['operation theatre',12]]),
+    integration:kw(t,[['bim',15],['coordination',12],['clash detection',15],['integrated',10],['interdisciplinary',8]]),
+    regulatory: kw(t,[['nbc',18],['fire noc',15],['aerb',15],['fire safety',10],['compliance',8],['statutory',8]]),
+    scale: teamScale(tn)
+  };
+}
+
+function transformRow(row){
+  const name=row['Legal Corporate Name of Firm']||row[Object.keys(row)[0]]||'Unnamed';
+  const domain=row['Select your primary engineering/consultancy domain for this project']||'Unknown';
+  const team=row['Total Strength of Active Full-Time Technical Personnel (Firm Size)']||'—';
+  const cat=detectCat(row);
+  const scores=scoreRow(row,cat);
+  return {name,domain,team,cat,scores,raw:row};
+}
+
+function catScore(firm){
+  const cat=firm.cat;
+  const criteria=CATS[cat].criteria;
+  const totW=criteria.reduce((s,c)=>s+W[cat][c.key],0);
+  if(!totW)return 0;
+  return Math.round(criteria.reduce((s,c)=>s+(firm.scores[c.key]||50)*W[cat][c.key]/totW,0));
+}
+
+function grade(s){
+  if(s>=82)return{g:'A',cls:'grade-a'};
+  if(s>=72)return{g:'B+',cls:'grade-b'};
+  if(s>=62)return{g:'B',cls:'grade-b'};
+  return{g:'B−',cls:'grade-c'};
+}
+
+/* ══════════════════════════════
+   CSV LOADING & POLLING SUBSYSTEM
+══════════════════════════════ */
+function loadCSV(){
+  Papa.parse(CSV_URL,{
+    download:true, header:true, skipEmptyLines:true,
+    complete(res){
+      if(!res.data || res.data.length===0){ useFallback(); return; }
+      FIRMS=res.data.map(transformRow).filter(f=>f.name && f.name.length>1);
+      if(FIRMS.length===0){ useFallback(); return; }
+      dataSource='live';
+      setBadge(true,FIRMS.length);
+      updatePitchCount(FIRMS.length);
+      renderAll();
     },
-    error: function(err) {
-      console.warn("CORS/Security Block detected or offline. Running localized application state smoothly.");
-      useFallbackEcosystem();
-    }
+    error(){ useFallback(); }
   });
 }
 
-/* ROBUST LOCAL INFRASTRUCTURE BACKUP BUILDER */
-function useFallbackEcosystem() {
-  CONSULTANTS = [
-    {
-      name: "Mediverse Project Delivery Infrastructure",
-      domain: "Integrated PMC & Healthcare Design",
-      team: "54 Technical Personnel",
-      grade: "A",
-      role: "Integrated Delivery Candidate",
-      scores: { healthcare: 85, nabh: 88, coordination: 90, mep: 82, documentation: 88, cost: 72, opex: 82 }
-    },
-    {
-      name: "CareSystems Integration Group",
-      domain: "Healthcare MEP & Systems Engineering",
-      team: "32 Specialist Engineers",
-      grade: "A",
-      role: "Specialist Systems Consultant",
-      scores: { healthcare: 78, nabh: 72, coordination: 78, mep: 90, documentation: 78, cost: 72, opex: 65 }
-    },
-    {
-      name: "Beacon Clinical Space Advisory",
-      domain: "Medical Equipment Planning & Architecture",
-      team: "18 Consultants",
-      grade: "B+",
-      role: "Consultant",
-      scores: { healthcare: 85, nabh: 58, coordination: 60, mep: 58, documentation: 60, cost: 72, opex: 65 }
-    },
-    {
-      name: "Apex Engineering Operations",
-      domain: "Multidisciplinary Structural Guild",
-      team: "40 Personnel",
-      grade: "A",
-      role: "Consultant",
-      scores: { healthcare: 60, nabh: 65, coordination: 82, mep: 70, documentation: 78, cost: 85, opex: 70 }
-    }
-  ];
-  updateAllInterfaces();
+function useFallback(){
+  FIRMS=[...STATIC];
+  dataSource='static';
+  setBadge(false,FIRMS.length);
+  updatePitchCount(FIRMS.length);
+  renderAll();
 }
 
-/* SYNCHRONOUS DOM FLUSH */
-function updateAllInterfaces() {
-  renderRankings();
-  refreshNarrative();
-  renderCommitteeTable();
-  updatePitchStats();
-}
-
-/* INITIAL LIFE-CYCLE CALL */
-window.addEventListener('DOMContentLoaded', loadConsultants);
-
-function updatePitchStats() {
-  const stat = document.querySelector('.pstat-n');
-  if (stat) {
-    stat.innerText = CONSULTANTS.length;
+function setBadge(live,n){
+  const b=document.getElementById('feed-status');
+  const l=document.getElementById('feed-label');
+  if(live){
+    b.className='feed-badge';
+    l.textContent=`Live Feed · ${n} responses`;
+  } else {
+    b.className='feed-badge static';
+    l.textContent=`Static Data · ${n} firms`;
   }
 }
 
-/* ═══════════════════════════════════
-   SCORING MATRIX ALGORITHMS
-   ═══════════════════════════════════ */
-function wScore(c) {
-  const tot = KEYS.reduce((s,k)=>s+W[k],0);
-  if (!tot) return 0;
-  return Math.round(KEYS.reduce((s,k)=>s + c.scores[k]*W[k]/tot, 0));
+function updatePitchCount(n){
+  const el=document.getElementById('ps-firms');
+  if(el) el.textContent=n;
 }
 
-function sorted() {
-  return [...CONSULTANTS].sort((a,b)=>wScore(b)-wScore(a));
-}
-
-/* ═══════════════════════════════════
-   NLG CONTEXT RUNTIME GENERATOR
-   ═══════════════════════════════════ */
-const NLG_D = {
-  nabh: [
-    "The current weight distribution places <span class='hl'>NABH regulatory preparedness</span> as the dominant procurement signal. This shifts the evaluation axis decisively from aesthetic portfolio strength toward accreditation documentation maturity. Consultants with demonstrated NABH process literacy — not merely healthcare project experience — consistently float to the top of the ranking in this configuration.",
-    "With <span class='hl'>regulatory readiness</span> as the leading criterion, the scoring engine interprets this as an institutional-benchmark project where licensing viability from Day 1 is non-negotiable. The ability to produce NABH-compliant documentation from the design stage — not retroactively — becomes the primary differentiator. Firms that have only designed hospitals without subsequently managing their accreditation are systematically disadvantaged."
-  ],
-  healthcare: [
-    "Healthcare experience dominates the current calibration. The engine prioritises consultants who have navigated the full delivery cycle of <span class='hl'>operational hospital facilities</span> — not institutional buildings in the general sense. The distinction matters critically: a completed school or corporate campus shares almost no coordination complexity with a functioning ICU or sterile surgical suite.",
-    "With healthcare experience weighted highest, the evaluation favours consultants with genuine <span class='hl'>clinical workflow literacy</span>. The ability to distinguish between infection control zones, patient and staff circulation sequencing, and biomedical equipment clearances is not a design skill — it is an operational one. Consultants without field evidence of this literacy are unlikely to survive site conditions on a hospital project."
-  ],
-  coordination: [
-    "Construction coordination is the dominant criterion in this configuration. This is <span class='hl'>the most frequently underweighted dimension</span> in standard consultant evaluation — and the one most directly correlated with mid-construction cost escalation and schedule collapse. Consultants scoring highest here demonstrate a systematic approach to interdisciplinary coordination, not merely coordination claims in their presentations.",
-    "<span class='hl'>Coordination intelligence</span> carries the highest evaluative weight. This signals a client or advisor who understands that the highest delivery risk in hospital construction is not conceptual design failure — it is good design that cannot survive contact with the site. Firms with documented RFI management discipline and interdisciplinary coordination protocols score significantly above competitors."
-  ],
-  mep: [
-    "MEP and systems integration carries the highest evaluative weight. This is appropriate for critical care environments where <span class='hl'>HVAC pressure zoning, MGPS coordination, and electrical redundancy</span> are not secondary engineering concerns — they define operational safety. Specialists without dedicated healthcare MEP track records are significantly disadvantaged at this calibration.",
-    "Systems integration dominates the evaluation logic. In hospital construction, research consistently shows that <span class='hl'>over 60% of post-construction defects</span> originate from MEP-architecture interface failures. The current weighting appropriately treats interdisciplinary systems coordination as a primary selection criterion, not a specialist subcategory added late to the consultant ecosystem."
-  ],
-  cost: [
-    "An emphasis on <span class='warn'>cost sensitivity over quality criteria</span> traditionally points to delivery risks downstream. While savings on fees appear immediate, they frequently cause reduced coordination bandwidth that costs far more during construction. This tension is noted as a key risk.",
-    "Prioritizing <span class='warn'>cost control above institutional quality benchmarks</span> can succeed if paired with a rigorous accountability matrix to manage the typical documentation gap that lower-fee consultant models run into."
-  ],
-  documentation: [
-    "Documentation maturity is the primary criterion in this configuration — an unusually sophisticated calibration signal. It indicates a client or advisor who understands that <span class='hl'>hospital project failures are predominantly documentation failures</span>, not design failures. Consultants with GFC drawing discipline, RFI protocols, and construction-stage document governance score highest.",
-    "The dominant weight on documentation intelligence reflects a mature understanding that hospitals are not delivered by architectural drawings — they are delivered by <span class='hl'>the entire document ecosystem</span> that flows from those drawings. Contractors, authorities, and future hospital operators all depend on documentation quality that is determined, and cannot be recovered, at the design stage."
-  ],
-  opex: [
-    "Long-term OPEX and lifecycle maintainability carries the highest weight — a configuration that signals a client committed to <span class='hl'>operational sustainability</span> over initial delivery cost. This decision typically produces 15–25% lower lifecycle costs over a 20-year operational period for hospital facilities when reflected in early procurement choices.",
-    "Lifecycle intelligence dominates the evaluation. The current calibration rewards consultants who design with <span class='hl'>operational maintainability as a primary constraint</span> — not a post-handover consideration. This directly reduces the risk of high-maintenance mechanical systems, inaccessible MEP infrastructure, and energy-inefficient clinical environments emerging after opening."
-  ]
-};
-
-const NLG_T = {
-  costVsQuality: "There is a <span class='warn'>visible tension</span> in the weight distribution between cost sensitivity and institutional quality criteria. This is one of the most dangerous configurations in healthcare procurement — the saving on consultant fees is real and immediate; the rework costs are deferred by 18–36 months and are exponentially larger.",
-  highAmbition: "The project positioning and risk appetite signal institutional ambition that <span class='hl'>aligns with the technically deeper ecosystems</span> in this evaluation. The scoring engine consistently elevates firms with multidisciplinary depth and documented healthcare systems coordination experience at this configuration.",
-  balanced: "The weight distribution reflects a <span class='hl'>balanced institutional approach</span> — prioritising healthcare coordination quality without ignoring commercial realities. This is the appropriate configuration for an NABH-ready benchmark project seeking long-term operational viability alongside fiscal discipline.",
-  safe: "The low-risk appetite calibration produces a <span class='hl'>stable, proven-ecosystem preference</span>. The scoring engine elevates firms with the strongest institutional survivability scores — prioritising delivery certainty over technical ambition."
-};
-
-const NLG_A = {
-  nabh: "For NABH-benchmark positioning, the most critical procurement risk is <span class='hl'>pre-construction documentation incompleteness</span>. Every approval delay, accreditation failure, and licensing rejection in Indian hospital projects traces back to documentation not structured correctly at the design stage — not to construction quality. Consultants should be evaluated on their NABH documentation track record, not their hospital portfolio count.",
-  functional: "For a functional mid-scale hospital, the key structural risk is over-reliance on a single architectural lead without named specialist systems consultants. A <span class='hl'>two-stage evaluation</span> — technical prequalification followed by a live coordination scenario workshop — dramatically reduces the likelihood of appointment regret.",
-  premium: "Premium neuro-care environments require MEP consultants with specific experience in <span class='hl'>electromagnetic interference management, critical power redundancy, and laminar airflow design</span>. These are non-standard capabilities that demand specialist shortlisting, not general MEP firms with hospital project references.",
-  future: "Future-expansion readiness must be specified as a design constraint from Day 1 — not a vague aspiration. Consultants should demonstrate how they would design <span class='hl'>MEP service void redundancy, structural grid flexibility, and floor-to-floor height provision</span> to accommodate future clinical departments without structural intervention."
-};
-
-let _lastDom = null;
-
-function buildNarrative() {
-  const tot = KEYS.reduce((s,k)=>s+W[k],0);
-  if (!tot) return '<p>Awaiting calibration.</p>';
-
-  const domKey = [...KEYS].sort((a,b)=>W[b]-W[a])[0];
-  const costPct = W.cost / tot * 100;
-  const pos = document.getElementById('sel-pos')?.value || 'nabh';
-  const risk = document.getElementById('sel-risk')?.value || 'balanced';
-
-  if (domKey !== _lastDom) { _lastDom = domKey; }
-  const pool = NLG_D[domKey] || NLG_D.healthcare;
-  const v = Math.floor(Date.now()/8000) % pool.length;
-  const p1 = pool[v];
-
-  let p2 = NLG_T.balanced;
-  if (costPct > 20 && (W.nabh > 14 || W.mep > 14)) p2 = NLG_T.costVsQuality;
-  else if (risk === 'aggressive') p2 = NLG_T.highAmbition;
-  else if (risk === 'safe') p2 = NLG_T.safe;
-
-  const p3 = NLG_A[pos] || NLG_A.functional;
-
-  return `<p>${p1}</p><p>${p2}</p><p>${p3}</p>`;
-}
-
-function refreshNarrative() {
-  const el = document.getElementById('nlg-out');
-  if (!el) return;
-  el.style.opacity = '0';
-  setTimeout(() => {
-    el.innerHTML = buildNarrative();
-    el.style.opacity = '1';
-  }, 220);
-}
-
-/* ═══════════════════════════════════
-   VIEWPORT COMPILATION LAYOUTS
-   ═══════════════════════════════════ */
-function renderRankings() {
-  const list = document.getElementById('clist');
-  if (!list) return;
-  const s = sorted();
-  list.innerHTML = s.map((c,i) => {
-    const sc = wScore(c);
-    const rc = i===0?'r1':i===1?'r2':i===2?'r3':'';
-    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
-    return `<div class="ccard ${rc}">
-      <div class="ranknum">${String(i+1).padStart(2,'0')}</div>
-      <div>
-        <div class="cname">${c.name}</div>
-        <div class="cdomain">${c.domain} · ${c.team}</div>
-        <div class="crole">${c.role}</div>
-      </div>
-      <div class="cscore-area">
-        <div class="cscore">${sc}</div>
-        <div class="cbar-track"><div class="cbar-fill" style="width:${sc}%"></div></div>
-        <span class="gbadge ${gc}">${c.grade}</span>
-      </div>
-    </div>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════════
-   FAILURE CASCADES
-   ═══════════════════════════════════ */
-const CASCADES = {
-  mep: {
-    phases: ['Brief & Design','Coordination','GFC Drawings','Construction','Inspection','Fire NOC','Operations'],
-    origin: 2, hits: [false,true,true,true,true,true,false],
-    desc: 'A MEP–fire services ceiling clash during GFC drawing production triggers a coordination redesign phase. Construction commencement is delayed 6–14 weeks. A cascade of RFIs follows during construction as contractors encounter unresolved space conflicts. Fire NOC inspection readiness is delayed. Operational launch is pushed. The original coordination failure at drawing stage propagates through every subsequent project phase.',
-    pills: [{t:'12 wk delay',c:'delay'},{t:'8–12% cost escalation',c:'cost'},{t:'Fire NOC at risk',c:'risk'}]
-  },
-  nabh: {
-    phases: ['Brief','NABH Planning','Coordination','Construction','Completion','Accreditation','Operations'],
-    origin: 1, hits: [false,true,false,false,true,true,true],
-    desc: 'NABH documentation was not integrated at the design stage. At project completion, a pre-accreditation audit identifies 40+ non-compliant design decisions that cannot be resolved through cosmetic intervention. Forced partial redesign and reconstruction is required. NABH accreditation is withheld until Category 3 rectifications are complete. Operational launch is delayed by 9–18 months beyond the construction programme.',
-    pills: [{t:'9–18 mo delayed opening',c:'delay'},{t:'15–20% CAPEX rework',c:'cost'},{t:'NABH withheld',c:'risk'}]
-  },
-  rfi: {
-    phases: ['Design','Tender','Mobilisation','Construction','Mid-review','Completion','Handover'],
-    origin: 3, hits: [false,false,false,true,true,true,true],
-    desc: 'Poor coordination documentation generates 200+ RFIs during construction. Decision velocity collapses as consultant response bandwidth is overwhelmed. The contractor begins autonomous interpretation of unresolved coordination conflicts. Design intent progressively erodes. Post-completion snag volumes are unmanageable. Consultant-contractor disputes delay handover. The client receives a building that is neither what was designed nor what was built.',
-    pills: [{t:'200+ RFIs',c:'risk'},{t:'Handover delayed',c:'delay'},{t:'Design intent lost',c:'risk'}]
-  },
-  contractor: {
-    phases: ['Procurement','Contract','Construction Ph.1','Construction Ph.2','Emergency','Recovery','Operations'],
-    origin: 3, hits: [false,false,false,true,true,true,false],
-    desc: 'Primary contractor abandons site at approximately 45% construction completion due to cash flow collapse. Emergency re-procurement happens at premium cost and extended timeline. The incoming contractor disputes the quality and completeness of existing works. Insurance claim and arbitration proceedings run in parallel with active construction. Estimated delay: 12–20 months beyond the original programme. Estimated additional cost: 20–35% of original project budget.',
-    pills: [{t:'12–20 mo delay',c:'delay'},{t:'20–35% cost overrun',c:'cost'},{t:'Arbitration risk',c:'risk'}]
-  },
-  noc: {
-    phases: ['Design','Statutory Review','Plan Approval','Construction','Inspection','Fire NOC','Licensing'],
-    origin: 1, hits: [false,true,true,false,false,true,true],
-    desc: 'Statutory compliance gaps in design documentation delay plan approval by 8 months. Construction cannot commence. When construction eventually begins, undocumented mid-design changes create a second statutory review requirement. Fire NOC inspection fails at first attempt. Re-inspection adds 6 months. Hospital licensing — dependent on all statutory clearances — is delayed by 14–22 months from the original target date.',
-    pills: [{t:'14–22 mo total delay',c:'delay'},{t:'₹ idle CAPEX cost',c:'cost'},{t:'KPME at risk',c:'risk'}]
-  },
-  opex: {
-    phases: ['Design','Handover','Month 6','Year 1','Year 3','Year 5','Year 10'],
-    origin: 2, hits: [false,false,true,true,true,true,true],
-    desc: 'Lifecycle OPEX was not evaluated as a design criterion during procurement. By Month 6, HVAC maintenance costs are 40% above projection. Inaccessible MEP risers require partial wall demolition for routine servicing. Energy consumption is 35% above benchmark. By Year 5, a major mechanical systems retrofit costing 18–25% of the original project value is unavoidable. Hospital operational continuity is disrupted during the retrofit period.',
-    pills: [{t:'40% HVAC cost overrun',c:'cost'},{t:'35% energy overspend',c:'cost'},{t:'18–25% retrofit at Yr 5',c:'risk'}]
-  }
-};
-
-function triggerCascade(type) {
-  document.querySelectorAll('.ftrig').forEach(b => b.classList.remove('on'));
-  document.querySelector(`.ftrig[data-cascade="${type}"]`)?.classList.add('on');
-
-  const data = CASCADES[type];
-  const box = document.getElementById('cascade-box');
-  const phasesEl = document.getElementById('cascade-phases');
-  const descEl = document.getElementById('cascade-desc');
-
-  phasesEl.innerHTML = data.phases.map((p,i) => {
-    let cls = 'cphase-box';
-    if (i === data.origin) cls += ' origin';
-    const arrow = i < data.phases.length-1 ? '<span class="cphase-arrow">→</span>' : '';
-    return `<div class="cphase"><div class="${cls}" id="cp-${i}">${p}</div>${arrow}</div>`;
-  }).join('');
-
-  descEl.innerHTML = '';
-  box.classList.add('on');
-
-  data.hits.forEach((hit, i) => {
-    if (!hit || i === data.origin) return;
-    setTimeout(() => {
-      document.getElementById('cp-'+i)?.classList.add('hit');
-    }, i * 280);
+/* ══════════════════════════════
+   RENDER PORTAL
+══════════════════════════════ */
+function renderAll(){
+  ['arch','pmc','mep'].forEach(cat=>{
+    buildWeightEditor(cat);
+    renderCat(cat);
   });
-
-  setTimeout(() => {
-    const pills = data.pills.map(p => `<span class="impact-pill ${p.c}">${p.t}</span>`).join('');
-    descEl.innerHTML = data.desc + `<div class="cascade-impact">${pills}</div>`;
-  }, data.phases.length * 280 + 200);
 }
 
-/* ═══════════════════════════════════
-   COMMITTEE INTERACTIVE MODES
-   ═══════════════════════════════════ */
-function buildCommitteeWeights() {
-  const grid = document.getElementById('cm-wgrid');
-  if (!grid) return;
-  grid.innerHTML = KEYS.map(k => `
-    <div class="cm-wfield">
-      <label>${LABELS[k]}</label>
-      <div style="display:flex;align-items:center;gap:8px">
-        <input type="number" min="0" max="40" value="${W[k]}" data-ck="${k}" class="cm-winput">
-        <span style="font-size:0.8rem;color:#94a3b8">/ 100</span>
+function buildWeightEditor(cat){
+  const grid=document.getElementById('wg-'+cat);
+  if(!grid)return;
+  
+  // Protect interface states: only draw grid template structural nodes if unpopulated
+  if (grid.children.length === 0) {
+    const catDef=CATS[cat];
+    grid.innerHTML=catDef.criteria.map(c=>`
+      <div class="we-row ${cat}-c">
+        <div class="we-head">
+          <span class="we-name">${c.label}</span>
+          <span class="we-val" id="wv-${cat}-${c.key}">${W[cat][c.key]}</span>
+        </div>
+        <input type="range" min="0" max="35" step="1" value="${W[cat][c.key]}"
+          data-cat="${cat}" data-key="${c.key}" class="w-slider">
       </div>
-    </div>
-  `).join('');
+    `).join('');
 
-  document.querySelectorAll('.cm-winput').forEach(inp => {
-    inp.addEventListener('input', () => {
-      W[inp.dataset.ck] = parseInt(inp.value)||0;
-      syncSlider(inp.dataset.ck);
-      updateAll();
-      updateCommitteeTotal();
+    grid.querySelectorAll('.w-slider').forEach(s=>{
+      s.addEventListener('input',()=>{
+        W[s.dataset.cat][s.dataset.key]=parseInt(s.value);
+        const vEl=document.getElementById(`wv-${s.dataset.cat}-${s.dataset.key}`);
+        if(vEl)vEl.textContent=s.value;
+        updateWeightTotal(s.dataset.cat);
+        renderCat(s.dataset.cat);
+      });
     });
-  });
-}
-
-function updateCommitteeTotal() {
-  const tot = KEYS.reduce((s,k)=>s+W[k],0);
-  const el = document.getElementById('cm-total');
-  if (el) {
-    el.textContent = tot + '%';
-    el.className = 'cm-total-val ' + (tot === 100 ? 'ok' : 'err');
+  } else {
+    // Background execution check: update numeric node components without tearing down handles
+    CATS[cat].criteria.forEach(c => {
+      const slider = grid.querySelector(`.w-slider[data-key="${c.key}"]`);
+      const txt = document.getElementById(`wv-${cat}-${c.key}`);
+      if (slider && document.activeElement !== slider) {
+        slider.value = W[cat][c.key];
+      }
+      if (txt) txt.textContent = W[cat][c.key];
+    });
   }
+  updateWeightTotal(cat);
 }
 
-function renderCommitteeTable() {
-  const tbody = document.getElementById('cm-tbody');
-  if (!tbody) return;
-  tbody.innerHTML = sorted().map(c => {
-    const sc = wScore(c);
-    const gc = c.grade.startsWith('A')?'ga':c.grade.startsWith('B+')||c.grade==='B'?'gb':'gc';
-    return `<tr>
-      <td><strong>${c.name}</strong></td>
-      <td style="color:#64748b;font-size:0.8rem">${c.domain}</td>
-      ${KEYS.map(k=>`<td class="cm-dim-val">${c.scores[k]}</td>`).join('')}
-      <td class="cm-score">${sc}</td>
-      <td><span class="cm-grade ${gc}">${c.grade}</span></td>
+function updateWeightTotal(cat){
+  const tot=CATS[cat].criteria.reduce((s,c)=>s+W[cat][c.key],0);
+  const el=document.getElementById('wt-'+cat);
+  if(!el)return;
+  el.textContent=tot+'%';
+  el.className='we-total-val '+(tot===100?'ok':tot<90||tot>110?'err':'warn');
+}
+
+function renderCat(cat){
+  const firms=FIRMS.filter(f=>f.cat===cat).map(f=>({...f,ws:catScore(f)})).sort((a,b)=>b.ws-a.ws);
+  const criteria=CATS[cat].criteria;
+
+  const cc=document.getElementById(cat+'-count');
+  if(cc)cc.textContent=firms.length+' firm'+(firms.length!==1?'s':'');
+
+  const th=document.getElementById('th-'+cat);
+  if(th){
+    th.innerHTML=`<tr>
+      <th style="width:36px">#</th>
+      <th>Firm</th>
+      ${criteria.map(c=>`<th title="${c.desc}">${c.label}</th>`).join('')}
+      <th>Score</th>
+      <th>Grade</th>
     </tr>`;
-  }).join('');
-}
-
-/* ═══════════════════════════════════
-   SYNCHRONIZATION CONTROLS
-   ═══════════════════════════════════ */
-function syncSlider(k) {
-  const s = document.querySelector(`.wslider[data-key="${k}"]`);
-  if (s) s.value = W[k];
-  const v = document.getElementById('sv-'+k);
-  if (v) v.textContent = W[k];
-}
-
-function syncCommitteeInput(k) {
-  const inp = document.querySelector(`.cm-winput[data-ck="${k}"]`);
-  if (inp) inp.value = W[k];
-}
-
-function updateAll() {
-  renderRankings();
-  refreshNarrative();
-  renderCommitteeTable();
-}
-
-/* ═══════════════════════════════════
-   ROUTING ENGINE PANELS
-   ═══════════════════════════════════ */
-function setMode(m) {
-  document.querySelectorAll('.modeview').forEach(p => p.classList.remove('on'));
-  document.querySelectorAll('.mpill').forEach(b => b.classList.remove('on'));
-  const panel = document.getElementById('v-'+m);
-  if (panel) panel.classList.add('on');
-  document.querySelector(`.mpill[data-mode="${m}"]`)?.classList.add('on');
-
-  if (m === 'committee') {
-    buildCommitteeWeights();
-    renderCommitteeTable();
-    updateCommitteeTotal();
   }
+
+  const tb=document.getElementById('tb-'+cat);
+  if(!tb)return;
+
+  if(firms.length===0){
+    tb.innerHTML=`<tr class="no-data-row"><td colspan="${criteria.length+4}">No firms in this category yet. Data will populate once EOI responses are received.</td></tr>`;
+  } else {
+    tb.innerHTML=firms.map((f,i)=>{
+      const g=grade(f.ws);
+      const rc=i===0?'r1':i===1?'r2':i===2?'r3':'';
+      const topClass=i===0?'top-rank':'';
+      return `<tr class="${rc} ${topClass}">
+        <td class="rank-badge">${String(i+1).padStart(2,'0')}</td>
+        <td>
+          <div class="firm-name">${f.name}</div>
+          <div class="firm-team">${f.domain} · ${f.team} personnel</div>
+        </td>
+        ${criteria.map(c=>`<td class="dim-score">${f.scores[c.key]||'—'}</td>`).join('')}
+        <td class="score-cell">${f.ws}</td>
+        <td><span class="grade-pill ${g.cls}">${g.g}</span></td>
+      </tr>`;
+    }).join('');
+  }
+
+  const wEl=document.getElementById('winner-'+cat);
+  if(wEl&&firms.length>0){
+    const top=firms[0];
+    const g=grade(top.ws);
+    wEl.innerHTML=`<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="flex-shrink:0"><polyline points="20 6 9 17 4 12"/></svg>
+    Category Leader: <strong>${top.name}</strong> — Weighted Score <strong>${top.ws}</strong> — Grade <span class="grade-pill ${g.cls}" style="font-size:.68rem">${g.g}</span>`;
+  } else if(wEl){
+    wEl.innerHTML='No firms registered in this category.';
+  }
+}
+
+/* ══════════════════════════════
+   NAVIGATION & TOGGLES
+══════════════════════════════ */
+function toggleCat(cat){
+  const we=document.getElementById('we-'+cat);
+  const arr=document.getElementById(cat+'-arrow');
+  if(!we)return;
+  const open=we.style.display!=='none';
+  we.style.display=open?'none':'block';
+  if(arr)arr.classList.toggle('open',!open);
+}
+
+function setMode(m){
+  document.querySelectorAll('.mv').forEach(p=>p.classList.remove('on'));
+  document.querySelectorAll('.pill').forEach(b=>b.classList.remove('on'));
+  const panel=document.getElementById('v-'+m);
+  if(panel)panel.classList.add('on');
+  document.querySelector(`.pill[data-mode="${m}"]`)?.classList.add('on');
+  
+  ['pitch','eval','advisory'].forEach((s,i)=>{
+    const el=document.getElementById('s'+(i+1));
+    if(el)el.style.color=s===m?'#0db487':'';
+  });
   window.scrollTo({top:0,behavior:'smooth'});
 }
 
-document.querySelectorAll('.mpill').forEach(b => {
-  b.addEventListener('click', () => setMode(b.dataset.mode));
+document.querySelectorAll('.pill').forEach(b=>{
+  b.addEventListener('click',()=>setMode(b.dataset.mode));
 });
 
-/* INPUT LISTENERS */
-document.querySelectorAll('.wslider').forEach(slider => {
-  slider.addEventListener('input', () => {
-    const k = slider.dataset.key;
-    W[k] = parseInt(slider.value);
-    const sv = document.getElementById('sv-'+k);
-    if (sv) sv.textContent = slider.value;
-    syncCommitteeInput(k);
-    updateAll();
+function adTab(btn,id){
+  document.querySelectorAll('.ad-tab').forEach(t=>t.style.display='none');
+  document.querySelectorAll('.ad-nav-btn').forEach(b=>b.classList.remove('on'));
+  const el=document.getElementById(id);
+  if(el)el.style.display='block';
+  btn.classList.add('on');
+}
+
+/* ══════════════════════════════
+   COMPILATION SUMMARY REPORTS
+══════════════════════════════ */
+function catPrintTable(cat){
+  const firms=FIRMS.filter(f=>f.cat===cat).map(f=>({...f,ws:catScore(f)})).sort((a,b)=>b.ws-a.ws);
+  const criteria=CATS[cat].criteria;
+  if(firms.length===0)return'<p style="color:#888;font-size:12px;padding:8px 0">No firms registered in this category.</p>';
+
+  const thCols=criteria.map(c=>`<th>${c.label}</th>`).join('');
+  const rows=firms.map((f,i)=>{
+    const g=grade(f.ws);
+    const bg=i===0?'background:#f0fdf8;':'';
+    return `<tr style="${bg}">
+      <td>${i+1}</td>
+      <td><strong>${f.name}</strong><br><span style="color:#888;font-size:10px">${f.domain} · ${f.team} personnel</span></td>
+      ${criteria.map(c=>`<td>${f.scores[c.key]||'—'}</td>`).join('')}
+      <td style="font-weight:700;font-size:14px">${f.ws}</td>
+      <td>${g.g}</td>
+    </tr>`;
+  }).join('');
+
+  const wLine=criteria.map(c=>`${c.label}: ${W[cat][c.key]}%`).join(' · ');
+
+  return `
+    <div style="font-size:9px;color:#888;margin-bottom:6px">Criteria weights: ${wLine}</div>
+    <table><thead><tr><th>#</th><th>Firm</th>${thCols}<th>Score</th><th>Grade</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+
+function buildReco(){
+  const catLeaders={};
+  ['arch','pmc','mep'].forEach(cat=>{
+    const firms=FIRMS.filter(f=>f.cat===cat).map(f=>({...f,ws:catScore(f)})).sort((a,b)=>b.ws-a.ws);
+    if(firms.length>0)catLeaders[cat]=firms[0];
   });
-});
+
+  let lines=[];
+  if(catLeaders.arch) lines.push(`Lead Architecture: <strong>${catLeaders.arch.name}</strong> (Score: ${catLeaders.arch.ws})`);
+  if(catLeaders.pmc)  lines.push(`Project Management: <strong>${catLeaders.pmc.name}</strong> (Score: ${catLeaders.pmc.ws})`);
+  if(catLeaders.mep)  lines.push(`MEP-F Engineering: <strong>${catLeaders.mep.name}</strong> (Score: ${catLeaders.mep.ws})`);
+
+  const pos=document.getElementById('sel-pos')?.value||'nabh';
+  const advisory={
+    nabh:'For an NABH-benchmark project, the recommended procurement sequence is: (1) appoint the PMC lead first to govern the consultant ecosystem from Day 1; (2) select the architecture lead through a two-stage evaluation including a live NABH documentation scenario; (3) appoint MEP-F specialist simultaneously with architecture, not after. NABH documentation cannot be retrofitted — it must be integrated from briefing stage.',
+    premium:'For a premium neuro-care centre, MEP-F specialist appointment should occur before architecture design stage begins. Electromagnetic compatibility, critical power infrastructure, and laminar flow environments require specialist input to the architectural brief — not just to the technical drawings.',
+    functional:'For a functional mid-scale hospital, the primary risk is coordination failure between architecture and MEP. The strongest ecosystem is a lead architect with proven hospital documentation maturity, a dedicated MEP-F specialist with hospital systems experience, and a PMC to govern both. A two-stage selection process — technical prequalification, then coordination scenario workshop — is strongly recommended.',
+    future:'For a future expansion-ready campus, MEP service void sizing, structural grid flexibility, and floor-to-floor heights must be specified as design constraints before concept design begins. Consultants unable to demonstrate expansion-ready design thinking in their interview responses should not proceed to Stage 2.'
+  };
+
+  return lines.join('<br>')+`<br><br>${advisory[pos]||advisory.functional}`;
+}
+
+function doPrint(){
+  const date=new Date().toLocaleDateString('en-IN',{year:'numeric',month:'long',day:'numeric'});
+  const pos=document.getElementById('sel-pos')?.value||'nabh';
+  const risk=document.getElementById('sel-risk')?.value||'balanced';
+  const posLabels={nabh:'NABH-Ready Institutional Benchmark',premium:'Premium Neuro-Care Centre',functional:'Functional Mid-Scale Hospital',future:'Future Expansion-Ready Campus'};
+  const src=dataSource==='live'?'Live EOI Response Data (Google Form)':'Static Reference Data (Fallback)';
+
+  const archHTML=catPrintTable('arch');
+  const pmcHTML=catPrintTable('pmc');
+  const mepHTML=catPrintTable('mep');
+  const recoHTML=buildReco();
+
+  const html=`<!DOCTYPE html><html><head>
+<meta charset="UTF-8"/>
+<title>Healthcare Procurement Intelligence Report</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700&family=JetBrains+Mono:wght@700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Plus Jakarta Sans',Arial,sans-serif;color:#1a1a1a;margin:0;padding:36px 40px;font-size:12px;line-height:1.55}
+.hdr{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:28px;padding-bottom:18px;border-bottom:2px solid #0a1020}
+.brand{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:#0db487;margin-bottom:6px}
+h1{font-size:20px;font-weight:700;margin-bottom:4px}
+.meta{font-size:10px;color:#888}
+.conf{font-size:10px;color:#aaa;text-align:right}
+h2{font-size:13px;font-weight:700;padding:7px 12px;margin:22px 0 8px;border-left:3px solid}
+h2.arch{border-color:#0db487;background:#f0fdf8;color:#065f46}
+h2.pmc{border-color:#e8a530;background:#fffbeb;color:#92400e}
+h2.mep{border-color:#6c8eff;background:#f0f4ff;color:#3730a3}
+h2.reco{border-color:#0a1020;background:#f8fafc;color:#0a1020}
+table{width:100%;border-collapse:collapse;font-size:10.5px;margin-bottom:8px}
+th{background:#0a1020;color:rgba(255,255,255,.8);padding:7px 9px;text-align:left;font-size:9px;text-transform:uppercase;letter-spacing:.06em;white-space:nowrap}
+td{padding:7px 9px;border-bottom:1px solid #eef2f7;vertical-align:top}
+tr:last-child td{border-bottom:none}
+.reco-box{padding:14px 16px;background:#f8fafc;border:1px solid #e2e8ef;border-radius:6px;font-size:11px;line-height:1.68;color:#374151}
+footer{margin-top:32px;padding-top:12px;border-top:1px solid #e2e8ef;font-size:9px;color:#aaa;display:flex;justify-content:space-between}
+@media print{body{padding:16px 20px}@page{size:A4;margin:15mm}}
+</style>
+</head><body>
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="brand">Greenscape Designz · Healthcare Delivery Advisory · Bengaluru</div>
+    <h1>Procurement Intelligence Report</h1>
+    <div class="meta">Generated: ${date} &nbsp;·&nbsp; Project: ${posLabels[pos]||pos} &nbsp;·&nbsp; Risk Appetite: ${risk} &nbsp;·&nbsp; Data: ${src}</div>
+    <div class="meta" style="margin-top:3px">Advisor: Anirban Pal, Principal Landscape Architect &amp; Founder, Greenscape Designz</div>
+  </div>
+  <div class="conf">CONFIDENTIAL<br>Internal Advisory Use Only<br>Not for circulation without consent</div>
+</div>
+
+<h2 class="arch">Architecture Firms — Category Evaluation</h2>
+${archHTML}
+
+<h2 class="pmc">PMC / Project Management — Category Evaluation</h2>
+${pmcHTML}
+
+<h2 class="mep">MEP-F Engineering — Category Evaluation</h2>
+${mepHTML}
+
+<h2 class="reco">Strategic Recommendation</h2>
+<div class="reco-box">${recoHTML}</div>
+
+<footer>
+  <span>Greenscape Designz · SG Palya, Bengaluru · greenscapedesignz.com</span>
+  <span>This report is a strategic decision-support instrument, not a final appointment recommendation.</span>
+  <span>Page 1</span>
+</footer>
+
+<script>window.onload=function(){window.print();}<\/script>
+</body></html>`;
+
+  const win=window.open('','_blank');
+  if(win){win.document.write(html);win.document.close();}
+  else alert('Please allow pop-ups for this page to print the report.');
+}
+
+/* ══════════════════════════════
+   LIVE DATA STREAM INIT & LOOP
+══════════════════════════════ */
+function bootstrapPortal() {
+  if(typeof Papa!=='undefined'){
+    loadCSV();
+  } else {
+    useFallback();
+  }
+}
+
+// First structural parse
+if(typeof Papa!=='undefined'){
+  bootstrapPortal();
+} else {
+  window.addEventListener('load', bootstrapPortal);
+}
+
+// Background sync parsing loop executing every 15 seconds
+setInterval(() => {
+  console.log("Background synchronization channel verified: Pulling changes from Google Sheets...");
+  if (typeof Papa !== 'undefined') {
+    Papa.parse(CSV_URL, {
+      download: true,
+      header: true,
+      skipEmptyLines: true,
+      complete: function(res) {
+        if (res.data && res.data.length > 0) {
+          FIRMS = res.data.map(transformRow).filter(f => f.name && f.name.length > 1);
+          dataSource = 'live';
+          setBadge(true, FIRMS.length);
+          updatePitchCount(FIRMS.length);
+          
+          // Refresh table streams silently behind open slider elements
+          ['arch', 'pmc', 'mep'].forEach(cat => renderCat(cat));
+        }
+      }
+    });
+  }
+}, 15000);
 
 document.getElementById('sel-pos')?.addEventListener('change', refreshNarrative);
 document.getElementById('sel-risk')?.addEventListener('change', refreshNarrative);
 
-document.querySelectorAll('.ftrig').forEach(btn => {
-  btn.addEventListener('click', () => triggerCascade(btn.dataset.cascade));
-});
+// Secondary stub helper to satisfy historical routing configurations safely
+function refreshNarrative() {
+  ['arch','pmc','mep'].forEach(cat => renderCat(cat));
+}
 </script>
 </body>
 </html>
